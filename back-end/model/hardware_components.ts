@@ -6,5 +6,21 @@ export class Hardware_Components {
         this.Name = hardware_component.Name;
         this.Details = hardware_component.Details;
     }
+
+    getName(): String {
+        return this.Name;
+    }
+
+    getDetails(): String {
+        return this.Details;
+    }
+
+    equals(hardware_component: Hardware_Components): boolean {
+        return (
+            this.Name === hardware_component.getName() &&
+            this.Details === hardware_component.getDetails()
+        );
+    }
+    
 }
 
