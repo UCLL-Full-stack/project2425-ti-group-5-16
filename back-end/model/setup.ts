@@ -1,5 +1,5 @@
 // import { Course } from './course';
-//import { user } from './user';
+// import { user } from './user';
 
 export class Setup {
     readonly owner_id: number;
