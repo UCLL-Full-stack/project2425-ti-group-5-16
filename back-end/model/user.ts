@@ -1,6 +1,6 @@
 export class User {
     readonly id: number; // Primary key // READONLY = key cannot be changed
-    private email: string;  
+    private email: string;
     private password: string;  
     private name: string;      
     private age: number; 

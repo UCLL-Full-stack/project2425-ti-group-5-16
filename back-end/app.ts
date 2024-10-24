@@ -2,8 +2,8 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import * as bodyParser from 'body-parser';
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
+// import swaggerJSDoc from 'swagger-jsdoc';
+// import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 dotenv.config();
