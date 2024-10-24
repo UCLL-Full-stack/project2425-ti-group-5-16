@@ -1,16 +1,17 @@
 export class User {
-    readonly id?: number;
-    readonly email: string;
-    readonly password: string;
-    readonly name: string;
-    readonly age: number;
+    readonly id: number; // Primary key // READONLY = key cannot be changed
+    private email: string;
+    private password: string;  
+    private name: string;      
+    private age: number; 
 
     constructor(user: {
-        id?: number;
+        id: number;
         email: string;
         password: string;
         name: string;
         age: number;
+
     }) {
         this.id = user.id;
         this.email = user.email;
@@ -19,7 +20,9 @@ export class User {
         this.age = user.age;
     }
 
-    getId(): number | undefined {
+    // GETTERS
+
+    getId(): number {
         return this.id;
     }
 
@@ -37,17 +40,25 @@ export class User {
 
     getAge(): number {
         return this.age;
+    }  
+
+    // SETTERS
+
+    setName(name: string): void {
+        this.name = name;
     }
 
-    equals(user: User): boolean {
-        return (
-            this.email === user.getEmail() &&
-            this.password === user.getPassword() &&
-            this.name === user.getName() && 
-            this.age === user.getAge()
-        );
+    setEmail(email: string): void {
+        this.email = email;
     }
-    
+
+    setPassword(password: string): void {
+        this.password = password;
+    }
+
+    setAge(age: number): void {
+        this.age = age;
+    }
 }
 
 

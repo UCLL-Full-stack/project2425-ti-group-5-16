@@ -1,26 +1,40 @@
 export class Hardware_Components {
-    readonly Name: String;
-    readonly Details: String;
+    private name: String;      // Primary key
+    private details: String;   
+    private price: number;     
 
-    constructor(hardware_component: { Name: String; Details: String }) {
-        this.Name = hardware_component.Name;
-        this.Details = hardware_component.Details;
+    constructor(hardware_component: { name: String; details: String; price: number; }) {
+        this.name = hardware_component.name;
+        this.details = hardware_component.details;
+        this.price = hardware_component.price;
     }
 
+    // GETTERS
+
     getName(): String {
-        return this.Name;
+        return this.name;
     }
 
     getDetails(): String {
-        return this.Details;
+        return this.details;
     }
 
-    equals(hardware_component: Hardware_Components): boolean {
-        return (
-            this.Name === hardware_component.getName() &&
-            this.Details === hardware_component.getDetails()
-        );
+    getPrice(): number {
+        return this.price;
     }
     
+    // SETTERS
+
+    setName(name: String) {
+        this.name = name;
+    }
+
+    setDetails(details: String) {
+        this.details = details;
+    }
+
+    setPrice(price: number) {
+        this.price = price;
+    }
 }
 
