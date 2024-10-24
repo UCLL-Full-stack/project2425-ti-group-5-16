@@ -19,11 +19,11 @@ const users = [
 
 const getAllUsers = (): User[] => users;
 
-const getUsersById = ({ id }: { id: number }): User | null => {
+const getUserById = ({ id }: { id: number }): User | null => {
     return users.find((user) => user.getId() === id) || null;
 };
 
 export default {
     getAllUsers,
-    getUsersById,
+    getUserById,
 };
