@@ -52,11 +52,11 @@ const addSetup = ({
         return component;
     });
 
-    // GET THE IMAGE OBJECTS USING THEIR URLS RETURNS A LIST OF IMAGES
+    // GET THE IMAGE OBJECTS USING THEIR URLS USING THERE URLS
     const image_url_list = image_urls.map((url) => {
         const image = imagesDb.getImageByUrl({ url: url });
         if (!image) {
-            throw new Error(`Image ${url} not found`);
+            throw new Error(`Image with url ${url} not found`);
         }
         return image;
     });
@@ -77,3 +77,4 @@ const addSetup = ({
 };
 
 export default {addSetup, getAllSetups, getSetupById};
+

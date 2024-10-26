@@ -45,18 +45,22 @@ const hardware_componentB2 = new Hardware_Components({
 });
 
 const image1 = new Images({
+    details: "image of of a monitor",
     url: "htpps://www.example.com/image1",
 });
 
 const image2 = new Images({
+    details: "image of a keyboard",
     url: "htpps://www.example.com/image2",
 });
 
 const image3 = new Images({
+    details: "image of a computermouse",
     url: "htpps://www.example.com/image3",
 });
 
 const image4 = new Images({
+    details: "image of a CPU",
     url: "htpps://www.example.com/image4",
 });
 
