@@ -11,8 +11,8 @@ const valid_user = new User({id: 1, name: "John Doe", email: "johndoe@gmail.com"
 const valid_hardware_component_1 = new Hardware_Components({name: "CPU", details: "Intel i9 10900k", price: 500});
 const valid_hardware_component_2 = new Hardware_Components({name: "GPU", details: "Nvidia RTX 3090", price: 1500});
 
-const valid_image_1 = new Images({url: "fakeurl.com"});
-const valid_image_2 = new Images({url: "fakeurl2.com"});
+const valid_image_1 = new Images({details: "foto1", url: "fakeurl.com"});
+const valid_image_2 = new Images({details: "foto2", url: "fakeurl2.com"});
 
 test('given: valid values, when: creating setup, then: setup is created with those values', () => {
     
