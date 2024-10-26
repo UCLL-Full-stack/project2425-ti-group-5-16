@@ -6,4 +6,13 @@ type UserInput = {
     age: number;
 };
 
-export { UserInput };
+type SetupInput = {
+    setup_id: number;
+    owner: UserInput;
+    hardware_components: string[];
+    image_urls: string[];
+    details: string;
+    last_updated: Date;
+};
+
+export { SetupInput, UserInput };
