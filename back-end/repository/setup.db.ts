@@ -84,3 +84,7 @@ const setupDB: Setup[] = [
 const getAllSetups = (): Setup[] => {
     return setupDB;
 }
+
+const addSetup = (setup: Setup): void => {
+    setupDB.push(setup);
+}
