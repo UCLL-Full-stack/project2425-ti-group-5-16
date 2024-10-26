@@ -1,19 +1,13 @@
 import { User } from './user';
-import { Setup } from './setup'; 
+import { Setup } from './setup';
 
-export class comments {
+export class Comments {
     readonly comment_id: number; // Primary key // COMMENT ID CANT BE CHANGED
     private user: User; // Foreign key
     private setup: Setup; // Foreign key
     readonly details: string; // COMMENT CANT BE CHANGED
 
-    constructor(comment: {
-        comment_id: number;
-        user: User;
-        setup: Setup;
-        details: string;
-
-    }) {
+    constructor(comment: { comment_id: number; user: User; setup: Setup; details: string }) {
         this.comment_id = comment.comment_id;
         this.user = comment.user;
         this.setup = comment.setup;
@@ -45,6 +39,4 @@ export class comments {
     setSetupId(setup: Setup): void {
         this.setup = setup;
     }
-
-
 }
