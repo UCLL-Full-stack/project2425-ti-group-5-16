@@ -6,6 +6,7 @@ import setupdb from '../repository/setup.db';
 
 import { SetupInput } from '../types';
 import hardware_componentsDb from '../repository/hardware_components.db';
+import imagesDb from '../repository/images.db';
 
 const getAllSetups = (): Setup[] => {
     return setupdb.getAllSetups();
@@ -19,7 +20,7 @@ const addSetup = ({
     setup_id,
     owner: ownerInput,
     hardware_components: componentInput, 
-    image_urls: imageInput, 
+    image_urls, 
     details,
     last_updated  
 
@@ -51,10 +52,23 @@ const addSetup = ({
         return component;
     });
 
-    // GET THE IMAGE URL OBJECTS USING THERE URLS
-    
+    // GET THE IMAGE OBJECTS USING THEIR URLS RETURNS A LIST OF IMAGES
+    const image_url_list = image_urls.map((url) => {
+        const image = imagesDb.getImageByUrl({ url: url });
+        if (!image) {
+            throw new Error(`Image ${url} not found`);
+        }
+        return image;
+    });
 
-    const newSetup = new Setup ({ setup_id, owner, hardware_components: [], image_urls: [], details, last_updated });
+    const newSetup = new Setup ({ 
+        setup_id, 
+        owner, 
+        hardware_components, 
+        image_urls: image_url_list, 
+        details, 
+        last_updated 
+    });
 
     console.log(newSetup);
     setupdb.addSetup(newSetup);
