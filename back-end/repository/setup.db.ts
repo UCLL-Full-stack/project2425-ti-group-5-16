@@ -85,6 +85,16 @@ const getAllSetups = (): Setup[] => {
     return setupDB;
 }
 
+const getSetupById = (setup_id: number): Setup => {
+    const setup = setupDB.find(setup => setup.setup_id === setup_id);
+    if (!setup) {
+        throw new Error(`Setup with id ${setup_id} not found`);
+    }
+    return setup;
+}
+
 const addSetup = (setup: Setup): void => {
     setupDB.push(setup);
 }
+
+export default { getAllSetups, addSetup, getSetupById };
