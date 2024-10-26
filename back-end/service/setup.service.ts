@@ -1,8 +1,8 @@
-import { User } from '../model/user';
 import { Setup } from '../model/setup';
 
 import userdb from '../repository/user.db';
 import setupdb from '../repository/setup.db';
+
 import { SetupInput } from '../types';
 
 const getAllSetups = (): Setup[] => {
@@ -33,7 +33,10 @@ const addSetup = ({
         throw new Error("Owner ID is required");
     }
 
-    const owner = userdb.getUserbyId(ownerInput.id);
+    const owner = userdb.getUserById({ id: ownerInput.id });
+    if (!owner) {
+        throw new Error("Owner not found");
+    }
 
     const newSetup = new Setup ({ setup_id, owner, hardware_components: [], image_urls: [], details, last_updated });
 
