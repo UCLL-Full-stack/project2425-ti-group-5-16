@@ -1,3 +1,15 @@
+import express, { NextFunction, Request, Response } from 'express';
+import userService from '../service/user.service';
+
+const userRouter = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ */
+
 /**
  * @swagger
  * components:
@@ -27,16 +39,13 @@
  *           type: number
  *           description: User age.
  */
-import express, { NextFunction, Request, Response } from 'express';
-import userService from '../service/user.service';
-
-const userRouter = express.Router();
 
 /**
  * @swagger
  * /users:
  *   get:
  *     summary: Get a list of all users.
+ *     tags: [Users]
  *     responses:
  *       200:
  *         description: A list of users.
@@ -61,6 +70,7 @@ userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  * /users/{id}:
  *   get:
  *     summary: Get a user by id.
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id

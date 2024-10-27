@@ -1,27 +1,63 @@
 import express, { NextFunction, Request, Response } from 'express';
-import Hardware_ComponentsService from '../service/hardware_components.service';
+import hardwareComponentsService from '../service/hardware_components.service';
+import { Hardware_Components } from '../model/hardware_components';
+import hardware_componentsService from '../service/hardware_components.service';
 
 const hardwareComponentsRouter = express.Router();
 
 /**
  * @swagger
- * /hardware_components:
- *  get:
- *   summary: Get a list of all hardware components.
- *  responses:
- *   200:
- *   description: A list of hardware components.
- *  content:
- *  application/json:
- *  schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/Hardware_Component'
-*/
+ * tags:
+ *   name: Hardware Components
+ *   description: Hardware component management
+ */
 
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Hardware_Component:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *           format: int64
+ *           description: Hardware component ID.
+ *         name:
+ *           type: string
+ *           description: Hardware component name.
+ *         type:
+ *           type: string
+ *           description: Hardware component type.
+ *         manufacturer:
+ *           type: string
+ *           description: Hardware component manufacturer.
+ */
+
+/**
+ * @swagger
+ * /hardware-components:
+ *   get:
+ *     summary: Get a list of all hardware components.
+ *     tags: [hardware-components]
+ *     responses:
+ *       200:
+ *         description: A list of hardware components.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Hardware_Component'
+ */
 hardwareComponentsRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const hardwareComponents = await Hardware_ComponentsService.getAllHardwareComponents();
+        const hardwareComponents = await hardwareComponentsService.getAllHardwareComponents();
         res.status(200).json(hardwareComponents);
     } catch (error) {
         next(error);
@@ -30,9 +66,10 @@ hardwareComponentsRouter.get('/', async (req: Request, res: Response, next: Next
 
 /**
  * @swagger
- * /hardware_components/{name}:
+ * /hardware-components/{name}:
  *   get:
  *     summary: Get a hardware component by name.
+ *     tags: [hardware-components]
  *     parameters:
  *       - in: path
  *         name: name
@@ -51,7 +88,7 @@ hardwareComponentsRouter.get('/', async (req: Request, res: Response, next: Next
 
 hardwareComponentsRouter.get('/:name', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const hardwareComponent = await Hardware_ComponentsService.getHardwareComponentByName({ name: req.params.name });
+        const hardwareComponent = await hardware_componentsService.getHardwareComponentByName({ name: req.params.name });
         res.status(200).json(hardwareComponent);
     } catch (error) {
         next(error);
