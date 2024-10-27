@@ -1,3 +1,8 @@
+import express, { NextFunction, Request, Response } from 'express';
+import userService from '../service/user.service';
+
+const userRouter = express.Router();
+
 /**
  * @swagger
  * components:
@@ -27,10 +32,6 @@
  *           type: number
  *           description: User age.
  */
-import express, { NextFunction, Request, Response } from 'express';
-import userService from '../service/user.service';
-
-const userRouter = express.Router();
 
 /**
  * @swagger
