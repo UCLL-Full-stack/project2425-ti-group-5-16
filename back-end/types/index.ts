@@ -16,3 +16,10 @@ type SetupInput = {
 };
 
 export { SetupInput, UserInput };
+
+type ImageInput = {
+    url: string;
+    details: string;
+};
+
+export { ImageInput };
