@@ -34,3 +34,9 @@ app.use('/hardware-components', hardwareComponentsRouter);
 
 import { imagesRouter } from './controller/images.router';
 app.use('/images', imagesRouter);
+
+// SETUP ROUTES
+
+import { setupRouter } from './controller/setup.router';
+app.use('/setup', setupRouter);
+
