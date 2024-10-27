@@ -1,12 +1,11 @@
 import { Setup } from '../model/setup';
 
 import userdb from '../repository/user.db';
-import hardware_components from '../repository/hardware_components.db';
+import hardware_componentsDb from '../repository/hardware_components.db';
+import imagesDb from '../repository/images.db';
 import setupdb from '../repository/setup.db';
 
 import { SetupInput } from '../types';
-import hardware_componentsDb from '../repository/hardware_components.db';
-import imagesDb from '../repository/images.db';
 
 const getAllSetups = (): Setup[] => {
     return setupdb.getAllSetups();
@@ -52,9 +51,9 @@ const addSetup = ({
         return component;
     });
 
-    // GET THE IMAGE OBJECTS USING THEIR URLS USING THERE URLS
+    // GET THE IMAGE OBJECTS USING THEIR URLS
     const image_url_list = image_urls.map((url) => {
-        const image = imagesDb.getImageByUrl({ url: url });
+        const image = imagesDb.getImageByUrl({ url });
         if (!image) {
             throw new Error(`Image with url ${url} not found`);
         }

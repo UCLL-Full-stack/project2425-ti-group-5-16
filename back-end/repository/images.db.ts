@@ -3,19 +3,19 @@ import { Images } from '../model/images';
 const imagesDB: Images[] = [
     new Images({
         details: "image of of a monitor",
-        url: "htpps://www.example.com/image1",
+        url: "www.example1.com",
     }),
     new Images({
         details: "image of a keyboard",
-        url: "htpps://www.example.com/image2",
+        url: "www.example2.com",
     }),
     new Images({
         details: "image of a computermouse",
-        url: "htpps://www.example.com/image3",
+        url: "www.example3.com",
     }),
     new Images({
         details: "image of a CPU",
-        url: "htpps://www.example.com/image4",
+        url: "www.example4.com",
     }),
 ];
 
