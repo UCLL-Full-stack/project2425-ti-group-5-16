@@ -7,6 +7,13 @@ const hardwareComponentsRouter = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Hardware Components
+ *   description: Hardware component management
+ */
+
+/**
+ * @swagger
  * components:
  *   securitySchemes:
  *     bearerAuth:
@@ -37,6 +44,7 @@ const hardwareComponentsRouter = express.Router();
  * /hardware-components:
  *   get:
  *     summary: Get a list of all hardware components.
+ *     tags: [hardware-components]
  *     responses:
  *       200:
  *         description: A list of hardware components.
@@ -61,6 +69,7 @@ hardwareComponentsRouter.get('/', async (req: Request, res: Response, next: Next
  * /hardware-components/{name}:
  *   get:
  *     summary: Get a hardware component by name.
+ *     tags: [hardware-components]
  *     parameters:
  *       - in: path
  *         name: name

@@ -5,6 +5,13 @@ const userRouter = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ */
+
+/**
+ * @swagger
  * components:
  *   securitySchemes:
  *     bearerAuth:
@@ -38,6 +45,7 @@ const userRouter = express.Router();
  * /users:
  *   get:
  *     summary: Get a list of all users.
+ *     tags: [Users]
  *     responses:
  *       200:
  *         description: A list of users.
@@ -62,6 +70,7 @@ userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  * /users/{id}:
  *   get:
  *     summary: Get a user by id.
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id
