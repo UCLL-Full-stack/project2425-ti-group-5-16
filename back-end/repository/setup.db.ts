@@ -67,7 +67,7 @@ const image4 = new Images({
 const setupDB: Setup[] = [
 
     new Setup({ 
-        setup_id: 1,
+        setup_id: 123,
         owner: mockuser1,
         hardware_components: [hardware_componentA1, hardware_componentA2],
         image_urls: [image1, image2],
