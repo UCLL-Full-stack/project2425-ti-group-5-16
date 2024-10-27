@@ -30,3 +30,7 @@ app.use('/users', userRouter);
 import { hardwareComponentsRouter } from './controller/hardware_components.router';
 app.use('/hardware-components', hardwareComponentsRouter);
 
+// IMAGES ROUTES    
+
+import { imagesRouter } from './controller/images.router';
+app.use('/images', imagesRouter);

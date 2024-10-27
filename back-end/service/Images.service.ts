@@ -7,6 +7,7 @@ const getAllImages = (): Images[] => {
 }
 
 const getImageByUrl = ({ url }: { url: string }): Images => {
+
     const image = imagesDb.getImageByUrl({ url });
     if (!image) {
         throw new Error(`Image with URL ${url} not found`);
@@ -14,5 +15,5 @@ const getImageByUrl = ({ url }: { url: string }): Images => {
     return image;
 }
 
-export { getAllImages, getImageByUrl };
+export default{ getAllImages, getImageByUrl };
 
