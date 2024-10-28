@@ -23,7 +23,12 @@ const getUserById = ({ id }: { id: number }): User | null => {
     return users.find((user) => user.getId() === id) || null;
 };
 
+const addUser = (user: User): void => {
+    users.push(user);
+};
+
 export default {
     getAllUsers,
     getUserById,
+    addUser,
 };

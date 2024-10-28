@@ -95,4 +95,33 @@ userRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) =
     }
 });
 
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Create a new user.
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       201:
+ *         description: The created user object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ */
+userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await userService.addUser(req.body);
+        res.status(201).json(user);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export { userRouter };
