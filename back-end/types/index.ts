@@ -6,6 +6,13 @@ type UserInput = {
     age: number;
 };
 
+type CommentInput = {
+    comment_id: number;
+    setup_id: number;
+    user_id: number;
+    content: string;
+};
+
 type SetupInput = {
     setup_id: number;
     owner: UserInput;
@@ -15,7 +22,7 @@ type SetupInput = {
     last_updated: Date;
 };
 
-export { SetupInput, UserInput };
+export { SetupInput, UserInput, CommentInput };
 
 type ImageInput = {
     url: string;

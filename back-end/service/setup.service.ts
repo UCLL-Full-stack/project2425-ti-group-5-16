@@ -15,31 +15,29 @@ const getSetupById = (setup_id: number): Setup => {
     return setupdb.getSetupById(setup_id);
 };
 
-const addSetup = ({ 
+const addSetup = ({
     setup_id,
     owner: ownerInput,
-    hardware_components: componentInput, 
-    image_urls, 
+    hardware_components: componentInput,
+    image_urls,
     details,
-    last_updated  
-
+    last_updated,
 }: SetupInput): Setup => {
-
     //BASIC VALIDATION
     if (!setup_id) {
-        throw new Error("Setup ID is required");
+        throw new Error('Setup ID is required');
     }
     if (setup_id in setupdb.getSetupById(setup_id)) {
-        throw new Error("Setup ID already exists");
+        throw new Error('Setup ID already exists');
     }
     if (!ownerInput.id) {
-        throw new Error("Owner ID is required");
+        throw new Error('Owner ID is required');
     }
 
     // GET THE OWNER OBJECT USING THE ID
     const owner = userdb.getUserById({ id: ownerInput.id });
     if (!owner) {
-        throw new Error("Owner not found");
+        throw new Error('Owner not found');
     }
 
     // GET THE HARDWARE COMPONENTS OBJECTS USING THERE NAMES
@@ -60,13 +58,13 @@ const addSetup = ({
         return image;
     });
 
-    const newSetup = new Setup ({ 
-        setup_id, 
-        owner, 
-        hardware_components, 
-        image_urls: image_url_list, 
-        details, 
-        last_updated 
+    const newSetup = new Setup({
+        setup_id,
+        owner,
+        hardware_components,
+        image_urls: image_url_list,
+        details,
+        last_updated,
     });
 
     console.log(newSetup);
@@ -75,5 +73,4 @@ const addSetup = ({
     return newSetup;
 };
 
-export default {addSetup, getAllSetups, getSetupById};
-
+export default { addSetup, getAllSetups, getSetupById };

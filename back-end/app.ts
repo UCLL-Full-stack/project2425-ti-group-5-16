@@ -52,10 +52,14 @@ app.use('/users', userRouter);
 import { hardwareComponentsRouter } from './controller/hardware_components.router';
 app.use('/hardware-components', hardwareComponentsRouter);
 
-// IMAGES ROUTES    
+// IMAGES ROUTES
 import { imagesRouter } from './controller/images.router';
 app.use('/images', imagesRouter);
 
 // SETUP ROUTES
 import { setupRouter } from './controller/setup.router';
 app.use('/setup', setupRouter);
+
+// COMMENT ROUTES
+import { commentRouter } from './controller/comment.router';
+app.use('/comments', commentRouter);
