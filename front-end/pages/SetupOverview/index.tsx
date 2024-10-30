@@ -45,7 +45,7 @@ const Lecturers: React.FC = () => {
                 <h1>SetupOverview</h1>
                 <section>
                     <p>List of registered setups will be displayed here:</p>
-                    <h2>Lecturers overview</h2>
+                    <h2>Setup Overvieuw</h2>
                     {loading && <p>Loading...</p>}
                     {error && <p>{error}</p>}
                     <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
