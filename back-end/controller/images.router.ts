@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
-import imagesService from '../service/images.service';
+import imagesService from '../service/Images.service';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 

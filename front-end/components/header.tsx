@@ -26,8 +26,15 @@ const Header: React.FC = () => {
               before:hover:scale-x-100 before:scale-x-0 before:origin-top-left
               before:transition before:ease-in-out before:duration-300"
         >
-        SetupOverview
+          SetupOverview
         </Link>
+        <Link
+          href="/Login"
+          className="mt-2 w-14 h-8 bg-[#005d8c] hover:bg-[#063970] rounded text-white flex items-center justify-center no-underline"
+        >
+          Login
+        </Link>
+        
       </nav>
     </header>
   );
