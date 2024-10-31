@@ -5,20 +5,20 @@ export interface Owner {
     password: string;
     name: string;
     age: number;
-  }
+}
   
-  export interface HardwareComponent {
+export interface HardwareComponent {
     name: string;
     details: string;
     price: number;
-  }
+}
   
-  export interface ImageUrl {
+export interface ImageUrl {
     url: string;
     details: string;
-  }
+}
   
-  export interface Setup {
+export interface Setup {
     setup_id: number;
     owner: Owner;
     hardware_components: Array<HardwareComponent>;
@@ -26,5 +26,5 @@ export interface Owner {
     details: string;
     last_updated: string;
     comments: Array<string>;
-  }
+}
   
