@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Header from '@components/header';
 
-const Lecturers: React.FC = () => {
+const HomePage: React.FC = () => {
 
   return (
     <>
@@ -22,4 +22,4 @@ const Lecturers: React.FC = () => {
   );
 };
 
-export default Lecturers;
+export default HomePage;
