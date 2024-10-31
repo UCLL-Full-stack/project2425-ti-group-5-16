@@ -1,11 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface RegisterUserData {
-  email: string;
-  password: string;
-  name: string;
-  age: number;
-}
+import { RegisterUserData } from "../types";
 
 const createUser = async (userData: RegisterUserData) => {
   const url = `${API_URL}/users`;
