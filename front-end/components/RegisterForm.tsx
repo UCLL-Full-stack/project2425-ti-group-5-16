@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import UserService from '@services/UserService';
 
-const RegisterForm: React.FC = () => {
+interface RegisterFormProps {
+  onRegisterSuccess?: () => void;
+}
+
+const RegisterForm: React.FC<RegisterFormProps> = ({onRegisterSuccess}) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
