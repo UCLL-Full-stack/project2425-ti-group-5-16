@@ -13,19 +13,15 @@ const userRouter = express.Router();
 /**
  * @swagger
  * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  *   schemas:
- *     User:
+ *     UserInput:
  *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *         - name
+ *         - age
  *       properties:
- *         id:
- *           type: number
- *           format: int64
- *           description: User ID.
  *         email:
  *           type: string
  *           description: User email.
@@ -106,7 +102,7 @@ userRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) =
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/UserInput'
  *     responses:
  *       201:
  *         description: The created user object.
@@ -117,10 +113,22 @@ userRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) =
  */
 userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = await userService.addUser(req.body);
+        const { email, password, name, age } = req.body;
+
+        // Basic validation
+        if (!email || !password || !name || !age) {
+            return res.status(400).json({
+                message: 'All fields are required (email, password, name, age)',
+            });
+        }
+
+        const user = await userService.addUser({ email, password, name, age });
         res.status(201).json(user);
-    } catch (error) {
-        next(error);
+    } catch (error: any) {
+        // Instead of passing to next, send a JSON response
+        res.status(400).json({
+            message: error.message || 'Failed to create user',
+        });
     }
 });
 

@@ -1,5 +1,5 @@
 type UserInput = {
-    id?: number;
+    id?: number; // Make id optional
     email: string;
     password: string;
     name: string;

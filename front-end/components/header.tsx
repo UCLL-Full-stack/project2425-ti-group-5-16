@@ -45,6 +45,13 @@ const Header: React.FC = () => {
         >
           Login
         </Link>
+
+        <Link
+          href="/Register"
+          className="mt-2 w-14 h-8 bg-[#005d8c] hover:bg-[#063970] rounded text-white flex items-center justify-center no-underline"
+        >
+          Register
+        </Link>
         
       </nav>
     </header>

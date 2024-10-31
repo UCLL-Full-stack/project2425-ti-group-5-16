@@ -1,6 +1,6 @@
 import { User } from '../model/user';
 
-const users = [
+const users: User[] = [
     new User({
         id: 1,
         email: 'john.doe@ucll.be',
@@ -23,8 +23,21 @@ const getUserById = ({ id }: { id: number }): User | null => {
     return users.find((user) => user.getId() === id) || null;
 };
 
-const addUser = (user: User): void => {
-    users.push(user);
+const getNextId = (): number => {
+    const maxId = users.reduce((max, user) => Math.max(max, user.getId()), 0);
+    return maxId + 1;
+};
+
+const addUser = (user: User): User => {
+    const newUser = new User({
+        id: getNextId(),
+        email: user.getEmail(),
+        password: user.getPassword(),
+        name: user.getName(),
+        age: user.getAge(),
+    });
+    users.push(newUser);
+    return newUser;
 };
 
 export default {

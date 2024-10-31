@@ -1,19 +1,18 @@
 export class User {
-    readonly id: number; // Primary key // READONLY = key cannot be changed
+    readonly id: number;
     private email: string;
-    private password: string;  
-    private name: string;      
-    private age: number; 
+    private password: string;
+    private name: string;
+    private age: number;
 
     constructor(user: {
-        id: number;
+        id?: number; // Make id optional in constructor
         email: string;
         password: string;
         name: string;
         age: number;
-
     }) {
-        this.id = user.id;
+        this.id = user.id || 0; // Temporary ID that will be overwritten
         this.email = user.email;
         this.password = user.password;
         this.name = user.name;
@@ -40,7 +39,7 @@ export class User {
 
     getAge(): number {
         return this.age;
-    }  
+    }
 
     // SETTERS
 
@@ -60,6 +59,3 @@ export class User {
         this.age = age;
     }
 }
-
-
-

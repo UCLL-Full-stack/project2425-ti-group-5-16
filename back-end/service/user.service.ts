@@ -6,18 +6,12 @@ const getAllUsers = (): User[] => userDB.getAllUsers();
 
 const getUserById = (id: number): User => {
     const user = userDB.getUserById({ id });
-    if (!user) throw new Error(`Lecturer with id ${id} does not exist.`);
+    if (!user) throw new Error(`User with id ${id} does not exist.`);
     return user;
 };
 
-const addUser = ({ id, email, password, name, age }: UserInput): User => {
+const addUser = ({ email, password, name, age }: Omit<UserInput, 'id'>): User => {
     // BASIC VALIDATION
-    if (!id) {
-        throw new Error('User ID is required');
-    }
-    if (userDB.getUserById({ id })) {
-        throw new Error('User ID already exists');
-    }
     if (!email) {
         throw new Error('Email is required');
     }
@@ -32,16 +26,13 @@ const addUser = ({ id, email, password, name, age }: UserInput): User => {
     }
 
     const newUser = new User({
-        id,
         email,
         password,
         name,
         age,
     });
 
-    userDB.addUser(newUser);
-
-    return newUser;
+    return userDB.addUser(newUser);
 };
 
 export default { getAllUsers, getUserById, addUser };
