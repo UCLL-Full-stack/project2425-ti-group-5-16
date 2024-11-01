@@ -5,7 +5,7 @@ import SetupService from '@services/SetupService';
 import SetupOverviewTable from '@components/SetupOverviewTable';
 import { Setup } from '@types';
 
-const Lecturers: React.FC = () => {
+const SetupOverview: React.FC = () => {
 
     // Basic state management
     const [loading, setLoading] = useState<boolean>(true);
@@ -16,7 +16,7 @@ const Lecturers: React.FC = () => {
     const [selectedLecturer, setSelectedLecturer] = useState<Setup | null>(null);
 
     useEffect(() => {
-        const fetchLecturers = async () => {
+        const fetchSetups = async () => {
             try {
                 const data = await SetupService.getAllSetups();
                 setSetup(data);
@@ -27,7 +27,7 @@ const Lecturers: React.FC = () => {
             }
         };
 
-        fetchLecturers();
+        fetchSetups();
     }, []);
 
     const selectsetups = (Setup: Setup) => {
@@ -55,4 +55,4 @@ const Lecturers: React.FC = () => {
     );
 };
 
-export default Lecturers;
+export default SetupOverview;
