@@ -32,3 +32,12 @@ export interface Setup {
   last_updated: string;
   comments: Array<string>;
 }
+
+export interface SetupInput {
+  setupId: number;
+  ownerId: number;
+  hardwareComponents: Array<string>;
+  imageUrls: Array<string>;
+  details: string;
+  lastUpdated: Date;
+}
