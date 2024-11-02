@@ -53,7 +53,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegisterSuccess}) => {
       });
       
       setTimeout(() => {
-        router.push('/login');
+        router.push('/Login');
       }, 2000);
     } catch (error: any) {
       console.error('Registration error:', error); // Debug log

@@ -1,3 +1,6 @@
+// src/model/user.ts
+import bcrypt from 'bcryptjs';
+
 export class User {
     readonly id: number;
     private email: string;
@@ -5,22 +8,30 @@ export class User {
     private name: string;
     private age: number;
 
-    constructor(user: {
-        id?: number; // Make id optional in constructor
-        email: string;
-        password: string;
-        name: string;
-        age: number;
-    }) {
-        this.id = user.id || 0; // Temporary ID that will be overwritten
+    constructor(user: { id?: number; email: string; password: string; name: string; age: number }) {
+        this.id = user.id || 0;
         this.email = user.email;
         this.password = user.password;
         this.name = user.name;
         this.age = user.age;
     }
 
-    // GETTERS
+    static async createUser(user: {
+        id?: number;
+        email: string;
+        password: string;
+        name: string;
+        age: number;
+    }): Promise<User> {
+        // Hash password before creating user
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        return new User({
+            ...user,
+            password: hashedPassword,
+        });
+    }
 
+    // Existing getters
     getId(): number {
         return this.id;
     }
@@ -41,8 +52,7 @@ export class User {
         return this.age;
     }
 
-    // SETTERS
-
+    // Existing setters
     setName(name: string): void {
         this.name = name;
     }
@@ -51,11 +61,21 @@ export class User {
         this.email = email;
     }
 
-    setPassword(password: string): void {
-        this.password = password;
+    async setPassword(password: string): Promise<void> {
+        this.password = await bcrypt.hash(password, 10);
     }
 
     setAge(age: number): void {
         this.age = age;
+    }
+
+    // Method to return user data without sensitive information
+    toJSON() {
+        return {
+            id: this.id,
+            email: this.email,
+            name: this.name,
+            age: this.age,
+        };
     }
 }

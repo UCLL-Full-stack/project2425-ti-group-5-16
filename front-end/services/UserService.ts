@@ -1,12 +1,39 @@
+// src/services/UserService.ts
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 import { RegisterUserData } from "../types";
+
+const loginUser = async (email: string, password: string) => {
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      try {
+        const jsonError = JSON.parse(errorData);
+        throw new Error(jsonError.message || "Login failed");
+      } catch {
+        throw new Error(`Login failed: ${response.statusText}`);
+      }
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error in loginUser:", error);
+    throw error;
+  }
+};
 
 const createUser = async (userData: RegisterUserData) => {
   const url = `${API_URL}/users`;
   console.log("Making request to:", url);
   console.log("With data:", userData);
-
   try {
     const response = await fetch(`${API_URL}/users`, {
       method: "POST",
@@ -15,7 +42,6 @@ const createUser = async (userData: RegisterUserData) => {
       },
       body: JSON.stringify(userData),
     });
-
     if (!response.ok) {
       const errorData = await response.text();
       try {
@@ -25,7 +51,6 @@ const createUser = async (userData: RegisterUserData) => {
         throw new Error(`Registration failed: ${response.statusText}`);
       }
     }
-
     return await response.json();
   } catch (error) {
     console.error("Error in createUser:", error);
@@ -36,11 +61,9 @@ const createUser = async (userData: RegisterUserData) => {
 const getAllUsers = async () => {
   try {
     const response = await fetch(`${API_URL}/users`);
-
     if (!response.ok) {
       throw new Error(`Failed to fetch users: ${response.statusText}`);
     }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -52,11 +75,9 @@ const getAllUsers = async () => {
 const getUserById = async (id: number) => {
   try {
     const response = await fetch(`${API_URL}/users/${id}`);
-
     if (!response.ok) {
       throw new Error(`Failed to fetch user: ${response.statusText}`);
     }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -71,14 +92,13 @@ const updateUser = async (id: number, user: any) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
       body: JSON.stringify(user),
     });
-
     if (!response.ok) {
       throw new Error(`Failed to update user: ${response.statusText}`);
     }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -91,12 +111,13 @@ const deleteUser = async (id: number) => {
   try {
     const response = await fetch(`${API_URL}/users/${id}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
     });
-
     if (!response.ok) {
       throw new Error(`Failed to delete user: ${response.statusText}`);
     }
-
     return true;
   } catch (error) {
     console.error("Error deleting user:", error);
@@ -105,6 +126,7 @@ const deleteUser = async (id: number) => {
 };
 
 const UserService = {
+  loginUser,
   getAllUsers,
   getUserById,
   createUser,
