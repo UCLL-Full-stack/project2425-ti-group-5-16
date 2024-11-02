@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Header from '@components/header';
+import HomePageInfomation from '@components/HomePageInformation';
 
 const HomePage: React.FC = () => {
 
@@ -11,11 +12,8 @@ const HomePage: React.FC = () => {
       </Head>
       <Header />
       <main className="d-flex flex-column justify-content-center align-items-center">
-        <h1>HomePage</h1>
         <section>
-          <p>
-            This is the homepage of the Setup Showcase. 
-          </p>
+          <HomePageInfomation />
         </section>
       </main>
     </>
