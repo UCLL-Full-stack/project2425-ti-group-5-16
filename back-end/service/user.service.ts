@@ -1,3 +1,4 @@
+// src/service/user.service.ts
 import userDB from '../repository/user.db';
 import { User } from '../model/user';
 import { UserInput } from '../types';
@@ -10,7 +11,7 @@ const getUserById = (id: number): User => {
     return user;
 };
 
-const addUser = ({ email, password, name, age }: Omit<UserInput, 'id'>): User => {
+const addUser = async ({ email, password, name, age }: Omit<UserInput, 'id'>): Promise<User> => {
     // BASIC VALIDATION
     if (!email) {
         throw new Error('Email is required');
@@ -25,7 +26,13 @@ const addUser = ({ email, password, name, age }: Omit<UserInput, 'id'>): User =>
         throw new Error('Age is required');
     }
 
-    const newUser = new User({
+    // Check if email already exists
+    const existingUser = userDB.getAllUsers().find((u) => u.getEmail() === email);
+    if (existingUser) {
+        throw new Error('Email already exists');
+    }
+
+    const newUser = await User.createUser({
         email,
         password,
         name,
