@@ -1,4 +1,4 @@
-import { Hardware_Components } from '../model/hardware_components';
+import { Hardware_Components } from '../model/hardware_components'; 
 
 const hardware_componentsDB: Hardware_Components[] = [
     new Hardware_Components({
@@ -31,7 +31,11 @@ const getAllHardwareComponents = (): Hardware_Components[] => {
 }
 
 const getHardwareComponentByName = ({ name }: { name: string }): Hardware_Components | null => {
-    return hardware_componentsDB.find((component) => component.getName() === name) || null;
+    const normalizedInputName = name.trim().toLowerCase();
+    return hardware_componentsDB.find(
+        (component) => component.getName().trim().toLowerCase() === normalizedInputName
+    ) || null;
 }
 
-export default {getAllHardwareComponents, getHardwareComponentByName};
+export default { getAllHardwareComponents, getHardwareComponentByName };
+

@@ -2,6 +2,7 @@ import { Setup } from '../model/setup'
 import { User } from '../model/user'
 import { Hardware_Components } from '../model/hardware_components'
 import { Images } from '../model/images'
+import { Comment } from '../model/comment'
 import { mock } from 'node:test';
 
 const mockuser1 = new User({
@@ -64,15 +65,38 @@ const image4 = new Images({
     url: "htpps://www.example.com/image4",
 });
 
+const user = new User({
+    id: 1,
+    email: 'john.doe@ucll.be',
+    password: 'john123',
+    name: 'John Doe',
+    age: 30,
+});
+
+const mockComment1 = new Comment({
+    comment_id: 1,
+    setup_id: 1,
+    user_id: 1,
+    content: 'Great setup!',
+});
+
+const mockComment2 = new Comment({
+    comment_id: 2,
+    setup_id: 2,
+    user_id: 2,
+    content: 'I love this setup!',
+});
+
 const setupDB: Setup[] = [
 
     new Setup({ 
-        setup_id: 123,
+        setup_id: 1,
         owner: mockuser1,
         hardware_components: [hardware_componentA1, hardware_componentA2],
         image_urls: [image1, image2],
         details: "This is test setup 1 with AMD Ryzen 5 3600x and NVIDIA GeForce RTX 3070",
-        last_updated: new Date("2023-01-01")
+        last_updated: new Date("2023-01-01"),
+        comments: [mockComment1, mockComment2]
     }),
 
     new Setup({ 
@@ -81,7 +105,8 @@ const setupDB: Setup[] = [
         hardware_components: [hardware_componentB1, hardware_componentB2],
         image_urls: [image3, image4],
         details: "This is a test setup with intel Core i9-10900k and NVIDIA GeForce RTX 3080",
-        last_updated: new Date("2024-01-01")
+        last_updated: new Date("2024-01-01"),
+        comments: [mockComment1, mockComment2]
     }),
 ];
 
@@ -97,8 +122,12 @@ const getSetupById = (setup_id: number): Setup => {
     return setup;
 }
 
+const IsSetupInDB = (setup_id: number): boolean => {
+    return setupDB.some(setup => setup.setup_id === setup_id);
+}
+
 const addSetup = (setup: Setup): void => {
     setupDB.push(setup);
 }
 
-export default { getAllSetups, addSetup, getSetupById };
+export default { getAllSetups, addSetup, getSetupById, IsSetupInDB };

@@ -19,25 +19,6 @@ const mockUser2 = new User({
     age: 30,
 });
 
-// Mock setups
-const mockSetup1 = new Setup({
-    setup_id: 1,
-    owner: mockUser1,
-    hardware_components: [],
-    image_urls: [],
-    details: 'This is test setup 1',
-    last_updated: new Date('2023-01-01'),
-});
-
-const mockSetup2 = new Setup({
-    setup_id: 2,
-    owner: mockUser2,
-    hardware_components: [],
-    image_urls: [],
-    details: 'This is test setup 2',
-    last_updated: new Date('2024-01-01'),
-});
-
 // Mock comments
 const mockComment1 = new Comment({
     comment_id: 1,
@@ -51,6 +32,43 @@ const mockComment2 = new Comment({
     setup_id: 2,
     user_id: 2,
     content: 'I love this setup!',
+});
+
+const mockComment3 = new Comment({
+    comment_id: 3,
+    setup_id: 3,
+    user_id: 2,
+    content: 'Amazing setup!',
+});
+
+// Mock setups
+const mockSetup1 = new Setup({
+    setup_id: 1,
+    owner: mockUser1,
+    hardware_components: [],
+    image_urls: [],
+    details: 'This is test setup 1',
+    last_updated: new Date('2023-01-01'),
+    comments: [mockComment1],
+});
+
+const mockSetup2 = new Setup({
+    setup_id: 2,
+    owner: mockUser2,
+    hardware_components: [],
+    image_urls: [],
+    details: 'This is test setup 2',
+    last_updated: new Date('2024-01-01'),
+});
+
+const mockSetup3 = new Setup({
+    setup_id: 3,
+    owner: mockUser1,
+    hardware_components: [],
+    image_urls: [],
+    details: 'This is test setup 3',
+    last_updated: new Date('2025-01-01'),
+    comments: [mockComment3, mockComment2],
 });
 
 const commentDB: Comment[] = [mockComment1, mockComment2];

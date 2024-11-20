@@ -1,20 +1,23 @@
 import { Setup } from '../model/setup';
-
 import userdb from '../repository/user.db';
 import hardware_componentsDb from '../repository/hardware_components.db';
 import imagesDb from '../repository/images.db';
 import setupdb from '../repository/setup.db';
+import commentdb from '../repository/comments.db';
 
 import { SetupInput } from '../types';
 
+// Function to get all setups
 const getAllSetups = (): Setup[] => {
     return setupdb.getAllSetups();
 };
 
+// Function to get a setup by ID
 const getSetupById = (setup_id: number): Setup => {
     return setupdb.getSetupById(setup_id);
 };
 
+// Function to add a new setup
 const addSetup = ({
     setup_id,
     owner: ownerInput,
@@ -23,11 +26,11 @@ const addSetup = ({
     details,
     last_updated,
 }: SetupInput): Setup => {
-    //BASIC VALIDATION
+    // BASIC VALIDATION
     if (!setup_id) {
         throw new Error('Setup ID is required');
     }
-    if (setup_id in setupdb.getSetupById(setup_id)) {
+    if (setupdb.IsSetupInDB(setup_id)) {
         throw new Error('Setup ID already exists');
     }
     if (!ownerInput.id) {
@@ -40,7 +43,7 @@ const addSetup = ({
         throw new Error('Owner not found');
     }
 
-    // GET THE HARDWARE COMPONENTS OBJECTS USING THERE NAMES
+    // GET THE HARDWARE COMPONENT OBJECTS USING THEIR NAMES
     const hardware_components = componentInput.map((componentName) => {
         const component = hardware_componentsDb.getHardwareComponentByName({ name: componentName });
         if (!component) {
@@ -58,6 +61,10 @@ const addSetup = ({
         return image;
     });
 
+    // GET COMMENTS FOR THE SETUP
+    const comments_content = commentdb.getCommentsBySetupId(setup_id);
+
+    // CREATE NEW SETUP OBJECT
     const newSetup = new Setup({
         setup_id,
         owner,
@@ -65,9 +72,9 @@ const addSetup = ({
         image_urls: image_url_list,
         details,
         last_updated,
+        comments: comments_content,
     });
 
-    console.log(newSetup);
     setupdb.addSetup(newSetup);
 
     return newSetup;
