@@ -7,7 +7,7 @@ import commentdb from '../repository/comments.db';
 
 import { SetupInput } from '../types';
 
-// Function to get all setups
+// Function to get all setups backend
 const getAllSetups = (): Setup[] => {
     return setupdb.getAllSetups();
 };
