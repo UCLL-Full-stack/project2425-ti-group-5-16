@@ -26,7 +26,7 @@ const getAllSetups = async () => {
     details: string;
   }
 
-  const CreateSetup = async (setup) => {
+  const CreateSetup = async (setup: Setup) => {
     try {
       if (!setup) {
         throw new Error("No setup data provided");
