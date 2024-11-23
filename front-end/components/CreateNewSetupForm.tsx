@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import Head from 'next/head';
-import Header from '@components/header';
 import SetupService from '@services/SetupService';
-import { SetupInput} from '@types';
 
 const CreateNewSetupForm: React.FC = () => {
   const [setupId, setSetupId] = useState<number | undefined>();
@@ -13,30 +10,33 @@ const CreateNewSetupForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
-    if (setupId !== undefined && ownerId !== undefined) {
-      // Format data to match backend structure
-      const formattedSetup: SetupInput = {
-        setupId: setupId,
-        ownerId: ownerId,
-        hardwareComponents: hardwareComponents,
-        imageUrls: imageUrls,
-        details: details,
-        lastUpdated: new Date()  // Automatically set to current date in ISO format
-      };
 
-      try {
-        // Pass formatted data to SetupService
-        const setup = await SetupService.CreateSetup(formattedSetup);
-        console.log('Created setup:', setup);
-      } catch (error) {
-        console.error('Failed to create setup:', error);
-      }
+    // Ensure the required fields are provided
+    if (setupId !== undefined && ownerId !== undefined) {
+        // Format data to match the backend structure
+        const formattedSetup = {
+            setup_id: setupId,
+            owner: {
+                id: ownerId,
+            },
+            hardware_components: hardwareComponents,
+            image_urls: imageUrls,
+            details: details,
+            last_updated: new Date().toISOString(), // ISO 8601 format
+        };
+
+        try {
+            // Pass formatted data to SetupService
+            // const setup = await SetupService.CreateSetup(); // Use mock setup for testing
+            const setup = await SetupService.CreateSetup(formattedSetup); // Use user-provided setup
+            console.log('Setup created successfully:', setup);
+        } catch (error) {
+            console.error('Failed to create setup:', error);
+        }
     } else {
-      console.error('Setup ID and Owner ID are required.');
+        console.error('Setup ID and Owner ID are required.');
     }
   };
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

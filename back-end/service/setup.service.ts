@@ -25,6 +25,7 @@ const addSetup = ({
     image_urls,
     details,
     last_updated,
+    
 }: SetupInput): Setup => {
     // BASIC VALIDATION
     if (!setup_id) {
