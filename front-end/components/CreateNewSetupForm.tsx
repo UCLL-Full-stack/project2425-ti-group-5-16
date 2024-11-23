@@ -13,28 +13,29 @@ const CreateNewSetupForm: React.FC = () => {
 
     // Ensure the required fields are provided
     if (setupId !== undefined && ownerId !== undefined) {
-        // Format data to match the backend structure
-        const formattedSetup = {
-            setup_id: setupId,
-            owner: {
-                id: ownerId,
-            },
-            hardware_components: hardwareComponents,
-            image_urls: imageUrls,
-            details: details,
-            last_updated: new Date().toISOString(), // ISO 8601 format
-        };
+      // Format data to match the backend structure
+      const formattedSetup = {
+        setup_id: setupId,
+        owner: {
+          id: ownerId,
+        },
+        hardware_components: hardwareComponents,
+        image_urls: imageUrls,
+        details: details,
+        last_updated: new Date().toISOString(), // ISO 8601 format
+      };
 
-        try {
-            // Pass formatted data to SetupService
-            // const setup = await SetupService.CreateSetup(); // Use mock setup for testing
-            const setup = await SetupService.CreateSetup(formattedSetup); // Use user-provided setup
-            console.log('Setup created successfully:', setup);
-        } catch (error) {
-            console.error('Failed to create setup:', error);
-        }
+      console.log('Formatted Setup:', formattedSetup);
+
+      try {
+        // Send data to SetupService
+        const setup = await SetupService.CreateSetup(formattedSetup);
+        console.log('Setup created successfully:', setup);
+      } catch (error) {
+        console.error('Failed to create setup:', error);
+      }
     } else {
-        console.error('Setup ID and Owner ID are required.');
+      console.error('Setup ID and Owner ID are required.');
     }
   };
 
@@ -59,7 +60,9 @@ const CreateNewSetupForm: React.FC = () => {
         />
       </div>
       <div>
-        <label className="block text-gray-600 font-medium mb-1">Hardware Components (comma-separated):</label>
+        <label className="block text-gray-600 font-medium mb-1">
+          Hardware Components (comma-separated):
+        </label>
         <input
           type="text"
           value={hardwareComponents.join(', ')}
@@ -70,7 +73,9 @@ const CreateNewSetupForm: React.FC = () => {
         />
       </div>
       <div>
-        <label className="block text-gray-600 font-medium mb-1">Image URLs (comma-separated):</label>
+        <label className="block text-gray-600 font-medium mb-1">
+          Image URLs (comma-separated):
+        </label>
         <input
           type="text"
           value={imageUrls.join(', ')}
@@ -99,5 +104,6 @@ const CreateNewSetupForm: React.FC = () => {
 };
 
 export default CreateNewSetupForm;
+
 
 
