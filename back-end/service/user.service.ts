@@ -6,10 +6,10 @@ import { User } from '../model/user';
 
 const getAllUsers = async (): Promise<User[]> => userDB.getAllUsers();
 
-const getUserByUsername = async ({ username }: { username: string }): Promise<User> => {
-    const user = await userDB.getUserByUsername({ username });
+const getUserByUsername = async ({ name }: { name: string }): Promise<User> => {
+    const user = await userDB.getUserByName({ name });
     if (!user) {
-        throw new Error(`User with username: ${username} does not exist.`);
+        throw new Error(`User with username: ${name} does not exist.`);
     }
     return user;
 };
@@ -24,20 +24,19 @@ const authenticate = async ({ name, password }: UserInput): Promise<Authenticati
     }
     return {
         token: generateJwtToken({ name, role: user.getRole() }),
-        username: name,
+        name: name,
         role: user.getRole(),
     };
 };
 
 const createUser = async ({
-
     name,
     password,
     email,
     age,
     role,
 }: UserInput): Promise<User> => {
-    const existingUser = await userDB.getUserByUsername({ name });
+    const existingUser = await userDB.getUserByName({ name });
 
     if (existingUser) {
         throw new Error(`User with username ${name} is already registered.`);

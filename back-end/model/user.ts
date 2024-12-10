@@ -1,37 +1,25 @@
 // src/model/user.ts
 import { User as UserPrisma } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { Role } from '../types';
+// import bcrypt from 'bcryptjs';
 
 export class User {
-    private id: number;
+    private id?: number;
+    private name: string;
     private email: string;
     private password: string;
-    private name: string;
-    private age: number;
     private role: Role;
+    private age: number;
 
-    constructor(user: { id?: number; email: string; password: string; name: string; age: number }) {
+    constructor(user: { id?: number; email: string; password: string; name: string; age: number; role: Role }) {
+        this.validate(user);
+
         this.id = user.id || 0;
+        this.name = user.name;
         this.email = user.email;
         this.password = user.password;
-        this.name = user.name;
-        this.age = user.age;
         this.role = user.role;
-    }
-
-    static async createUser(user: {
-        id?: number;
-        email: string;
-        password: string;
-        name: string;
-        age: number;
-    }): Promise<User> {
-        // Hash password before creating user
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        return new User({
-            ...user,
-            password: hashedPassword,
-        });
+        this.age = user.age;
     }
 
     getId(): number | undefined {
@@ -59,21 +47,16 @@ export class User {
     }
 
     validate(user: {
-        username: string;
-        firstName: string;
-        lastName: string;
+        id ?: number;
+        name: string;
         email: string;
         password: string;
         role: Role;
+        age: number;
+
     }) {
-        if (!user.username?.trim()) {
+        if (!user.name?.trim()) {
             throw new Error('Username is required');
-        }
-        if (!user.firstName?.trim()) {
-            throw new Error('First name is required');
-        }
-        if (!user.lastName?.trim()) {
-            throw new Error('Last name is required');
         }
         if (!user.email?.trim()) {
             throw new Error('Email is required');
@@ -84,6 +67,9 @@ export class User {
         if (!user.role) {
             throw new Error('Role is required');
         }
+        if (!user.age) {
+            throw new Error('Age is required');
+        }
     }
 
     equals(user: User): boolean {
@@ -92,8 +78,8 @@ export class User {
             this.name === user.getName() &&
             this.email === user.getEmail() &&
             this.password === user.getPassword() &&
-            this.age === user.getAge() &&
-            this.role === user.getRole()
+            this.role === user.getRole() &&
+            this.age === user.getAge()
         );
     }
 
@@ -103,8 +89,8 @@ export class User {
             name,
             email,
             password,
-            age,
             role: role as Role,
+            age,
         });
     } 
 }

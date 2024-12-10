@@ -1,5 +1,5 @@
 import { User } from '../model/user';
-import database from './database.ts';
+import database from './database';
 
 const getAllUsers = async (): Promise<User[]> => {
     try {
@@ -24,7 +24,7 @@ const getUserById = async ({ id }: { id: number }): Promise<User | null> => {
     }
 };
 
-const getUserByUsername = async ({ username }: { username: string }): Promise<User | null> => {
+const getUserByName = async ({ name }: { name: string }): Promise<User | null> => {
     try {
         const userPrisma = await database.user.findFirst({
             where: { name },
@@ -45,8 +45,8 @@ const createUser = async (user: User): Promise<User> => {
                 name: user.getName(),
                 email: user.getEmail(),
                 password: user.getPassword(),
-                age: user.getAge(),
                 role: user.getRole(),
+                age: user.getAge(),
             },
         });
         return User.from(userPrisma);
@@ -60,5 +60,5 @@ export default {
     getAllUsers,
     createUser,
     getUserById,
-    getUserByUsername,
+    getUserByName,
 };

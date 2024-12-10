@@ -2,21 +2,22 @@ import { Setup } from '../model/setup'
 import { User } from '../model/user'
 import { Hardware_Components } from '../model/hardware_components'
 import { Images } from '../model/images'
-import { mock } from 'node:test';
 
 const mockuser1 = new User({
     id: 1,
-    email: "janny-smith@gmail.com",
+    email: "jan@gmail.com",
     password: "password1",
     name: "Janny Smith",
+    role: "admin",
     age: 25
 });
 
 const mockuser2 = new User({
     id: 2,
-    email: "richard-domer@gmail.com",
+    email: "rikki@gmail.com",
     password: "password2",
     name: "Richard Domer",
+    role: "user",
     age: 30
 });
 
