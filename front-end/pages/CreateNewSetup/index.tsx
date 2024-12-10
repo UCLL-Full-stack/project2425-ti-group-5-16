@@ -9,12 +9,13 @@ const CreateNewSetup: React.FC = () => {
         <title>Create New Setup</title>
       </Head>
       <Header />
-      <main className="min-h-screen bg-gray-100 grid grid-rows-layout grid-cols-layout gap-6 p-6">
+      <main className="min-h-screen bg-gray-50 py-8 px-6">
         {/* Page Title */}
-        <h3 className="text-3xl font-bold text-gray-700 col-span-2 m-0 p-0">
+        <h3 className="text-4xl font-bold text-gray-700 mb-8 text-center">
           Create New Setup
         </h3>
-        {/* Form Elements Spread Across the Page */}
+
+        {/* Input Fields Spread Across the Page */}
         <CreateNewSetupForm />
       </main>
     </>
@@ -22,6 +23,5 @@ const CreateNewSetup: React.FC = () => {
 };
 
 export default CreateNewSetup;
-
 
 

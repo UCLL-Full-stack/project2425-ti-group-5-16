@@ -13,17 +13,17 @@ const getAllSetups = async () => {
       throw error;
     }
   };
-  
+
   interface Owner {
     id: number;
   }
 
   interface Setup {
-    setup_id: number;
-    owner?: Owner;
+    owner: Owner;
     hardware_components: any[];
     image_urls: string[];
     details: string;
+    last_updated: string;
   }
 
   const CreateSetup = async (setup: Setup) => {
@@ -31,10 +31,8 @@ const getAllSetups = async () => {
       if (!setup) {
         throw new Error("No setup data provided");
       }
-  
-      // Validate setup structure
+
       if (
-        typeof setup.setup_id !== 'number' ||
         typeof setup.owner?.id !== 'number' ||
         !Array.isArray(setup.hardware_components) ||
         !Array.isArray(setup.image_urls) ||
