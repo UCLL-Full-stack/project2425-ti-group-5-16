@@ -1,47 +1,96 @@
+/**
+ * @swagger
+ *   components:
+ *    securitySchemes:
+ *     bearerAuth:
+ *      type: http
+ *      scheme: bearer
+ *      bearerFormat: JWT
+ *    schemas:
+ *      AuthenticationResponse:
+ *          type: object
+ *          properties:
+ *            message:
+ *              type: string
+ *              description: Authentication response.
+ *            token:
+ *              type: string
+ *              description: JWT access token.
+ *            username:
+ *              type: string
+ *              description: User name.
+ *            fullname:
+ *             type: string
+ *             description: Full name.
+ *      AuthenticationRequest:
+ *          type: object
+ *          properties:
+ *            username:
+ *              type: string
+ *              description: User name.
+ *            password:
+ *              type: string
+ *              description: User password.
+ *      User:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: number
+ *              format: int64
+ *            username:
+ *              type: string
+ *              description: User name.
+ *            password:
+ *              type: string
+ *              description: User password.
+ *            firstName:
+ *              type: string
+ *              description: First name.
+ *            lastName:
+ *              type: string
+ *              description: Last name.
+ *            email:
+ *              type: string
+ *              description: E-mail.
+ *            role:
+ *               $ref: '#/components/schemas/Role'
+ *      UserInput:
+ *          type: object
+ *          properties:
+ *            username:
+ *              type: string
+ *              description: User name.
+ *            password:
+ *              type: string
+ *              description: User password.
+ *            firstName:
+ *              type: string
+ *              description: First name.
+ *            lastName:
+ *              type: string
+ *              description: Last name.
+ *            email:
+ *              type: string
+ *              description: E-mail.
+ *            role:
+ *               $ref: '#/components/schemas/Role'
+ *      Role:
+ *          type: string
+ *          enum: [student, lecturer, admin, guest]
+ */
 import express, { NextFunction, Request, Response } from 'express';
 import userService from '../service/user.service';
+import { UserInput } from '../types/index';
 
 const userRouter = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Users
- *   description: User management
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     UserInput:
- *       type: object
- *       required:
- *         - email
- *         - password
- *         - name
- *         - age
- *       properties:
- *         email:
- *           type: string
- *           description: User email.
- *         password:
- *           type: string
- *           description: User password.
- *         name:
- *           type: string
- *           description: User name.
- *         age:
- *           type: number
- *           description: User age.
- */
-
-/**
- * @swagger
  * /users:
  *   get:
- *     summary: Get a list of all users.
- *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get a list of all users
  *     responses:
  *       200:
  *         description: A list of users.
@@ -50,7 +99,7 @@ const userRouter = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                  $ref: '#/components/schemas/User'
  */
 userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -63,29 +112,28 @@ userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * @swagger
- * /users/{id}:
- *   get:
- *     summary: Get a user by id.
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *           required: true
- *           description: The user id.
- *     responses:
- *       200:
- *         description: A user object.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
+ * /users/login:
+ *   post:
+ *      summary: Login using username/password. Returns an object with JWT token and user name when succesful.
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/AuthenticationRequest'
+ *      responses:
+ *         200:
+ *            description: The created user object
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  $ref: '#/components/schemas/AuthenticationResponse'
  */
-userRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = await userService.getUserById(Number(req.params.id));
-        res.status(200).json(user);
+        const userInput = <UserInput>req.body;
+        const response = await userService.authenticate(userInput);
+        res.status(200).json({ message: 'Authentication succesful', ...response });
     } catch (error) {
         next(error);
     }
@@ -93,42 +141,30 @@ userRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) =
 
 /**
  * @swagger
- * /users:
+ * /users/signup:
  *   post:
- *     summary: Create a new user.
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserInput'
- *     responses:
- *       201:
- *         description: The created user object.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
+ *      summary: Create a user
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/UserInput'
+ *      responses:
+ *         200:
+ *            description: The created user object
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  $ref: '#/components/schemas/User'
  */
-userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, name, age } = req.body;
-
-        // Basic validation
-        if (!email || !password || !name || !age) {
-            return res.status(400).json({
-                message: 'All fields are required (email, password, name, age)',
-            });
-        }
-
-        const user = await userService.addUser({ email, password, name, age });
-        res.status(201).json(user);
-    } catch (error: any) {
-        // Instead of passing to next, send a JSON response
-        res.status(400).json({
-            message: error.message || 'Failed to create user',
-        });
+        const userInput = <UserInput>req.body;
+        const user = await userService.createUser(userInput);
+        res.status(200).json(user);
+    } catch (error) {
+        next(error);
     }
 });
 

@@ -1,3 +1,5 @@
+type Role = 'admin' | 'user';
+
 type UserInput = {
     id?: number; // Make id optional
     email: string;
