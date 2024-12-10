@@ -2,6 +2,7 @@ import { Comment } from '../model/comment';
 import { User } from '../model/user';
 import { Setup } from '../model/setup';
 
+// Mock users
 const mockuser1 = new User({
     id: 1,
     email: "jan@gmail.com",
@@ -20,25 +21,6 @@ const mockuser2 = new User({
     age: 30
 });
 
-// Mock setups
-const mockSetup1 = new Setup({
-    setup_id: 1,
-    owner: mockuser1,
-    hardware_components: [],
-    image_urls: [],
-    details: 'This is test setup 1',
-    last_updated: new Date('2023-01-01'),
-});
-
-const mockSetup2 = new Setup({
-    setup_id: 2,
-    owner: mockuser2,
-    hardware_components: [],
-    image_urls: [],
-    details: 'This is test setup 2',
-    last_updated: new Date('2024-01-01'),
-});
-
 // Mock comments
 const mockComment1 = new Comment({
     comment_id: 1,
@@ -52,6 +34,13 @@ const mockComment2 = new Comment({
     setup_id: 2,
     user_id: 2,
     content: 'I love this setup!',
+});
+
+const mockComment3 = new Comment({
+    comment_id: 3,
+    setup_id: 3,
+    user_id: 2,
+    content: 'Amazing setup!',
 });
 
 const commentDB: Comment[] = [mockComment1, mockComment2];

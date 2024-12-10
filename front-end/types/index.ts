@@ -4,6 +4,7 @@ export interface RegisterUserData {
   name: string;
   age: number;
 }
+
 export interface Owner {
   id: number;
   email: string;
@@ -23,6 +24,13 @@ export interface ImageUrl {
   details: string;
 }
 
+export interface Comment {
+  comment_id: number;
+  setup_id: number;
+  user_id: number;
+  content: string;
+}
+
 export interface Setup {
   setup_id: number;
   owner: Owner;
@@ -30,7 +38,7 @@ export interface Setup {
   image_urls: Array<ImageUrl>;
   details: string;
   last_updated: string;
-  comments: Array<string>;
+  comments: Array<Comment>; // Updated to use Comment type
 }
 
 export interface SetupInput {
@@ -41,3 +49,4 @@ export interface SetupInput {
   details: string;
   lastUpdated: Date;
 }
+
