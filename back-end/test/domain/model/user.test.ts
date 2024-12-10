@@ -1,75 +1,69 @@
 import { User } from "../../../model/user";
-import bcrypt from "bcryptjs";
 
+describe('User Class', () => {
+    it('should create a user instance with valid data', () => {
+        const user = new User({
+            id: 1,
+            name: 'John Doe',
+            email: 'johndoe@example.com',
+            password: 'password123',
+            age: 25,
+            role: "admin",
+        });
 
-test("given: valid values, when: creating user, then: user is created with those values", async () => {
-    // Given / When
-    const valid_user = await User.createUser({
-        id: 1,
-        email: "johndoe@gmail.com",
-        password: "password123",
-        name: "John Doe",
-        age: 25,
+        expect(user.getName()).toBe('John Doe');
+        expect(user.getEmail()).toBe('johndoe@example.com');
+        expect(user.getRole()).toBe('admin');
     });
 
-    // Then
-    expect(valid_user.getId()).toEqual(1);
-    expect(valid_user.getEmail()).toEqual("johndoe@gmail.com");
-    expect(valid_user.getName()).toEqual("John Doe");
-    expect(valid_user.getAge()).toEqual(25);
+    it('should throw an error if name is empty', () => {
+        expect(() => {
+            new User({
+                id: 1,
+                name: '',
+                email: 'johndoe@example.com',
+                password: 'password123',
+                age: 25,
+                role: "admin",
+            });
+        }).toThrow('Username is required');
+    });
 
-    // Check password is hashed
-    const isPasswordHashed = await bcrypt.compare("password123", valid_user.getPassword());
-    expect(isPasswordHashed).toBe(true);
+    it('should throw an error if email is empty', () => {
+        expect(() => {
+            new User({
+                id: 1,
+                name: 'John Doe',
+                email: '',
+                password: 'password123',
+                age: 25,
+                role: "user",
+            });
+        }).toThrow('Email is required');
+    });
+
+    it('should compare two users correctly', () => {
+        const user1 = new User({
+            id: 1,
+            name: 'John Doe',
+            email: 'johndoe@example.com',
+            password: 'password123',
+            age: 25,
+            role: "admin",
+        });
+
+        const user2 = new User({
+            id: 1,
+            name: 'John Doe',
+            email: 'johndoe@example.com',
+            password: 'password123',
+            age: 25,
+            role: "admin",
+        });
+
+        expect(user1.equals(user2)).toBe(true);
+    });
 });
 
-test("given: valid user, when: updating properties, then: properties are updated", async () => {
-    // Given
-    const valid_user = await User.createUser({
-        id: 1,
-        email: "johndoe@gmail.com",
-        password: "password123",
-        name: "John Doe",
-        age: 25,
-    });
 
-    // When
-    valid_user.setName("Jane Doe");
-    valid_user.setEmail("janedoe@gmail.com");
-    await valid_user.setPassword("newpassword123");
-    valid_user.setAge(30);
 
-    // Then
-    expect(valid_user.getName()).toEqual("Jane Doe");
-    expect(valid_user.getEmail()).toEqual("janedoe@gmail.com");
-    expect(valid_user.getAge()).toEqual(30);
-
-    // Check updated password is hashed
-    const isPasswordUpdatedHashed = await bcrypt.compare("newpassword123", valid_user.getPassword());
-    expect(isPasswordUpdatedHashed).toBe(true);
-});
-
-test("given: valid user, when: converting to JSON, then: sensitive data is excluded", async () => {
-    // Given
-    const valid_user = await User.createUser({
-        id: 1,
-        email: "johndoe@gmail.com",
-        password: "password123",
-        name: "John Doe",
-        age: 25,
-    });
-
-    // When
-    const userJSON = valid_user.toJSON();
-
-    // Then
-    expect(userJSON).toEqual({
-        id: 1,
-        email: "johndoe@gmail.com",
-        name: "John Doe",
-        age: 25,
-    });
-
-    // Ensure password is not included in the JSON
-    expect(userJSON).not.toHaveProperty("password");
-});
