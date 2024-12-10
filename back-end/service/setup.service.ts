@@ -15,42 +15,40 @@ const getSetupById = (setup_id: number): Setup => {
 };
 
 const addSetup = async ({
-    setup_id,
-    owner: ownerInput,
+    //setup.id (generated)
+    owner: ownerInput, // Logged-in user ID is given when creating a setup
     hardware_components: componentInput,
     image_urls,
     details,
     last_updated,
+
 }: SetupInput): Promise<Setup> => {
-    // BASIC VALIDATION
-    if (!setup_id) {
-        throw new Error('Setup ID is required');
-    }
-    if (setupdb.getSetupById(setup_id)) { // Fix incorrect use of 'in'
-        throw new Error('Setup ID already exists');
-    }
+
+    // Generate a unique not yet existing ID for the new setup
+    const setup_id = setupdb.generateUniqueSetupId();
+
     if (!ownerInput || !ownerInput.id) {
-        throw new Error('Owner ID is required');
+        throw new Error('No user ID was given when creating setup');
     }
 
-    // GET THE OWNER OBJECT USING THE ID
-    const owner = await userdb.getUserById({ id: ownerInput.id }); // Pass an object with id
+    // Get the owner object using the ID
+    const owner = await userdb.getUserById({ id: ownerInput.id });
     if (!owner) {
         throw new Error('Owner not found');
     }
 
-    // GET THE HARDWARE COMPONENTS OBJECTS USING THEIR NAMES
+    // Get the hardware components objects using their names
     const hardware_components = componentInput.map((componentName) => {
-        const component = hardware_componentsDb.getHardwareComponentByName({ name: componentName }); // Fix destructuring
+        const component = hardware_componentsDb.getHardwareComponentByName({ name: componentName });
         if (!component) {
             throw new Error(`Hardware component "${componentName}" not found`);
         }
         return component;
     });
 
-    // GET THE IMAGE OBJECTS USING THEIR URLS
+    // Get the image objects using their URLs
     const image_url_list = image_urls.map((url) => {
-        const image = imagesDb.getImageByUrl({ url }); // Fix destructuring
+        const image = imagesDb.getImageByUrl({ url });
         if (!image) {
             throw new Error(`Image with URL "${url}" not found`);
         }
@@ -58,19 +56,18 @@ const addSetup = async ({
     });
 
     const newSetup = new Setup({
-        setup_id,
-        owner, // full owner object
-        hardware_components, // full hardware components objects
-        image_urls: image_url_list, // full image objects
+        setup_id, // generated setup_id
+        owner, // Full owner object
+        hardware_components, // Full hardware components objects
+        image_urls: image_url_list, // Full image objects
         details,
         last_updated,
     });
 
-    console.log('New Setup:', newSetup);
     setupdb.addSetup(newSetup);
 
     return newSetup;
 };
 
-
 export default { addSetup, getAllSetups, getSetupById };
+

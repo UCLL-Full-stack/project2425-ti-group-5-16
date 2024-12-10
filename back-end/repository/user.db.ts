@@ -12,6 +12,22 @@ const getAllUsers = async (): Promise<User[]> => {
 };
 
 const getUserById = async ({ id }: { id: number }): Promise<User | null> => {
+
+    // tijdelijke returnwaarde
+    const mockuser1 = new User({
+        id: 1,
+        email: "jan@gmail.com",
+        password: "password1",
+        name: "Janny Smith",
+        role: "admin",
+        age: 25
+    });
+
+    return mockuser1
+
+    /* DB MOET EERST VOLLEDIG WERKEN VOOR DAT DEZE CODE KAN GEBRUIKT WORDEN 
+    MAAR HIJ ZOU WEL CORRECT MOETEN ZIJN
+
     try {
         const userPrisma = await database.user.findUnique({
             where: { id },
@@ -22,6 +38,7 @@ const getUserById = async ({ id }: { id: number }): Promise<User | null> => {
         console.error(error);
         throw new Error('Database error. See server log for details.');
     }
+    */
 };
 
 const getUserByName = async ({ name }: { name: string }): Promise<User | null> => {

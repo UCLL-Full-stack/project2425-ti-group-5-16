@@ -2,6 +2,7 @@ import { Setup } from '../model/setup'
 import { User } from '../model/user'
 import { Hardware_Components } from '../model/hardware_components'
 import { Images } from '../model/images'
+import { Comment } from '../model/comment'
 
 const mockuser1 = new User({
     id: 1,
@@ -65,14 +66,6 @@ const image4 = new Images({
     url: "htpps://www.example.com/image4",
 });
 
-const user = new User({
-    id: 1,
-    email: 'john.doe@ucll.be',
-    password: 'john123',
-    name: 'John Doe',
-    age: 30,
-});
-
 const mockComment1 = new Comment({
     comment_id: 1,
     setup_id: 1,
@@ -126,8 +119,15 @@ const IsSetupInDB = (setup_id: number): boolean => {
     return setupDB.some(setup => setup.setup_id === setup_id);
 }
 
+const generateUniqueSetupId = (): number => {
+    const setups = getAllSetups();
+    if (setups.length === 0) return 1;
+    const highestId = Math.max(...setups.map((setup) => setup.setup_id));
+    return highestId + 1;
+};
+
 const addSetup = (setup: Setup): void => {
     setupDB.push(setup);
 }
 
-export default { getAllSetups, addSetup, getSetupById, IsSetupInDB };
+export default { getAllSetups, addSetup, getSetupById, IsSetupInDB, generateUniqueSetupId };
