@@ -1,5 +1,7 @@
 import React from 'react';
+import { useRouter } from 'next/router'; // Import Next.js router
 import { Setup } from '@types';
+
 
 type Props = {
   setups: Array<Setup>;
@@ -7,6 +9,8 @@ type Props = {
 };
 
 const SetupOverview: React.FC<Props> = ({ setups, selectsetups }) => {
+const router = useRouter(); // Use Next.js router
+
   return (
     <>
       {setups && (
@@ -27,10 +31,10 @@ const SetupOverview: React.FC<Props> = ({ setups, selectsetups }) => {
               <tr
                 key={index}
                 onClick={() => {
-                  window.open("https://google.com", "_blank"); // Open the link in a new tab
-                  selectsetups(setup); // Call the selectsetups handler
+                  router.push(`/SetupOverview/${setup.setup_id}`); // Navigate to the dynamic route
+                  selectsetups(setup); // Call selectsetups if needed
                 }}
-                style={{ cursor: 'pointer' }} // Add a pointer cursor to indicate clickability
+                style={{ cursor: 'pointer' }} // Add pointer cursor for clickability
               >
                 <td>{setup.setup_id}</td>
                 <td>{setup.owner.name}</td>
@@ -79,4 +83,5 @@ const SetupOverview: React.FC<Props> = ({ setups, selectsetups }) => {
 };
 
 export default SetupOverview;
+
 
