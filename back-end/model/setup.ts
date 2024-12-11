@@ -34,7 +34,11 @@ export class Setup {
 
     // refrence to the user class
     public getOwnerID(): number {
-        return this.owner.getId();
+        const ownerId = this.owner.getId();
+        if (ownerId === undefined) {
+            throw new Error('Owner ID is undefined');
+        }
+        return ownerId;
     }
     // refrence to the hardware_components class
     public getHardwareComponents(): Hardware_Components[] {

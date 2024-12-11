@@ -1,45 +1,51 @@
-// src/service/user.service.ts
+import bcrypt from 'bcrypt';
 import userDB from '../repository/user.db';
+import { AuthenticationResponse, UserInput } from '../types';
+import { generateJwtToken } from '../util/jwt';
 import { User } from '../model/user';
-import { UserInput } from '../types';
 
-const getAllUsers = (): User[] => userDB.getAllUsers();
+const getAllUsers = async (): Promise<User[]> => userDB.getAllUsers();
 
-const getUserById = (id: number): User => {
-    const user = userDB.getUserById({ id });
-    if (!user) throw new Error(`User with id ${id} does not exist.`);
+const getUserByUsername = async ({ name }: { name: string }): Promise<User> => {
+    const user = await userDB.getUserByName({ name });
+    if (!user) {
+        throw new Error(`User with username: ${name} does not exist.`);
+    }
     return user;
 };
 
-const addUser = async ({ email, password, name, age }: Omit<UserInput, 'id'>): Promise<User> => {
-    // BASIC VALIDATION
-    if (!email) {
-        throw new Error('Email is required');
-    }
-    if (!password) {
-        throw new Error('Password is required');
-    }
-    if (!name) {
-        throw new Error('Name is required');
-    }
-    if (!age) {
-        throw new Error('Age is required');
-    }
+const authenticate = async ({ name, password }: UserInput): Promise<AuthenticationResponse> => {
+    const user = await getUserByUsername({ name });
 
-    // Check if email already exists
-    const existingUser = userDB.getAllUsers().find((u) => u.getEmail() === email);
-    if (existingUser) {
-        throw new Error('Email already exists');
+    const isValidPassword = await bcrypt.compare(password, user.getPassword());
+
+    if (!isValidPassword) {
+        throw new Error('Incorrect password.');
     }
-
-    const newUser = await User.createUser({
-        email,
-        password,
-        name,
-        age,
-    });
-
-    return userDB.addUser(newUser);
+    return {
+        token: generateJwtToken({ name, role: user.getRole() }),
+        name: name,
+        role: user.getRole(),
+    };
 };
 
-export default { getAllUsers, getUserById, addUser };
+const createUser = async ({
+    name,
+    password,
+    email,
+    age,
+    role,
+}: UserInput): Promise<User> => {
+    const existingUser = await userDB.getUserByName({ name });
+
+    if (existingUser) {
+        throw new Error(`User with username ${name} is already registered.`);
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = new User({ name, password: hashedPassword, email, age, role });
+
+    return await userDB.createUser(user);
+};
+
+export default { getUserByUsername, authenticate, createUser, getAllUsers };

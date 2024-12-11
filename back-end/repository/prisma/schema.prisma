@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  name     String
+  role     String
+  age      Int
+  setups   Setup[]
+  comments Comment[]
+}
+
+model Setup {
+  id                 Int                  @id @default(autoincrement())
+  owner              User                 @relation(fields: [ownerId], references: [id])
+  ownerId            Int
+  details            String
+  lastUpdated        DateTime             @updatedAt
+  hardwareComponents HardwareComponentToSetup[]
+  images             Image[]
+  comments           Comment[]
+}
+
+model HardwareComponent {
+  name    String  @unique @id
+  details String
+  price   Float
+  setups  HardwareComponentToSetup[]
+}
+
+model Image {
+  url     String  @unique @id
+  details String
+  setups  Setup[]
+}
+
+model Comment {
+  comment_id Int    @id @default(autoincrement())
+  user       User   @relation(fields: [user_id], references: [id])
+  user_id    Int
+  setup      Setup  @relation(fields: [setup_id], references: [id])
+  setup_id   Int
+  content    String
+}
+
+model HardwareComponentToSetup {
+  hardwareComponent HardwareComponent @relation(fields: [hardwareComponentId], references: [name])
+  hardwareComponentId String
+  setup Setup @relation(fields: [setupId], references: [id])
+  setupId Int
+  @@id([hardwareComponentId, setupId])
+}

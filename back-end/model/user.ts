@@ -1,38 +1,35 @@
 // src/model/user.ts
-import bcrypt from 'bcryptjs';
+import { User as UserPrisma } from '@prisma/client';
+import { Role } from '../types';
+// import bcrypt from 'bcryptjs';
 
 export class User {
-    readonly id: number;
+    private id?: number;
+    private name: string;
     private email: string;
     private password: string;
-    private name: string;
+    private role: Role;
     private age: number;
 
-    constructor(user: { id?: number; email: string; password: string; name: string; age: number }) {
-        this.id = user.id || 0;
-        this.email = user.email;
-        this.password = user.password;
-        this.name = user.name;
-        this.age = user.age;
-    }
-
-    static async createUser(user: {
+    constructor(user: {
         id?: number;
         email: string;
         password: string;
         name: string;
         age: number;
-    }): Promise<User> {
-        // Hash password before creating user
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        return new User({
-            ...user,
-            password: hashedPassword,
-        });
+        role: Role;
+    }) {
+        this.validate(user);
+
+        this.id = user.id || 0;
+        this.name = user.name;
+        this.email = user.email;
+        this.password = user.password;
+        this.role = user.role;
+        this.age = user.age;
     }
 
-    // Existing getters
-    getId(): number {
+    getId(): number | undefined {
         return this.id;
     }
 
@@ -40,42 +37,65 @@ export class User {
         return this.name;
     }
 
-    getEmail(): string {
-        return this.email;
-    }
-
     getPassword(): string {
         return this.password;
+    }
+
+    getEmail(): string {
+        return this.email;
     }
 
     getAge(): number {
         return this.age;
     }
 
-    // Existing setters
-    setName(name: string): void {
-        this.name = name;
+    getRole(): Role {
+        return this.role;
     }
 
-    setEmail(email: string): void {
-        this.email = email;
+    validate(user: {
+        id?: number;
+        name: string;
+        email: string;
+        password: string;
+        role: Role;
+        age: number;
+    }) {
+        if (!user.name?.trim()) {
+            throw new Error('Username is required');
+        }
+        if (!user.email?.trim()) {
+            throw new Error('Email is required');
+        }
+        if (!user.password?.trim()) {
+            throw new Error('Password is required');
+        }
+        if (!user.role) {
+            throw new Error('Role is required');
+        }
+        if (!user.age) {
+            throw new Error('Age is required');
+        }
     }
 
-    async setPassword(password: string): Promise<void> {
-        this.password = await bcrypt.hash(password, 10);
+    equals(user: User): boolean {
+        return (
+            this.name === user.getName() &&
+            this.email === user.getEmail() &&
+            this.password === user.getPassword() &&
+            this.role === user.getRole() &&
+            this.age === user.getAge()
+        );
     }
 
-    setAge(age: number): void {
-        this.age = age;
-    }
-
-    // Method to return user data without sensitive information
-    toJSON() {
-        return {
-            id: this.id,
-            email: this.email,
-            name: this.name,
-            age: this.age,
-        };
+    static from({ id, name, email, password, age, role }: UserPrisma) {
+        return new User({
+            id,
+            name,
+            email,
+            password,
+            role: role as Role,
+            age,
+        });
     }
 }

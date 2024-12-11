@@ -1,7 +1,5 @@
 import { Hardware_Components } from "../../../model/hardware_components";
 
-// global variable
-// given
 const valid_hardware_component_1 = new Hardware_Components({name: "CPU", details: "Intel i9 10900k", price: 500});
 
 test('given: valid values, when: creating hardware component, then: hardware component is created with those values', () => {

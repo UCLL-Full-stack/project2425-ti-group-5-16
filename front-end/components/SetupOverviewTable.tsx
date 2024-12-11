@@ -6,7 +6,7 @@ type Props = {
   selectsetups: (setup: Setup) => void;
 };
 
-const LecturerOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
+const SetupOverview: React.FC<Props> = ({ setups, selectsetups }) => {
   return (
     <>
       {setups && (
@@ -19,6 +19,7 @@ const LecturerOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
               <th scope="col">Image URLs</th>
               <th scope="col">Details</th>
               <th scope="col">Last Updated</th>
+              <th scope="col">Comments</th>
             </tr>
           </thead>
           <tbody>
@@ -48,6 +49,19 @@ const LecturerOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
                 </td>
                 <td>{setup.details}</td>
                 <td>{new Date(setup.last_updated).toLocaleDateString()}</td>
+                <td>
+                  <ul>
+                    {setup.comments && setup.comments.length > 0 ? (
+                      setup.comments.map((comment, idx) => (
+                        <li key={idx}>
+                          <strong>User {comment.user_id}:</strong> {comment.content}
+                        </li>
+                      ))
+                    ) : (
+                      <li>No comments available</li>
+                    )}
+                  </ul>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -57,4 +71,4 @@ const LecturerOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
   );
 };
 
-export default LecturerOverviewTable;
+export default SetupOverview;

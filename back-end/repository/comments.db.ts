@@ -1,42 +1,4 @@
 import { Comment } from '../model/comment';
-import { User } from '../model/user';
-import { Setup } from '../model/setup';
-
-// Mock users
-const mockUser1 = new User({
-    id: 1,
-    email: 'janny-smith@gmail.com',
-    password: 'password1',
-    name: 'Janny Smith',
-    age: 25,
-});
-
-const mockUser2 = new User({
-    id: 2,
-    email: 'richard-domer@gmail.com',
-    password: 'password2',
-    name: 'Richard Domer',
-    age: 30,
-});
-
-// Mock setups
-const mockSetup1 = new Setup({
-    setup_id: 1,
-    owner: mockUser1,
-    hardware_components: [],
-    image_urls: [],
-    details: 'This is test setup 1',
-    last_updated: new Date('2023-01-01'),
-});
-
-const mockSetup2 = new Setup({
-    setup_id: 2,
-    owner: mockUser2,
-    hardware_components: [],
-    image_urls: [],
-    details: 'This is test setup 2',
-    last_updated: new Date('2024-01-01'),
-});
 
 // Mock comments
 const mockComment1 = new Comment({
