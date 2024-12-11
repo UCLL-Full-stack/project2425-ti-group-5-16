@@ -34,7 +34,7 @@ const createUser = async ({
     password,
     email,
     age,
-    role,
+    role, 
 }: UserInput): Promise<User> => {
     const existingUser = await userDB.getUserByName({ name });
 

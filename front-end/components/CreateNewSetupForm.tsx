@@ -20,7 +20,7 @@ const CreateNewSetupForm: React.FC = () => {
     setSuccessMessage(null);
 
     // Replace with actual user context or auth service.
-    const ownerId = 1;
+    const ownerId = 1; // logged in user id
 
     const validationError = validateInputs();
     if (validationError) {

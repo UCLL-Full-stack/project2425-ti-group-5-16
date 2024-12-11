@@ -14,6 +14,22 @@ const getAllSetups = async () => {
     }
   };
 
+const getSetupById = async (setup_id: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch setup: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching setup:', error);
+      throw error;
+    }
+  };
+
   interface Owner {
     id: number;
   }
@@ -69,6 +85,7 @@ const getAllSetups = async () => {
   const SetupService = {
     getAllSetups,
     CreateSetup,
+    getSetupById,
   };
   
   export default SetupService;
