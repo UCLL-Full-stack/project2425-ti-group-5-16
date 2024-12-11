@@ -43,6 +43,13 @@ const updateComment = (comment_id: number, content: string): Comment => {
     return comment;
 };
 
+const generateUniqueSetupId = (): number => {
+    const comments = getAllComments();
+    if (comments.length === 0) return 1;
+    const highestId = Math.max(...comments.map((comment) => comment.setup_id));
+    return highestId + 1;
+};
+
 const deleteComment = (comment_id: number): void => {
     const index = commentDB.findIndex((comment) => comment.getCommentID() === comment_id);
     if (index === -1) {
@@ -57,5 +64,6 @@ export default {
     getCommentsBySetupId,
     addComment,
     updateComment,
+    generateUniqueSetupId,
     deleteComment,
 };

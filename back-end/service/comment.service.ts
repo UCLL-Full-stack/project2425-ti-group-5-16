@@ -18,14 +18,9 @@ const getCommentsBySetupId = (setup_id: number): Comment[] => {
     return commentDB.getCommentsBySetupId(setup_id);
 };
 
-const addComment = ({ comment_id, setup_id, user_id, content }: CommentInput): Comment => {
+const addComment = ({ setup_id, user_id, content }: CommentInput): Comment => {
     // BASIC VALIDATION
-    if (!comment_id) {
-        throw new Error('Comment ID is required');
-    }
-    if (commentDB.getCommentById(comment_id)) {
-        throw new Error('Comment ID already exists');
-    }
+
     if (!setup_id) {
         throw new Error('Setup ID is required');
     }
@@ -35,6 +30,9 @@ const addComment = ({ comment_id, setup_id, user_id, content }: CommentInput): C
     if (!content) {
         throw new Error('Content is required');
     }
+
+    // GENERATE A UNIQUE COMMENT ID
+    const comment_id = commentDB.generateUniqueSetupId();
 
     // GET THE SETUP OBJECT USING THE ID
     const setup = setupDB.getSetupById(setup_id);

@@ -50,3 +50,10 @@ export interface SetupInput {
   lastUpdated: Date;
 }
 
+export interface Comment {
+  setup_id: number;
+  user_id: number;
+  content: string;
+}
+
+
