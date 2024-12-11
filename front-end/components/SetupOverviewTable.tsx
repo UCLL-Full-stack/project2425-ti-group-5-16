@@ -24,7 +24,14 @@ const SetupOverview: React.FC<Props> = ({ setups, selectsetups }) => {
           </thead>
           <tbody>
             {setups.map((setup, index) => (
-              <tr key={index} onClick={() => selectsetups(setup)}>
+              <tr
+                key={index}
+                onClick={() => {
+                  window.open("https://google.com", "_blank"); // Open the link in a new tab
+                  selectsetups(setup); // Call the selectsetups handler
+                }}
+                style={{ cursor: 'pointer' }} // Add a pointer cursor to indicate clickability
+              >
                 <td>{setup.setup_id}</td>
                 <td>{setup.owner.name}</td>
                 <td>
@@ -72,3 +79,4 @@ const SetupOverview: React.FC<Props> = ({ setups, selectsetups }) => {
 };
 
 export default SetupOverview;
+
