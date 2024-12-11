@@ -11,7 +11,14 @@ export class User {
     private role: Role;
     private age: number;
 
-    constructor(user: { id?: number; email: string; password: string; name: string; age: number; role: Role }) {
+    constructor(user: {
+        id?: number;
+        email: string;
+        password: string;
+        name: string;
+        age: number;
+        role: Role;
+    }) {
         this.validate(user);
 
         this.id = user.id || 0;
@@ -27,7 +34,7 @@ export class User {
     }
 
     getName(): string {
-        return this.name
+        return this.name;
     }
 
     getPassword(): string {
@@ -47,13 +54,12 @@ export class User {
     }
 
     validate(user: {
-        id ?: number;
+        id?: number;
         name: string;
         email: string;
         password: string;
         role: Role;
         age: number;
-
     }) {
         if (!user.name?.trim()) {
             throw new Error('Username is required');
@@ -74,7 +80,6 @@ export class User {
 
     equals(user: User): boolean {
         return (
-            this.id === user.getId() &&
             this.name === user.getName() &&
             this.email === user.getEmail() &&
             this.password === user.getPassword() &&
@@ -92,5 +97,5 @@ export class User {
             role: role as Role,
             age,
         });
-    } 
+    }
 }

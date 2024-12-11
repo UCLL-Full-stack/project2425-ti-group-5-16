@@ -1,10 +1,11 @@
 import * as dotenv from 'dotenv';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { authRouter } from './controller/auth.router';
+import { expressjwt } from 'express-jwt';
+import helmet from 'helmet';
 
 // BASIC CONFIGURATION
 const app = express();
@@ -12,9 +13,6 @@ dotenv.config();
 const port = process.env.APP_PORT || 3000;
 app.use(cors());
 app.use(express.json());
-
-app.use(bodyParser.json());
-app.use('/auth', authRouter);
 
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
