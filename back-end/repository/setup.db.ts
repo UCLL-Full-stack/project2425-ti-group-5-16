@@ -101,6 +101,16 @@ const setupDB: Setup[] = [
         last_updated: new Date("2024-01-01"),
         comments: [mockComment1, mockComment2]
     }),
+
+    new Setup({ 
+        setup_id: 3,
+        owner: mockuser1,
+        hardware_components: [hardware_componentA1, hardware_componentA2],
+        image_urls: [image1, image2],
+        details: "This is test setup 1 with AMD Ryzen 5 3600x and NVIDIA GeForce RTX 3070",
+        last_updated: new Date("2023-01-01"),
+        comments: [mockComment1, mockComment2]
+    }),
 ];
 
 const getAllSetups = (): Setup[] => {
