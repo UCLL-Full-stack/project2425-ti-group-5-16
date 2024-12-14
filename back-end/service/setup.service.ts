@@ -69,5 +69,40 @@ const addSetup = async ({
     return newSetup;
 };
 
-export default { addSetup, getAllSetups, getSetupById };
+const updateSetup = async (setup_id: number, setupInput: SetupInput): Promise<Setup> => {
+    const existingSetup = setupdb.getSetupById(setup_id);
+    if (!existingSetup) throw new Error(`Setup with ID ${setup_id} not found`);
+
+    if (!setupInput.owner.id) {
+        throw new Error('Owner ID is undefined');
+    }
+    const owner = await userdb.getUserById({ id: setupInput.owner.id });
+    if (!owner) throw new Error('Owner not found');
+
+    const hardware_components = setupInput.hardware_components.map((componentName) => {
+        const component = hardware_componentsDb.getHardwareComponentByName({ name: componentName });
+        if (!component) throw new Error(`Hardware component "${componentName}" not found`);
+        return component;
+    });
+
+    const image_urls = setupInput.image_urls.map((url) => {
+        const image = imagesDb.getImageByUrl({ url });
+        if (!image) throw new Error(`Image with URL "${url}" not found`);
+        return image;
+    });
+
+    const updatedSetup = new Setup({ 
+        ...existingSetup, 
+        ...setupInput, 
+        owner, 
+        hardware_components, 
+        image_urls, 
+        last_updated: new Date() 
+    });
+
+    setupdb.updateSetup(setup_id, updatedSetup);
+    return updatedSetup;
+};
+
+export default { getAllSetups, getSetupById, addSetup, updateSetup };
 

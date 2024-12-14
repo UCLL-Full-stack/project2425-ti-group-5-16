@@ -140,4 +140,11 @@ const addSetup = (setup: Setup): void => {
     setupDB.push(setup);
 }
 
-export default { getAllSetups, addSetup, getSetupById, IsSetupInDB, generateUniqueSetupId };
+const updateSetup = (setup_id: number, updatedSetup: Setup): void => {
+    const index = setupDB.findIndex((setup) => setup.setup_id === setup_id);
+    if (index === -1) throw new Error(`Setup with ID ${setup_id} not found`);
+    setupDB[index] = updatedSetup;
+};
+
+
+export default { getAllSetups, addSetup, getSetupById, IsSetupInDB, generateUniqueSetupId, updateSetup };

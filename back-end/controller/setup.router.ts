@@ -30,4 +30,14 @@ setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) =>
     }
 });
 
+setupRouter.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const setupId = parseInt(req.params.id);
+        const updatedSetup = await SetupService.updateSetup(setupId, req.body);
+        res.status(200).json(updatedSetup);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export { setupRouter };
