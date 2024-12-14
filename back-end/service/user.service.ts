@@ -14,8 +14,16 @@ const getUserByUsername = async ({ name }: { name: string }): Promise<User> => {
     return user;
 };
 
-const authenticate = async ({ name, password }: UserInput): Promise<AuthenticationResponse> => {
-    const user = await getUserByUsername({ name });
+const getUserByEmail = async ({ email }: { email: string }): Promise<User> => {
+    const user = await userDB.getUserByEmail({ email });
+    if (!user) {
+        throw new Error(`User with email: ${email} does not exist.`);
+    }
+    return user;
+};
+
+const authenticate = async ({ email, password }: UserInput): Promise<AuthenticationResponse> => {
+    const user = await getUserByEmail({ email });
 
     const isValidPassword = await bcrypt.compare(password, user.getPassword());
 
@@ -23,23 +31,17 @@ const authenticate = async ({ name, password }: UserInput): Promise<Authenticati
         throw new Error('Incorrect password.');
     }
     return {
-        token: generateJwtToken({ name, role: user.getRole() }),
-        name: name,
+        token: generateJwtToken({ email, role: user.getRole() }),
+        email: email,
         role: user.getRole(),
     };
 };
 
-const createUser = async ({
-    name,
-    password,
-    email,
-    age,
-    role, 
-}: UserInput): Promise<User> => {
-    const existingUser = await userDB.getUserByName({ name });
+const createUser = async ({ name, password, email, age, role }: UserInput): Promise<User> => {
+    const existingUser = await userDB.getUserByEmail({ email });
 
     if (existingUser) {
-        throw new Error(`User with username ${name} is already registered.`);
+        throw new Error(`User with username ${email} is already registered.`);
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -48,4 +50,4 @@ const createUser = async ({
     return await userDB.createUser(user);
 };
 
-export default { getUserByUsername, authenticate, createUser, getAllUsers };
+export default { getUserByUsername, authenticate, createUser, getAllUsers, getUserByEmail };

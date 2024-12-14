@@ -1,29 +1,34 @@
-import { Setup } from '../model/setup';
-import userdb from '../repository/user.db';
-import hardware_componentsDb from '../repository/hardware_components.db';
-import imagesDb from '../repository/images.db';
-import setupdb from '../repository/setup.db';
+import setupDB from '../repository/setup.db';
 
-import { SetupInput } from '../types';
+import { Setup as SetupPrisma } from '@prisma/client';
 
-const getAllSetups = (): Setup[] => {
-    return setupdb.getAllSetups();
+const getAllSetups = async (): Promise<SetupPrisma[]> => {
+    return await setupDB.getAllSetups();
 };
 
-const getSetupById = (setup_id: number): Setup => {
-    return setupdb.getSetupById(setup_id);
+const getSetupById = async (id: number): Promise<SetupPrisma | null> => {
+    return await setupDB.getSetupById(id);
+};
+
+const addSetup = async (setup: Omit<SetupPrisma, 'id'>): Promise<SetupPrisma> => {
+    return await setupDB.addSetup(setup);
+};
+
+const updateSetup = async (id: number, setup: Partial<SetupPrisma>): Promise<SetupPrisma> => {
+    return await setupDB.updateSetup(id, setup);
+};
+
+const deleteSetup = async (id: number): Promise<SetupPrisma> => {
+    return await setupDB.deleteSetup(id);
 };
 
 const addSetup = async ({
-    //setup.id (generated)
     owner: ownerInput, // Logged-in user ID is given when creating a setup
     hardware_components: componentInput,
     image_urls,
     details,
     last_updated,
-
-}: SetupInput): Promise<Setup> => {
-
+}: SetupInput): Promise<SetupPrisma> => {
     // Generate a unique not yet existing ID for the new setup
     const setup_id = setupdb.generateUniqueSetupId();
 
@@ -70,4 +75,3 @@ const addSetup = async ({
 };
 
 export default { addSetup, getAllSetups, getSetupById };
-

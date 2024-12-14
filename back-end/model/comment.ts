@@ -1,19 +1,16 @@
 import { Setup } from './setup';
 import { User } from './user';
+import { Comment as CommentPrisma, Setup as SetupPrisma, User as UserPrisma } from '@prisma/client';
 
 export class Comment {
-    readonly comment_id: number; // Primary key // READONLY = key cannot be changed
+    readonly id?: number; // Primary key // READONLY = key cannot be changed
     readonly setup_id: number; // Foreign key // READONLY = key cannot be changed
     readonly user_id: number; // Foreign key // READONLY = key cannot be changed
     private content: string;
 
-    constructor(comment: {
-        comment_id: number;
-        setup_id: number;
-        user_id: number;
-        content: string;
-    }) {
-        this.comment_id = comment.comment_id;
+    constructor(comment: { id?: number; setup_id: number; user_id: number; content: string }) {
+        this.validate(comment);
+        this.id = comment.id;
         this.setup_id = comment.setup_id;
         this.user_id = comment.user_id;
         this.content = comment.content;
@@ -25,8 +22,8 @@ export class Comment {
      * Returns the comment ID.
      * @returns {number} The comment ID.
      */
-    public getCommentID(): number {
-        return this.comment_id;
+    public getCommentID(): number | undefined {
+        return this.id;
     }
 
     /**
@@ -53,6 +50,18 @@ export class Comment {
         return this.content;
     }
 
+    validate(comment: { id?: number; setup_id: number; user_id: number; content: string }) {
+        if (!comment.content?.trim()) {
+            throw new Error('Content is required');
+        }
+        if (!comment.setup_id) {
+            throw new Error('Setup ID is required');
+        }
+        if (!comment.user_id) {
+            throw new Error('User ID is required');
+        }
+    }
+
     // SETTERS
 
     /**
@@ -61,5 +70,31 @@ export class Comment {
      */
     public setContent(content: string): void {
         this.content = content;
+    }
+
+    equals(comment: Comment): boolean {
+        return (
+            this.id === comment.getCommentID() &&
+            this.setup_id === comment.getSetupID() &&
+            this.user_id === comment.getUserID() &&
+            this.content === comment.getContent()
+        );
+    }
+
+    static from({
+        id,
+        setup_id,
+        user_id,
+        content,
+    }: CommentPrisma & {
+        setup: SetupPrisma;
+        user: UserPrisma;
+    }) {
+        return new Comment({
+            id,
+            setup_id,
+            user_id,
+            content,
+        });
     }
 }

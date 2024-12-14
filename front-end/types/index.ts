@@ -1,3 +1,5 @@
+type Role = "admin" | "user";
+
 export interface RegisterUserData {
   email: string;
   password: string;
@@ -49,4 +51,3 @@ export interface SetupInput {
   details: string;
   lastUpdated: Date;
 }
-
