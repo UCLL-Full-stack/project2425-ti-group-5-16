@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 const main = async () => {
     // Clear existing data
     await prisma.hardwareComponentToSetup.deleteMany();
+    await prisma.image.deleteMany(); // Add this line
     await prisma.hardwareComponent.deleteMany();
     await prisma.user.deleteMany();
 
@@ -49,18 +50,32 @@ const main = async () => {
                 price: 549.99,
             },
         }),
-        prisma.hardwareComponent.create({
+    ]);
+
+    // Create images
+    const images = await Promise.all([
+        prisma.image.create({
             data: {
-                name: 'Samsung 970 EVO Plus 1TB',
-                details: 'NVMe M.2 SSD with high read/write speeds',
-                price: 169.99,
+                url: 'https://example.com/images/rtx3080.jpg',
+                details: 'NVIDIA GeForce RTX 3080 product image',
             },
         }),
-        prisma.hardwareComponent.create({
+        prisma.image.create({
             data: {
-                name: 'Corsair Vengeance LPX 32GB',
-                details: 'DDR4 3200MHz RAM kit',
-                price: 159.99,
+                url: 'https://example.com/images/ryzen9.jpg',
+                details: 'AMD Ryzen 9 5900X processor image',
+            },
+        }),
+        prisma.image.create({
+            data: {
+                url: 'https://example.com/images/setup1.jpg',
+                details: 'Gaming setup with RGB lighting',
+            },
+        }),
+        prisma.image.create({
+            data: {
+                url: 'https://example.com/images/setup2.jpg',
+                details: 'Professional workstation setup',
             },
         }),
     ]);
@@ -68,6 +83,7 @@ const main = async () => {
     console.log('Seed data created:');
     console.log('Users:', users);
     console.log('Hardware Components:', hardwareComponents);
+    console.log('Images:', images);
 };
 
 (async () => {

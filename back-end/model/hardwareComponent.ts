@@ -7,6 +7,7 @@ export class HardwareComponent {
     private price: number;
 
     constructor(hardware: { id?: number; name: string; details: string; price: number }) {
+        this.validate(hardware);
         this.id = hardware.id;
         this.name = hardware.name;
         this.details = hardware.details;
@@ -39,6 +40,23 @@ export class HardwareComponent {
             throw new Error('Price is undefined');
         }
         return this.price;
+    }
+    validate(hardware: { name: string; details: string; price: number }) {
+        if (!hardware.name?.trim()) {
+            throw new Error('Name is required');
+        }
+        if (!hardware.details?.trim()) {
+            throw new Error('Details is required');
+        }
+        if (!hardware.price) {
+            throw new Error('Price is required');
+        }
+        if (typeof hardware.name !== 'string' || typeof hardware.details !== 'string') {
+            throw new Error('Invalid data type: Name and details must be strings');
+        }
+        if (typeof hardware.price !== 'number') {
+            throw new Error('Invalid data type: Price must be a number');
+        }
     }
 
     // SETTERS

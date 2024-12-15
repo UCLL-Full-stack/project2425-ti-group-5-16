@@ -1,30 +1,41 @@
-/*import { Image } from '../model/image';
+import { Image } from '../model/image';
+import { Image as ImagePrisma } from '@prisma/client';
+import database from './database';
 
-const imagesDB: Image[] = [
-    new Image({
-        details: "image of of a monitor",
-        url: "www.example1.com",
-    }),
-    new Image({
-        details: "image of a keyboard",
-        url: "www.example2.com",
-    }),
-    new Image({
-        details: "image of a computermouse",
-        url: "www.example3.com",
-    }),
-    new Images({
-        details: "image of a CPU",
-        url: "www.example4.com",
-    }),
-];
+const getById = async ({ id }: { id: number }): Promise<Image | null> => {
+    try {
+        const imagePrisma = await database.image.findUnique({
+            where: { id },
+        });
 
-const getAllImages = (): Images[] => {
-    return imagesDB;
+        return imagePrisma ? Image.from(imagePrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
 };
 
-const getImageByUrl = ({ url }: { url: string }): Images | null => {
-    return imagesDB.find((image) => image.getUrl() === url) || null;
+const getAllImages = async (): Promise<Image[]> => {
+    try {
+        const imagesPrisma = await database.image.findMany();
+        return imagesPrisma.map((imagePrisma) => Image.from(imagePrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
 };
 
-export default {getAllImages, getImageByUrl};*/
+const getImageByUrl = async ({ url }: { url: string }): Promise<Image | null> => {
+    try {
+        const imagePrisma = await database.image.findFirst({
+            where: { url },
+        });
+
+        return imagePrisma ? Image.from(imagePrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+export default { getAllImages, getImageByUrl, getById };

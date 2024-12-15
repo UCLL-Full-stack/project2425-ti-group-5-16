@@ -1,16 +1,11 @@
-// Define the ImagePrisma interface
-interface ImagePrisma {
-    id: string;
-    url: string;
-    details: string;
-}
+import { Image as ImagePrisma } from '@prisma/client';
 
 export class Image {
-    private id: string;
+    private id?: number;
     private url: string;
     private details: string;
 
-    constructor(image: { id: string; url: string; details: string }) {
+    constructor(image: { id?: number; url: string; details: string }) {
         this.validate(image);
         this.id = image.id;
         this.url = image.url;
@@ -18,17 +13,17 @@ export class Image {
     }
 
     // Add getId method
-    getId(): string {
+    getId(): number | undefined {
         return this.id;
     }
 
     // GETTERS
 
-    getUrl(): String {
+    getUrl(): string {
         return this.url;
     }
 
-    getDetails(): String {
+    getDetails(): string {
         return this.details;
     }
 
@@ -50,13 +45,15 @@ export class Image {
         this.details = details;
     }
 
-    // Other methods remain similar
+    equals(image: Image): boolean {
+        return this.url === image.getUrl() && this.details === image.getDetails();
+    }
 
-    static from(prismaImage: ImagePrisma): Image {
+    static from({ id, url, details }: ImagePrisma): Image {
         return new Image({
-            id: prismaImage.id,
-            url: prismaImage.url,
-            details: prismaImage.details,
+            id,
+            url,
+            details,
         });
     }
 }
