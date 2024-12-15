@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import userDB from '../repository/user.db';
-import { AuthenticationResponse, UserInput } from '../types';
+import { AuthenticationResponse, UserInput, LoginInput } from '../types';
 import { generateJwtToken } from '../util/jwt';
 import { User } from '../model/user';
 
@@ -22,7 +22,10 @@ const getUserByEmail = async ({ email }: { email: string }): Promise<User> => {
     return user;
 };
 
-const authenticate = async ({ email, password }: UserInput): Promise<AuthenticationResponse> => {
+const authenticate = async ({ email, password }: LoginInput): Promise<AuthenticationResponse> => {
+
+    console.log('gets in authenticate with { email, password } :', { email, password });
+    
     const user = await getUserByEmail({ email });
 
     const isValidPassword = await bcrypt.compare(password, user.getPassword());

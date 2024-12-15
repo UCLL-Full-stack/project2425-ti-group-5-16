@@ -13,6 +13,16 @@ dotenv.config();
 const port = process.env.APP_PORT || 3000;
 app.use(cors());
 app.use(express.json());
+app.use(helmet());
+
+app.use(
+    expressjwt({
+        secret: process.env.JWT_SECRET || 'default_secret',
+        algorithms: ['HS256'],
+    }).unless({
+        path: ['/api-docs', /^\/api-docs\/.*/, '/users/login', '/users/signup', '/status'],
+    })
+);
 
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
@@ -67,7 +77,18 @@ app.use('/setup', setupRouter);
 import { commentRouter } from './controller/comment.router';
 app.use('/comments', commentRouter);
 */
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Something broke!' });
+});
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({ status: 'unauthorized', message: err.message });
+    } else if (err.name === 'CoursesError') {
+        res.status(400).json({ status: 'domain error', message: err.message });
+    } else {
+        res.status(400).json({ status: 'application error', message: err.message });
+    }
 });

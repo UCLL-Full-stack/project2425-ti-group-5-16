@@ -114,7 +114,7 @@ userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  * @swagger
  * /users/login:
  *   post:
- *      summary: Login using username/password. Returns an object with JWT token and user name when succesful.
+ *      summary: Login using email/password. Returns an object with JWT token and user name when succesful.
  *      requestBody:
  *        required: true
  *        content:
@@ -131,13 +131,19 @@ userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  */
 userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userInput = <UserInput>req.body;
-        const response = await userService.authenticate(userInput);
-        res.status(200).json({ message: 'Authentication succesful', ...response });
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required.' });
+        }
+
+        const response = await userService.authenticate({ email, password });
+        res.status(200).json({ message: 'Authentication successful', ...response });
     } catch (error) {
         next(error);
     }
 });
+
 
 /**
  * @swagger
