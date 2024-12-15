@@ -29,26 +29,37 @@ model Image {
   @@map("images")
 }
 
-model HardwareComponent {
-  id      Int       @id  @default(autoincrement())
-  name    String    @unique
-  details String
-  price   Float
-  setups  Setup[]
+model Setup {
+    id                  Int                        @id @default(autoincrement())
+    ownerId            Int
+    owner              User                       @relation(fields: [ownerId], references: [id])
+    hardwareComponents HardwareComponentToSetup[]
+    images             Image[]
+    details            String
+    lastUpdated        DateTime                   @updatedAt
+    comments           Comment[]
 
-  @@map("hardware_components")
+    @@map("setups")
 }
 
-model Setup {
-  id                 Int                      @id @default(autoincrement())
-  owner              User                     @relation(fields: [ownerId], references: [id])
-  ownerId            Int
-  details            String
-  lastUpdated        DateTime                 @updatedAt
-  hardwareComponents HardwareComponent[]
-  images             Image[]
-  comments           Comment[]
-  @@map("setups")
+model HardwareComponent {
+    id                Int                        @id @default(autoincrement())
+    name              String
+    details           String
+    price             Float
+    setups            HardwareComponentToSetup[]
+
+    @@map("hardware_components")
+}
+
+model HardwareComponentToSetup {
+    hardwareComponentId Int
+    setupId            Int
+    hardwareComponent  HardwareComponent         @relation(fields: [hardwareComponentId], references: [id])
+    setup              Setup                     @relation(fields: [setupId], references: [id])
+
+    @@id([hardwareComponentId, setupId])
+    @@map("hardware_component_to_setup")
 }
 
 model Comment {

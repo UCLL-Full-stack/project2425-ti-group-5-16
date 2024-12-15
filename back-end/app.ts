@@ -28,6 +28,8 @@ app.use(
             '/status,',
             '/images',
             '/hardwareComponents',
+            '/setup',
+            { url: /^\/setup\/.*/, methods: ['GET'] }, // Add this line to match all setup routes
         ],
     })
 );
@@ -76,11 +78,10 @@ app.use('/hardwareComponents', hardwareComponentsRouter);
 import { imagesRouter } from './controller/images.router';
 app.use('/images', imagesRouter);
 
-/*
 // SETUP ROUTES
 import { setupRouter } from './controller/setup.router';
 app.use('/setup', setupRouter);
-
+/*
 // COMMENT ROUTES
 import { commentRouter } from './controller/comment.router';
 app.use('/comments', commentRouter);

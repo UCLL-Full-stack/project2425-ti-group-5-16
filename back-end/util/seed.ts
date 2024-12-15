@@ -1,4 +1,3 @@
-// Execute: npx ts-node util/seed.ts
 import { set } from 'date-fns';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -8,7 +7,9 @@ const prisma = new PrismaClient();
 const main = async () => {
     // Clear existing data
     await prisma.hardwareComponentToSetup.deleteMany();
-    await prisma.image.deleteMany(); // Add this line
+    await prisma.setup.deleteMany();
+    await prisma.comment.deleteMany(); // Add this line
+    await prisma.image.deleteMany();
     await prisma.hardwareComponent.deleteMany();
     await prisma.user.deleteMany();
 
@@ -80,10 +81,79 @@ const main = async () => {
         }),
     ]);
 
+    // Create setups with empty comments array
+    const setups = await Promise.all([
+        prisma.setup.create({
+            data: {
+                details: 'High-end gaming setup with RGB lighting',
+                lastUpdated: new Date(),
+                ownerId: users[0].id,
+                images: {
+                    connect: [{ id: images[2].id }],
+                },
+                hardwareComponents: {
+                    create: [
+                        {
+                            hardwareComponent: {
+                                connect: { id: hardwareComponents[0].id },
+                            },
+                        },
+                    ],
+                },
+                comments: {
+                    create: [], // Empty comments array
+                },
+            },
+            include: {
+                owner: true,
+                hardwareComponents: {
+                    include: {
+                        hardwareComponent: true,
+                    },
+                },
+                images: true,
+                comments: true, // Include comments in the return value
+            },
+        }),
+        prisma.setup.create({
+            data: {
+                details: 'Professional workstation for content creation',
+                lastUpdated: new Date(),
+                ownerId: users[1].id,
+                images: {
+                    connect: [{ id: images[3].id }],
+                },
+                hardwareComponents: {
+                    create: [
+                        {
+                            hardwareComponent: {
+                                connect: { id: hardwareComponents[1].id },
+                            },
+                        },
+                    ],
+                },
+                comments: {
+                    create: [], // Empty comments array
+                },
+            },
+            include: {
+                owner: true,
+                hardwareComponents: {
+                    include: {
+                        hardwareComponent: true,
+                    },
+                },
+                images: true,
+                comments: true, // Include comments in the return value
+            },
+        }),
+    ]);
+
     console.log('Seed data created:');
     console.log('Users:', users);
     console.log('Hardware Components:', hardwareComponents);
     console.log('Images:', images);
+    console.log('Setups:', setups);
 };
 
 (async () => {
