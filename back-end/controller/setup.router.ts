@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response} from 'express';
+/*import express, {NextFunction, Request, Response} from 'express';
 import SetupService  from '../service/setup.service';
 
 const setupRouter = express.Router();
@@ -30,4 +30,4 @@ setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) =>
     }
 });
 
-export { setupRouter };
+export { setupRouter };*/

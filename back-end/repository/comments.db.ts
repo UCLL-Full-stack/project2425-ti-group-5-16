@@ -1,4 +1,4 @@
-import { Comment } from '../model/comment';
+/*import { Comment } from '../model/comment';
 
 // Mock comments
 const mockComment1 = new Comment({
@@ -59,3 +59,4 @@ export default {
     updateComment,
     deleteComment,
 };
+*/

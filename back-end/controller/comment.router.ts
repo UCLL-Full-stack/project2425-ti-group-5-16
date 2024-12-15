@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+/*import express, { NextFunction, Request, Response } from 'express';
 import CommentService from '../service/comment.service';
 
 const commentRouter = express.Router();
@@ -67,3 +67,4 @@ commentRouter.delete('/:id', async (req: Request, res: Response, next: NextFunct
 });
 
 export { commentRouter };
+*/

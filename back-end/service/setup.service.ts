@@ -1,3 +1,4 @@
+/*
 import setupDB from '../repository/setup.db';
 
 import { Setup as SetupPrisma } from '@prisma/client';
@@ -75,3 +76,4 @@ const addSetup = async ({
 };
 
 export default { addSetup, getAllSetups, getSetupById };
+*/

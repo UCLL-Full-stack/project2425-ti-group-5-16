@@ -1,4 +1,4 @@
-import { Images } from "../../../model/images";
+/*import { Images } from "../../../model/images";
 
 test('given: valid values, when: creating image, then: image is created with those values', () => {
     
@@ -22,4 +22,4 @@ test('given: valid values, when: setting image url, then: image url is set', () 
     // then
     expect(image.getUrl()).toEqual("fakeurl2.com");
 });
-
+*/

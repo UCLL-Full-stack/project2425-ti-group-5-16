@@ -1,5 +1,7 @@
 import { User } from '../model/user';
 import database from './database';
+import { User as UserPrisma } from '@prisma/client';
+
 
 const getAllUsers = async (): Promise<User[]> => {
     try {

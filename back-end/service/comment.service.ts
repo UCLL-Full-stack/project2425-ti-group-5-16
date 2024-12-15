@@ -1,4 +1,4 @@
-import { Comment } from '../model/comment';
+/*import { Comment } from '../model/comment';
 import { Setup } from '../model/setup';
 import { User } from '../model/user';
 import commentDB from '../repository/comments.db';
@@ -37,7 +37,7 @@ const addComment = ({ comment_id, setup_id, user_id, content }: CommentInput): C
     }
 
     // GET THE SETUP OBJECT USING THE ID
-    const setup = setupDB.getSetupById(setup_id);
+    const setup = setupDB.getSetupById(Id);
     if (!setup) {
         throw new Error('Setup not found');
     }
@@ -77,3 +77,4 @@ export default {
     updateComment,
     deleteComment,
 };
+*/

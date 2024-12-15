@@ -1,7 +1,7 @@
 import { User } from './user';
-import { Hardware_Components } from './hardware_components';
-import { Images } from './images';
+import { Image } from './image';
 import { Comment } from './comment';
+import { HardwareComponentToSetup } from './HardwareComponentToSetup';
 
 import {
     User as UserPrisma,
@@ -12,40 +12,43 @@ import {
 } from '@prisma/client';
 
 export class Setup {
-    private id?: number; // Primary key // ID OF SETUP CANT BE CHANGED => READONLY
-    private owner: User; // Foreign key // OWNER OF SETUP CANT BE CHANGED => READONLY
-    private hardware_components: Hardware_Components[]; // Foreign key
-    private image_urls: Images[]; // Forein key
-    private details: String;
-    private last_updated: Date;
-    private comments: Comment[]; // New property to store comments
+    private id?: number;
+    private ownerId: number; // Add this field
+    private owner: User;
+    private hardware_components: HardwareComponentToSetup[];
+    private images: Image[];
+    private details: string;
+    private lastUpdated: Date;
+    private comments: Comment[];
 
     constructor(setup: {
-        id?: number; // PK
-        owner: User; // FK
-        hardware_components: Hardware_Components[]; // FK
-        image_urls: Images[]; // FK
-        details: String;
-        last_updated: Date;
-        comments: Comment[]; // Optional parameter for comments
+        id?: number;
+        ownerId: number;
+        owner: User;
+        hardware_components: HardwareComponentToSetup[];
+        images: Image[];
+        details: string;
+        lastUpdated: Date;
+        comments: Comment[];
     }) {
         this.validate(setup);
         this.id = setup.id;
+        this.ownerId = setup.ownerId;
         this.owner = setup.owner;
-        this.hardware_components = setup.hardware_components || []; // Initialize hardware_components array
-        this.image_urls = setup.image_urls || []; // Initialize image_urls array
+        this.hardware_components = setup.hardware_components;
+        this.images = setup.images;
         this.details = setup.details;
-        this.last_updated = setup.last_updated;
-        this.comments = setup.comments || []; // Initialize comments array
+        this.lastUpdated = setup.lastUpdated;
+        this.comments = setup.comments;
     }
 
     validate(setup: {
         id?: number;
         owner: User;
-        hardware_components: Hardware_Components[];
-        image_urls: Images[];
+        hardware_components: HardwareComponentToSetup[];
+        images: Image[];
         details: String;
-        last_updated: Date;
+        lastUpdated: Date;
         comments?: Comment[];
     }) {
         if (setup.id !== undefined && setup.id < 0) {
@@ -54,7 +57,7 @@ export class Setup {
         if (setup.owner.getRole() !== setup.owner.getRole()) {
             throw new Error('Setup owner must be a user');
         }
-        if (setup.last_updated.getTime() > Date.now()) {
+        if (setup.lastUpdated.getTime() > Date.now()) {
             throw new Error('Last updated date must not be in the future');
         }
     }
@@ -88,16 +91,16 @@ export class Setup {
      * Returns the hardware components associated with the setup.
      * @returns {Hardware_Components[]} The hardware components associated with the setup.
      */
-    public getHardwareComponents(): Hardware_Components[] {
+    public getHardwareComponents(): HardwareComponentToSetup[] {
         return this.hardware_components ? [...this.hardware_components] : []; // Return a copy to maintain immutability
     }
 
     /**
      * Returns the image URLs associated with the setup.
-     * @returns {Images[]} The image URLs associated with the setup.
+     * @returns {Image[]} The image URLs associated with the setup.
      */
-    public getImageUrls(): Images[] {
-        return this.image_urls ? [...this.image_urls] : []; // Return a copy to maintain immutability
+    public getImageUrls(): Image[] {
+        return this.images ? [...this.images] : []; // Return a copy to maintain immutability
     }
 
     // ----------------------------
@@ -110,11 +113,11 @@ export class Setup {
         return this.details;
     }
     public getLastUpdated(): Date {
-        const last_updated = this.last_updated;
-        if (last_updated === undefined) {
+        const lastUpdated = this.lastUpdated;
+        if (lastUpdated === undefined) {
             throw new Error('Last updated date is undefined');
         }
-        return this.last_updated;
+        return this.lastUpdated;
     }
 
     /**
@@ -129,24 +132,24 @@ export class Setup {
 
     // SETTERS
 
-    public setDetails(details: String): void {
+    public setDetails(details: string): void {
         this.details = details;
     }
 
-    public setLastUpdated(last_updated: Date): void {
-        this.last_updated = last_updated;
+    public setLastUpdated(lastUpdated: Date): void {
+        this.lastUpdated = lastUpdated;
     }
 
     // ADDERS
 
-    public addImageUrl(image: Images): void {
-        if (this.image_urls.includes(image)) {
+    public addImageUrl(image: Image): void {
+        if (this.images.includes(image)) {
             throw new Error('Image already exists in the list');
         }
-        this.image_urls.push(image);
+        this.images.push(image);
     }
 
-    public addHardwareComponent(hardware_component: Hardware_Components): void {
+    public addHardwareComponent(hardware_component: HardwareComponentToSetup): void {
         if (this.hardware_components.includes(hardware_component)) {
             throw new Error('Hardware component already exists in the list');
         }
@@ -163,17 +166,32 @@ export class Setup {
             throw new Error('Comment already exists in the list');
         }
         this.comments.push(comment);
-    }
-
-    static from(setupPrisma: SetupPrisma): Setup {
+    } /*
+    static from(
+            setupPrisma: SetupPrisma & {
+            owner: UserPrisma;
+            hardwareComponents: HardwareComponentToSetup[];
+            images: ImagesPrisma[];
+            comments: CommentPrisma[];
+        }
+    ): Setup {
         return new Setup({
             id: setupPrisma.id,
+            ownerId: setupPrisma.ownerId,
             owner: User.from(setupPrisma.owner),
-            hardware_components: setupPrisma.hardwareComponents.map(Hardware_Components.from),
-            image_urls: setupPrisma.images.map(Images.from),
+            hardware_components: setupPrisma.hardwareComponents.map((hc) =>
+                HardwareComponentToSetup.from(hc)
+            ),
+            images: setupPrisma.images.map((img) => Image.from({ id: img.id, url: img.url, details: img.details })),
             details: setupPrisma.details,
-            last_updated: setupPrisma.lastUpdated,
-            comments: setupPrisma.comments.map(Comment.from),
+            lastUpdated: setupPrisma.lastUpdated,
+            comments: setupPrisma.comments.map((comment) => Comment.from({
+                id: comment.comment_id,
+                userId: comment.user_id,
+                setupId: comment.setup_id,
+                content: comment.content,
+                createdAt: new Date() // Assuming createdAt is the current date for this example
+            })),
         });
-    }
+    }*/
 }

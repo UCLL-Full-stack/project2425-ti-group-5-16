@@ -1,15 +1,15 @@
-import { Images } from '../model/images';
+/*import { Image } from '../model/image';
 
-const imagesDB: Images[] = [
-    new Images({
+const imagesDB: Image[] = [
+    new Image({
         details: "image of of a monitor",
         url: "www.example1.com",
     }),
-    new Images({
+    new Image({
         details: "image of a keyboard",
         url: "www.example2.com",
     }),
-    new Images({
+    new Image({
         details: "image of a computermouse",
         url: "www.example3.com",
     }),
@@ -27,4 +27,4 @@ const getImageByUrl = ({ url }: { url: string }): Images | null => {
     return imagesDB.find((image) => image.getUrl() === url) || null;
 };
 
-export default {getAllImages, getImageByUrl};
+export default {getAllImages, getImageByUrl};*/

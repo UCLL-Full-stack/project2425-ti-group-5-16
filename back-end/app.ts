@@ -51,9 +51,9 @@ import { userRouter } from './controller/user.routes';
 app.use('/users', userRouter);
 
 // HARDWARE COMPONENTS ROUTES
-import { hardwareComponentsRouter } from './controller/hardware_components.router';
-app.use('/hardware-components', hardwareComponentsRouter);
-
+import { hardwareComponentsRouter } from './controller/hardwareComponent.router';
+app.use('/hardwareComponents', hardwareComponentsRouter);
+/*
 // IMAGES ROUTES
 import { imagesRouter } from './controller/images.router';
 app.use('/images', imagesRouter);
@@ -65,3 +65,8 @@ app.use('/setup', setupRouter);
 // COMMENT ROUTES
 import { commentRouter } from './controller/comment.router';
 app.use('/comments', commentRouter);
+*/
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something broke!' });
+});

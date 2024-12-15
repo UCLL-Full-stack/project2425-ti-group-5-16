@@ -1,15 +1,29 @@
-import { Image as ImagesPrisma } from '@prisma/client';
-export class Images {
-    private url: string; // Primary key
+// Define the ImagePrisma interface
+interface ImagePrisma {
+    id: string;
+    url: string;
+    details: string;
+}
+
+export class Image {
+    private id: string;
+    private url: string;
     private details: string;
 
-    constructor(image: { url: string; details: string }) {
+    constructor(image: { id: string; url: string; details: string }) {
         this.validate(image);
+        this.id = image.id;
         this.url = image.url;
         this.details = image.details;
     }
 
+    // Add getId method
+    getId(): string {
+        return this.id;
+    }
+
     // GETTERS
+
     getUrl(): String {
         return this.url;
     }
@@ -36,10 +50,13 @@ export class Images {
         this.details = details;
     }
 
-    static from(imagesPrisma: ImagesPrisma): Images {
-        return new Images({
-            url: imagesPrisma.url,
-            details: imagesPrisma.details,
+    // Other methods remain similar
+
+    static from(prismaImage: ImagePrisma): Image {
+        return new Image({
+            id: prismaImage.id,
+            url: prismaImage.url,
+            details: prismaImage.details,
         });
     }
 }

@@ -1,22 +1,41 @@
 import { Setup } from './setup';
 import { User } from './user';
-import { Comment as CommentPrisma, Setup as SetupPrisma, User as UserPrisma } from '@prisma/client';
+
+interface CommentPrisma {
+    id: number;
+    userId: number;
+    setupId: number;
+    content: string;
+    createdAt: Date;
+}
 
 export class Comment {
-    readonly id?: number; // Primary key // READONLY = key cannot be changed
-    readonly setup_id: number; // Foreign key // READONLY = key cannot be changed
-    readonly user_id: number; // Foreign key // READONLY = key cannot be changed
+    readonly id?: number;
+    readonly userId: number; // Changed from user_id
+    readonly setupId: number; // Changed from setup_id
     private content: string;
+    private createdAt: Date;
 
-    constructor(comment: { id?: number; setup_id: number; user_id: number; content: string }) {
+    constructor(comment: {
+        id?: number;
+        userId: number;
+        setupId: number;
+        content: string;
+        createdAt?: Date;
+    }) {
         this.validate(comment);
         this.id = comment.id;
-        this.setup_id = comment.setup_id;
-        this.user_id = comment.user_id;
+        this.userId = comment.userId;
+        this.setupId = comment.setupId;
         this.content = comment.content;
+        this.createdAt = comment.createdAt || new Date();
     }
 
     // GETTERS
+
+    getCreatedAt(): Date {
+        return this.createdAt;
+    }
 
     /**
      * Returns the comment ID.
@@ -31,7 +50,7 @@ export class Comment {
      * @returns {number} The setup ID.
      */
     public getSetupID(): number {
-        return this.setup_id;
+        return this.setupId;
     }
 
     /**
@@ -39,7 +58,7 @@ export class Comment {
      * @returns {number} The user ID.
      */
     public getUserID(): number {
-        return this.user_id;
+        return this.userId;
     }
 
     /**
@@ -50,14 +69,14 @@ export class Comment {
         return this.content;
     }
 
-    validate(comment: { id?: number; setup_id: number; user_id: number; content: string }) {
+    validate(comment: { id?: number; setupId: number; userId: number; content: string }) {
         if (!comment.content?.trim()) {
             throw new Error('Content is required');
         }
-        if (!comment.setup_id) {
+        if (!comment.setupId) {
             throw new Error('Setup ID is required');
         }
-        if (!comment.user_id) {
+        if (!comment.userId) {
             throw new Error('User ID is required');
         }
     }
@@ -75,26 +94,19 @@ export class Comment {
     equals(comment: Comment): boolean {
         return (
             this.id === comment.getCommentID() &&
-            this.setup_id === comment.getSetupID() &&
-            this.user_id === comment.getUserID() &&
+            this.setupId === comment.getSetupID() &&
+            this.userId === comment.getUserID() &&
             this.content === comment.getContent()
         );
     }
 
-    static from({
-        id,
-        setup_id,
-        user_id,
-        content,
-    }: CommentPrisma & {
-        setup: SetupPrisma;
-        user: UserPrisma;
-    }) {
+    static from({ id, userId, setupId, content, createdAt }: CommentPrisma) {
         return new Comment({
             id,
-            setup_id,
-            user_id,
+            userId,
+            setupId,
             content,
+            createdAt,
         });
     }
 }

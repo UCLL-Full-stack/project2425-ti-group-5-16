@@ -1,12 +1,12 @@
-import { Images } from '../model/images';
+/*import { Image } from '../model/image';
 
 import imagesDb from '../repository/images.db';
 
-const getAllImages = (): Images[] => {
+const getAllImages = (): Image[] => {
     return imagesDb.getAllImages();
 }
 
-const getImageByUrl = ({ url }: { url: string }): Images => {
+const getImageByUrl = ({ url }: { url: string }): Image => {
 
     const image = imagesDb.getImageByUrl({ url });
     if (!image) {
@@ -17,3 +17,4 @@ const getImageByUrl = ({ url }: { url: string }): Images => {
 
 export default{ getAllImages, getImageByUrl };
 
+*/

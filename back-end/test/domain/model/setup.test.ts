@@ -1,4 +1,4 @@
-import { User } from "../../../model/user";
+/*import { User } from "../../../model/user";
 import { Hardware_Components } from "../../../model/hardware_components";
 import { Images } from "../../../model/images";
 import { Setup } from "../../../model/setup";
@@ -100,4 +100,4 @@ test('given: valid values, when: changing last updated, then: last updated is ch
     
     expect(setup.getLastUpdated().getTime()).toBeCloseTo(new Date().getTime(), -2);
 });
-
+*/

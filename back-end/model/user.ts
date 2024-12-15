@@ -88,12 +88,12 @@ export class User {
         );
     }
 
-    static from({ id, name, email, password, age, role }: UserPrisma) {
+    static from({ id, email, password, name, role, age }: UserPrisma): User {
         return new User({
             id,
-            name,
             email,
             password,
+            name,
             role: role as Role,
             age,
         });

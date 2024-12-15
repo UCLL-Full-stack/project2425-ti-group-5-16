@@ -1,4 +1,4 @@
-import { Setup } from '../model/setup';
+/*import { Setup } from '../model/setup';
 import database from './database';
 
 const getSetupById = async ({ id }: { id: number }): Promise<Setup | null> => {
@@ -55,3 +55,4 @@ const deleteSetup = async (id: number): Promise<Setup> => {
 };
 
 export default { getAllSetups, getSetupById, createSetup, deleteSetup };
+*/
