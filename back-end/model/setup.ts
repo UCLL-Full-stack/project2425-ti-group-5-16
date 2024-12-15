@@ -1,7 +1,9 @@
 import { User } from './user';
 import { Image } from './image';
 import { Comment } from './comment';
-import { HardwareComponentToSetup } from './HardwareComponentToSetup';
+import { HardwareComponent } from './hardwareComponent';
+
+// Import Prisma models
 
 import {
     User as UserPrisma,
@@ -15,7 +17,7 @@ export class Setup {
     private id?: number;
     private ownerId: number; // Add this field
     private owner: User;
-    private hardware_components: HardwareComponentToSetup[];
+    private hardware_components: HardwareComponent[];
     private images: Image[];
     private details: string;
     private lastUpdated: Date;
@@ -25,7 +27,7 @@ export class Setup {
         id?: number;
         ownerId: number;
         owner: User;
-        hardware_components: HardwareComponentToSetup[];
+        hardware_components: HardwareComponent[];
         images: Image[];
         details: string;
         lastUpdated: Date;
@@ -44,8 +46,9 @@ export class Setup {
 
     validate(setup: {
         id?: number;
+        ownerId: number;
         owner: User;
-        hardware_components: HardwareComponentToSetup[];
+        hardware_components: HardwareComponent[];
         images: Image[];
         details: String;
         lastUpdated: Date;
@@ -54,8 +57,8 @@ export class Setup {
         if (setup.id !== undefined && setup.id < 0) {
             throw new Error('Setup ID must be a non-negative number');
         }
-        if (setup.owner.getRole() !== setup.owner.getRole()) {
-            throw new Error('Setup owner must be a user');
+        if (typeof setup.ownerId !== 'number' || setup.ownerId <= 0) {
+            throw new Error('Setup ownerId must be a positive number');
         }
         if (setup.lastUpdated.getTime() > Date.now()) {
             throw new Error('Last updated date must not be in the future');
@@ -91,7 +94,7 @@ export class Setup {
      * Returns the hardware components associated with the setup.
      * @returns {Hardware_Components[]} The hardware components associated with the setup.
      */
-    public getHardwareComponents(): HardwareComponentToSetup[] {
+    public getHardwareComponents(): HardwareComponent[] {
         return this.hardware_components ? [...this.hardware_components] : []; // Return a copy to maintain immutability
     }
 
@@ -149,7 +152,7 @@ export class Setup {
         this.images.push(image);
     }
 
-    public addHardwareComponent(hardware_component: HardwareComponentToSetup): void {
+    public addHardwareComponent(hardware_component: HardwareComponent): void {
         if (this.hardware_components.includes(hardware_component)) {
             throw new Error('Hardware component already exists in the list');
         }
@@ -166,32 +169,31 @@ export class Setup {
             throw new Error('Comment already exists in the list');
         }
         this.comments.push(comment);
-    } /*
-    static from(
-            setupPrisma: SetupPrisma & {
-            owner: UserPrisma;
-            hardwareComponents: HardwareComponentToSetup[];
-            images: ImagesPrisma[];
-            comments: CommentPrisma[];
-        }
-    ): Setup {
+    }
+
+    static from({
+        id,
+        ownerId,
+        owner,
+        hardware_components,
+        images,
+        details,
+        lastUpdated,
+        comments,
+    }: SetupPrisma & {
+        comments: CommentPrisma[];
+        images: ImagesPrisma;
+        owner: UserPrisma;
+    }): Setup {
         return new Setup({
-            id: setupPrisma.id,
-            ownerId: setupPrisma.ownerId,
-            owner: User.from(setupPrisma.owner),
-            hardware_components: setupPrisma.hardwareComponents.map((hc) =>
-                HardwareComponentToSetup.from(hc)
-            ),
-            images: setupPrisma.images.map((img) => Image.from({ id: img.id, url: img.url, details: img.details })),
-            details: setupPrisma.details,
-            lastUpdated: setupPrisma.lastUpdated,
-            comments: setupPrisma.comments.map((comment) => Comment.from({
-                id: comment.comment_id,
-                userId: comment.user_id,
-                setupId: comment.setup_id,
-                content: comment.content,
-                createdAt: new Date() // Assuming createdAt is the current date for this example
-            })),
+            id,
+            ownerId,
+            owner,
+            hardware_components,
+            images,
+            details,
+            lastUpdated,
+            comments,
         });
-    }*/
+    }
 }
