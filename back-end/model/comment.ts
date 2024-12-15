@@ -1,13 +1,4 @@
-import { Setup } from './setup';
-import { User } from './user';
-
-interface CommentPrisma {
-    id: number;
-    userId: number;
-    setupId: number;
-    content: string;
-    createdAt: Date;
-}
+import { Comment as CommentPrisma } from '@prisma/client';
 
 export class Comment {
     readonly id?: number;

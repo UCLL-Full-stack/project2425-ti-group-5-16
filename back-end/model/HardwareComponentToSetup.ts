@@ -44,6 +44,14 @@ export class HardwareComponentToSetup {
         );
     }
 
+    static from({hardwareComponentId,setupId,hardwareComponent }): HardwareComponentToSetupPrisma & {hardwareComponent: HardwareComponentPrisma[];}) {
+        return new HardwareComponentToSetup({
+            hardwareComponentId: hardwareComponents.map((hardwareComponent) => hardwareComponent.id),
+            setupId,
+            hardwareComponent: HardwareComponent.from(hardwareComponent),
+        });
+    }
+
     // Add from method
     /*
     static from(prismaData: HardwareComponentToSetupWithRelations): HardwareComponentToSetup {

@@ -2,19 +2,16 @@ import { User } from './user';
 import { Image } from './image';
 import { Comment } from './comment';
 import { HardwareComponentToSetup } from './HardwareComponentToSetup';
-
-import {
-    User as UserPrisma,
-    HardwareComponent as HardwareComponentPrisma,
-    Image as ImagesPrisma,
+import { 
+    Setup as SetupPrisma , 
     Comment as CommentPrisma,
-    Setup as SetupPrisma,
+    Image as ImagePrisma,
+    HardwareComponentToSetup as HardwareComponentToSetupPrisma,
+    User as UserPrisma,
 } from '@prisma/client';
-
 export class Setup {
     private id?: number;
     private ownerId: number; // Add this field
-    private owner: User;
     private hardware_components: HardwareComponentToSetup[];
     private images: Image[];
     private details: string;
@@ -24,7 +21,6 @@ export class Setup {
     constructor(setup: {
         id?: number;
         ownerId: number;
-        owner: User;
         hardware_components: HardwareComponentToSetup[];
         images: Image[];
         details: string;
@@ -34,7 +30,6 @@ export class Setup {
         this.validate(setup);
         this.id = setup.id;
         this.ownerId = setup.ownerId;
-        this.owner = setup.owner;
         this.hardware_components = setup.hardware_components;
         this.images = setup.images;
         this.details = setup.details;
@@ -44,7 +39,7 @@ export class Setup {
 
     validate(setup: {
         id?: number;
-        owner: User;
+        ownerId: number;
         hardware_components: HardwareComponentToSetup[];
         images: Image[];
         details: String;
@@ -54,14 +49,18 @@ export class Setup {
         if (setup.id !== undefined && setup.id < 0) {
             throw new Error('Setup ID must be a non-negative number');
         }
-        if (setup.owner.getRole() !== setup.owner.getRole()) {
-            throw new Error('Setup owner must be a user');
+        if (setup.ownerId < 0) {
+            throw new Error('Owner ID must be a non-negative number');
         }
         if (setup.lastUpdated.getTime() > Date.now()) {
             throw new Error('Last updated date must not be in the future');
         }
+        if (setup.details.trim() === '') {
+            throw new Error('Details are required');
+        }
     }
 
+    // GETTERS
     getId(): number | undefined {
         const id = this.id;
         if (id === undefined) {
@@ -70,17 +69,9 @@ export class Setup {
         return this.id;
     }
 
-    getOwner(): User {
-        const ownerId = this.owner.getId();
-        if (ownerId === undefined) {
-            throw new Error('Owner ID is undefined');
-        }
-        return this.owner;
-    }
-
     // refrence to the user class
     public getOwnerID(): number {
-        const ownerId = this.owner.getId();
+        const ownerId = this.ownerId;
         if (ownerId === undefined) {
             throw new Error('Owner ID is undefined');
         }
@@ -166,32 +157,28 @@ export class Setup {
             throw new Error('Comment already exists in the list');
         }
         this.comments.push(comment);
-    } /*
-    static from(
-            setupPrisma: SetupPrisma & {
-            owner: UserPrisma;
-            hardwareComponents: HardwareComponentToSetup[];
-            images: ImagesPrisma[];
-            comments: CommentPrisma[];
-        }
-    ): Setup {
-        return new Setup({
-            id: setupPrisma.id,
-            ownerId: setupPrisma.ownerId,
-            owner: User.from(setupPrisma.owner),
-            hardware_components: setupPrisma.hardwareComponents.map((hc) =>
-                HardwareComponentToSetup.from(hc)
-            ),
-            images: setupPrisma.images.map((img) => Image.from({ id: img.id, url: img.url, details: img.details })),
-            details: setupPrisma.details,
-            lastUpdated: setupPrisma.lastUpdated,
-            comments: setupPrisma.comments.map((comment) => Comment.from({
-                id: comment.comment_id,
-                userId: comment.user_id,
-                setupId: comment.setup_id,
-                content: comment.content,
-                createdAt: new Date() // Assuming createdAt is the current date for this example
-            })),
-        });
-    }*/
+    } 
+    static from({
+                id,
+                ownerId,
+                hardware_components,
+                images,
+                details,
+                lastUpdated,
+                comments,
+            }: SetupPrisma & { comments: CommentPrisma[]; hardware_components: HardwareComponentToSetupPrisma[]; images: ImagePrisma[] }) {
+            return new Setup({
+                id,
+                ownerId,
+                hardware_components: hardware_components.map(HardwareComponentToSetup.from),
+                images: images.map(Image.from),
+                details,
+                lastUpdated,
+                comments: comments.map(Comment.from),
+            });
+
+
+
+
+    
 }

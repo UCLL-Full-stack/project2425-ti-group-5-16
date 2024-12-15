@@ -11,6 +11,8 @@ const main = async () => {
     await prisma.image.deleteMany(); // Add this line
     await prisma.hardwareComponent.deleteMany();
     await prisma.user.deleteMany();
+    await prisma.comment.deleteMany();
+
 
     // Create users
     const users = await Promise.all([
@@ -30,6 +32,42 @@ const main = async () => {
                 email: 'john.doe@example.com',
                 role: 'user',
                 age: 28,
+            },
+        }),
+    ]);
+
+    // Create comments
+    const comments = await Promise.all([
+        prisma.comment.create({
+            data: {
+                content: 'Amazing setup! Love the cable management.',
+                userId: users[1].id, // John commenting
+                setupId: setups[0].id, // on Linda's setup
+                createdAt: new Date('2023-01-15T10:00:00Z'),
+            },
+        }),
+        prisma.comment.create({
+            data: {
+                content: 'What monitor stand are you using?',
+                userId: users[0].id, // Linda commenting
+                setupId: setups[1].id, // on John's setup
+                createdAt: new Date('2023-01-16T14:30:00Z'),
+            },
+        }),
+        prisma.comment.create({
+            data: {
+                content: 'The RGB lighting looks fantastic!',
+                userId: users[1].id, // John commenting
+                setupId: setups[0].id, // on Linda's setup
+                createdAt: new Date('2023-01-17T09:15:00Z'),
+            },
+        }),
+        prisma.comment.create({
+            data: {
+                content: 'Thanks! I'm using a VIVO dual monitor stand.',
+                userId: users[1].id, // John commenting
+                setupId: setups[1].id, // on his own setup, replying to Linda
+                createdAt: new Date('2023-01-16T15:45:00Z'),
             },
         }),
     ]);
