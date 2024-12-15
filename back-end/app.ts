@@ -29,7 +29,9 @@ app.use(
             '/images',
             '/hardwareComponents',
             '/setup',
+            '/comments',
             { url: /^\/setup\/.*/, methods: ['GET'] }, // Add this line to match all setup routes
+            { url: /^\/comments\/.*/, methods: ['GET'] }, // Add this line to match all comment routes
         ],
     })
 );
@@ -81,11 +83,10 @@ app.use('/images', imagesRouter);
 // SETUP ROUTES
 import { setupRouter } from './controller/setup.router';
 app.use('/setup', setupRouter);
-/*
+
 // COMMENT ROUTES
 import { commentRouter } from './controller/comment.router';
 app.use('/comments', commentRouter);
-*/
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err.name === 'UnauthorizedError') {

@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 const main = async () => {
     // Clear existing data
     await prisma.hardwareComponentToSetup.deleteMany();
+    await prisma.comment.deleteMany();
     await prisma.setup.deleteMany();
-    await prisma.comment.deleteMany(); // Add this line
     await prisma.image.deleteMany();
     await prisma.hardwareComponent.deleteMany();
     await prisma.user.deleteMany();
@@ -81,7 +81,7 @@ const main = async () => {
         }),
     ]);
 
-    // Create setups with empty comments array
+    // Create setups with comments
     const setups = await Promise.all([
         prisma.setup.create({
             data: {
@@ -101,7 +101,18 @@ const main = async () => {
                     ],
                 },
                 comments: {
-                    create: [], // Empty comments array
+                    create: [
+                        {
+                            content: 'Amazing setup! Love the RGB lighting!',
+                            userId: users[1].id, // John comments on Linda's setup
+                            createdAt: new Date('2023-01-15T10:00:00Z'),
+                        },
+                        {
+                            content: 'Thanks! The RGB really adds to the atmosphere.',
+                            userId: users[0].id, // Linda replies
+                            createdAt: new Date('2023-01-15T11:30:00Z'),
+                        },
+                    ],
                 },
             },
             include: {
@@ -112,7 +123,11 @@ const main = async () => {
                     },
                 },
                 images: true,
-                comments: true, // Include comments in the return value
+                comments: {
+                    include: {
+                        user: true,
+                    },
+                },
             },
         }),
         prisma.setup.create({
@@ -133,7 +148,23 @@ const main = async () => {
                     ],
                 },
                 comments: {
-                    create: [], // Empty comments array
+                    create: [
+                        {
+                            content: "How's the Ryzen 9 performing for your workload?",
+                            userId: users[0].id, // Linda comments on John's setup
+                            createdAt: new Date('2023-01-16T09:00:00Z'),
+                        },
+                        {
+                            content: 'It handles everything I throw at it with ease!',
+                            userId: users[1].id, // John replies
+                            createdAt: new Date('2023-01-16T09:45:00Z'),
+                        },
+                        {
+                            content: 'Great to hear! Might upgrade mine soon.',
+                            userId: users[0].id, // Linda responds again
+                            createdAt: new Date('2023-01-16T10:15:00Z'),
+                        },
+                    ],
                 },
             },
             include: {
@@ -144,7 +175,39 @@ const main = async () => {
                     },
                 },
                 images: true,
-                comments: true, // Include comments in the return value
+                comments: {
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+        }),
+    ]);
+
+    // Create additional standalone comments (optional)
+    const additionalComments = await Promise.all([
+        prisma.comment.create({
+            data: {
+                content: 'The cable management looks really clean!',
+                userId: users[1].id,
+                setupId: setups[0].id,
+                createdAt: new Date('2023-01-17T14:00:00Z'),
+            },
+            include: {
+                user: true,
+                setup: true,
+            },
+        }),
+        prisma.comment.create({
+            data: {
+                content: 'What monitor arm are you using?',
+                userId: users[0].id,
+                setupId: setups[1].id,
+                createdAt: new Date('2023-01-18T15:30:00Z'),
+            },
+            include: {
+                user: true,
+                setup: true,
             },
         }),
     ]);
@@ -154,6 +217,7 @@ const main = async () => {
     console.log('Hardware Components:', hardwareComponents);
     console.log('Images:', images);
     console.log('Setups:', setups);
+    console.log('Additional Comments:', additionalComments);
 };
 
 (async () => {

@@ -1,78 +1,53 @@
-/*import { Comment } from '../model/comment';
-import { Setup } from '../model/setup';
-import { User } from '../model/user';
 import commentDB from '../repository/comments.db';
-import setupDB from '../repository/setup.db';
-import userDB from '../repository/user.db';
-import { CommentInput } from '../types';
+import { Comment } from '../model/comment';
 
-const getAllComments = (): Comment[] => {
-    return commentDB.getAllComments();
+const getAllComments = async (): Promise<Comment[]> => {
+    const comments = await commentDB.getAllComments();
+    return comments;
 };
 
-const getCommentById = (comment_id: number): Comment => {
-    return commentDB.getCommentById(comment_id);
+const getCommentById = async (id: number): Promise<Comment | null> => {
+    return await commentDB.getCommentById(id);
 };
 
-const getCommentsBySetupId = (setup_id: number): Comment[] => {
-    return commentDB.getCommentsBySetupId(setup_id);
+const createComment = async (comment: {
+    userId: number;
+    setupId: number;
+    content: string;
+}): Promise<Comment> => {
+    return await commentDB.createComment(comment);
 };
 
-const addComment = ({ setup_id, user_id, content }: CommentInput): Comment => {
-    // BASIC VALIDATION
-
-    if (!setup_id) {
-        throw new Error('Setup ID is required');
+const updateComment = async (
+    id: number,
+    content: string,
+    userId: number
+): Promise<Comment | null> => {
+    const comment = await commentDB.getCommentById(id);
+    if (!comment) {
+        throw new Error('Comment not found');
     }
-    if (!user_id) {
-        throw new Error('User ID is required');
+    if (comment.getUserID() !== userId) {
+        throw new Error('Unauthorized to update this comment');
     }
-    if (!content) {
-        throw new Error('Content is required');
-    }
-
-    // GENERATE A UNIQUE COMMENT ID
-    const comment_id = commentDB.generateUniqueSetupId();
-
-    // GET THE SETUP OBJECT USING THE ID
-    const setup = setupDB.getSetupById(Id);
-    if (!setup) {
-        throw new Error('Setup not found');
-    }
-
-    // GET THE USER OBJECT USING THE ID
-    const user = userDB.getUserById({ id: user_id });
-    if (!user) {
-        throw new Error('User not found');
-    }
-
-    const newComment = new Comment({
-        comment_id,
-        setup_id,
-        user_id,
-        content,
-    });
-
-    commentDB.addComment(newComment);
-    setup.addComment(newComment); // Add the comment to the setup
-
-    return newComment;
+    return await commentDB.updateComment(id, content);
 };
 
-const updateComment = (comment_id: number, content: string): Comment => {
-    return commentDB.updateComment(comment_id, content);
-};
-
-const deleteComment = (comment_id: number): void => {
-    commentDB.deleteComment(comment_id);
+const deleteComment = async (id: number, userId: number): Promise<void> => {
+    const comment = await commentDB.getCommentById(id);
+    if (!comment) {
+        throw new Error('Comment not found');
+    }
+    if (comment.getUserID() !== userId) {
+        throw new Error('Unauthorized to delete this comment');
+    }
+    await commentDB.deleteComment(id);
 };
 
 export default {
-    addComment,
     getAllComments,
     getCommentById,
-    getCommentsBySetupId,
+    createComment,
     updateComment,
     deleteComment,
 };
-*/
