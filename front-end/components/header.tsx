@@ -1,72 +1,108 @@
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+interface User {
+  email: string;
+  role: string;
+}
 
 const Header: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Load user data from sessionStorage on mount
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Clear session storage and update state
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    setUser(null);
+  };
+
   return (
     <header
-      className="p-3 mb-3 border-bottom"
-      style={{ background: 'linear-gradient(90deg, #065290, #0a74da)' }}
+      className="p-4 mb-3 border-bottom relative"
+      style={{ background: "linear-gradient(90deg, #065290, #0a74da)" }}
     >
-      <a className="fs-2 fw-bold d-flex justify-content-center mb-2 mb-lg-0 text-white text-decoration-none">
-        Setup Showcase
-      </a>
-      <nav className="nav justify-content-center">
+      {/* Header Title */}
+      <div className="flex justify-between items-center">
+        <a
+          className="fs-2 fw-bold text-white text-decoration-none"
+          style={{ fontSize: "1.5rem" }}
+        >
+          Setup Showcase
+        </a>
+
+        {/* Top Right User Actions */}
+        <div className="absolute top-4 right-4 flex items-center gap-4">
+          {user ? (
+            <>
+              <span className="fs-6 text-white">{user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="fs-5 text-white bg-red-600 hover:bg-red-700 rounded px-4 py-2"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/Login"
+                className="fs-5 text-white bg-[#005d8c] hover:bg-[#063970] rounded px-4 py-2"
+              >
+                Login
+              </Link>
+              <Link
+                href="/Register"
+                className="fs-5 text-white bg-[#005d8c] hover:bg-[#063970] rounded px-4 py-2"
+              >
+                Register
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation Links */}
+      <nav className="flex justify-center gap-6 mt-3">
         <Link
           href="/"
-          className="nav-link px-4 fs-5 text-white relative before:content-[''] before:absolute before:block before:w-full before:h-[2px] 
-              before:bottom-0 before:left-0 before:bg-[#065290]
-              before:hover:scale-x-100 before:scale-x-0 before:origin-top-left
-              before:transition before:ease-in-out before:duration-300"
+          className="nav-link fs-5 text-white hover:underline"
         >
           HomePage
         </Link>
         <Link
           href="/SetupOverview"
-          className="nav-link px-4 fs-5 text-white relative before:content-[''] before:absolute before:block before:w-full before:h-[2px] 
-              before:bottom-0 before:left-0 before:bg-[#065290]
-              before:hover:scale-x-100 before:scale-x-0 before:origin-top-left
-              before:transition before:ease-in-out before:duration-300"
+          className="nav-link fs-5 text-white hover:underline"
         >
           SetupOverview
         </Link>
-
         <Link
           href="/CreateNewSetup"
-          className="nav-link px-4 fs-5 text-white relative before:content-[''] before:absolute before:block before:w-full before:h-[2px] 
-              before:bottom-0 before:left-0 before:bg-[#065290]
-              before:hover:scale-x-100 before:scale-x-0 before:origin-top-left
-              before:transition before:ease-in-out before:duration-300"
+          className="nav-link fs-5 text-white hover:underline"
         >
           CreateNewSetup
         </Link>
-
         <Link
           href="/EditSetup"
-          className="nav-link px-4 fs-5 text-white relative before:content-[''] before:absolute before:block before:w-full before:h-[2px] 
-              before:bottom-0 before:left-0 before:bg-[#065290]
-              before:hover:scale-x-100 before:scale-x-0 before:origin-top-left
-              before:transition before:ease-in-out before:duration-300"
+          className="nav-link fs-5 text-white hover:underline"
         >
           EditYourSetup
         </Link>
-
-        <Link
-          href="/Login"
-          className="mt-2 w-14 h-8 bg-[#005d8c] hover:bg-[#063970] rounded text-white flex items-center justify-center no-underline"
-        >
-          Login
-        </Link>
-
-        <Link
-          href="/Register"
-          className="mt-2 w-14 h-8 bg-[#005d8c] hover:bg-[#063970] rounded text-white flex items-center justify-center no-underline"
-        >
-          Register
-        </Link>
-        
       </nav>
     </header>
   );
 };
 
 export default Header;
+
+
+
+
 

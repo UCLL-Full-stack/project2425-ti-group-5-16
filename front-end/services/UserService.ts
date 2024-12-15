@@ -5,7 +5,8 @@ import { RegisterUserData } from "../types";
 
 const loginUser = async (email: string, password: string) => {
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    console.log("Logging in with:", email);
+    const response = await fetch(`${API_URL}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,7 +24,8 @@ const loginUser = async (email: string, password: string) => {
       }
     }
 
-    return response;
+    // Return the full response JSON
+    return response.json();
   } catch (error) {
     console.error("Error in loginUser:", error);
     throw error;
@@ -35,7 +37,7 @@ const createUser = async (userData: RegisterUserData) => {
   console.log("Making request to:", url);
   console.log("With data:", userData);
   try {
-    const response = await fetch(`${API_URL}/users`, {
+    const response = await fetch(`${API_URL}/users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

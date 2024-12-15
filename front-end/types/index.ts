@@ -5,6 +5,7 @@ export interface RegisterUserData {
   password: string;
   name: string;
   age: number;
+  role: string;
 }
 
 export interface Owner {

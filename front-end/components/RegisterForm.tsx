@@ -14,6 +14,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegisterSuccess}) => {
     password: '',
     name: '',
     age: '',
+    role: 'user'
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -35,7 +36,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegisterSuccess}) => {
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        age: parseInt(formData.age)
+        age: parseInt(formData.age),
+        role: formData.role
       };
 
       console.log('Submitting user data:', userData); // Debug log
@@ -49,7 +51,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onRegisterSuccess}) => {
         email: '',
         password: '',
         name: '',
-        age: ''
+        age: '',
+        role: 'user'
       });
       
       setTimeout(() => {

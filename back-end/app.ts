@@ -79,11 +79,6 @@ app.use('/comments', commentRouter);
 */
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something broke!' });
-});
-
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err.name === 'UnauthorizedError') {
         res.status(401).json({ status: 'unauthorized', message: err.message });
     } else if (err.name === 'CoursesError') {
@@ -91,4 +86,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     } else {
         res.status(400).json({ status: 'application error', message: err.message });
     }
+});
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something broke!' });
 });

@@ -42,48 +42,47 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     clearErrors();
-
+  
     if (!validate()) {
       return;
     }
-
+  
     try {
-      const response = await UserService.loginUser(email, password);
-      const data = await response.json();
-
-      if (response.ok) {
+      console.log("Logging in with:", email, password);
+      const data = await UserService.loginUser(email, password);
+  
+      if (data.token && data.email) {
         setStatusMessage({
           message: "Login successful! Redirecting...",
-          type: "success"
+          type: "success",
         });
-
+  
         // Store user data in session storage
         sessionStorage.setItem("user", JSON.stringify({
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.name,
-          token: data.token
+          email: data.email,
+          role: data.role,
+          token: data.token,
         }));
         sessionStorage.setItem("token", data.token);
-
+  
         // Redirect after a short delay
         setTimeout(() => {
           router.push("/");
         }, 1500);
       } else {
         setStatusMessage({
-          message: data.message || "Login failed. Please check your credentials.",
-          type: "error"
+          message: "Login failed. Missing expected response fields.",
+          type: "error",
         });
       }
     } catch (error: any) {
       setStatusMessage({
         message: error.message || "An error occurred during login.",
-        type: "error"
+        type: "error",
       });
     }
   };
-
+  
   return (
     <form onSubmit={handleSubmit} className={`space-y-4 ${className}`}>
       {statusMessage && (
