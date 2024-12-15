@@ -1,70 +1,90 @@
-/*import { Comment } from '../model/comment';
+// src/repository/comment.db.ts
+import database from './database';
+import { Comment } from '../model/comment';
 
-// Mock comments
-const mockComment1 = new Comment({
-    comment_id: 1,
-    setup_id: 1,
-    user_id: 1,
-    content: 'Great setup!',
-});
-
-const mockComment2 = new Comment({
-    comment_id: 2,
-    setup_id: 2,
-    user_id: 2,
-    content: 'I love this setup!',
-});
-
-const commentDB: Comment[] = [mockComment1, mockComment2];
-
-const getAllComments = (): Comment[] => {
-    return commentDB;
-};
-
-const getCommentById = (comment_id: number): Comment => {
-    const comment = commentDB.find((comment) => comment.getCommentID() === comment_id);
-    if (!comment) {
-        throw new Error(`Comment with id ${comment_id} not found`);
+const getAllComments = async (): Promise<Comment[]> => {
+    try {
+        const comments = await database.comment.findMany({
+            include: {
+                user: true,
+                setup: true,
+            },
+        });
+        return comments.map(Comment.from);
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error fetching comments');
     }
-    return comment;
 };
 
-const getCommentsBySetupId = (setup_id: number): Comment[] => {
-    return commentDB.filter((comment) => comment.getSetupID() === setup_id);
-};
-
-const addComment = (comment: Comment): void => {
-    commentDB.push(comment);
-};
-
-const updateComment = (comment_id: number, content: string): Comment => {
-    const comment = getCommentById(comment_id);
-    comment.setContent(content);
-    return comment;
-};
-
-const generateUniqueSetupId = (): number => {
-    const comments = getAllComments();
-    if (comments.length === 0) return 1;
-    const highestId = Math.max(...comments.map((comment) => comment.setup_id));
-    return highestId + 1;
-};
-
-const deleteComment = (comment_id: number): void => {
-    const index = commentDB.findIndex((comment) => comment.getCommentID() === comment_id);
-    if (index === -1) {
-        throw new Error(`Comment with id ${comment_id} not found`);
+const getCommentById = async (id: number): Promise<Comment | null> => {
+    try {
+        const comment = await database.comment.findUnique({
+            where: { id },
+            include: {
+                user: true,
+                setup: true,
+            },
+        });
+        return comment ? Comment.from(comment) : null;
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error fetching comment');
     }
-    commentDB.splice(index, 1);
+};
+
+const createComment = async (comment: {
+    userId: number;
+    setupId: number;
+    content: string;
+}): Promise<Comment> => {
+    try {
+        const newComment = await database.comment.create({
+            data: comment,
+            include: {
+                user: true,
+                setup: true,
+            },
+        });
+        return Comment.from(newComment);
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error creating comment');
+    }
+};
+
+const updateComment = async (id: number, content: string): Promise<Comment | null> => {
+    try {
+        const updatedComment = await database.comment.update({
+            where: { id },
+            data: { content },
+            include: {
+                user: true,
+                setup: true,
+            },
+        });
+        return Comment.from(updatedComment);
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error updating comment');
+    }
+};
+
+const deleteComment = async (id: number): Promise<void> => {
+    try {
+        await database.comment.delete({
+            where: { id },
+        });
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error deleting comment');
+    }
 };
 
 export default {
     getAllComments,
     getCommentById,
-    getCommentsBySetupId,
-    addComment,
+    createComment,
     updateComment,
-    generateUniqueSetupId,
     deleteComment,
 };
-*/

@@ -1,4 +1,3 @@
-// Execute: npx ts-node util/seed.ts
 import { set } from 'date-fns';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -8,7 +7,9 @@ const prisma = new PrismaClient();
 const main = async () => {
     // Clear existing data
     await prisma.hardwareComponentToSetup.deleteMany();
-    await prisma.image.deleteMany(); // Add this line
+    await prisma.comment.deleteMany();
+    await prisma.setup.deleteMany();
+    await prisma.image.deleteMany();
     await prisma.hardwareComponent.deleteMany();
     await prisma.user.deleteMany();
 
@@ -80,10 +81,143 @@ const main = async () => {
         }),
     ]);
 
+    // Create setups with comments
+    const setups = await Promise.all([
+        prisma.setup.create({
+            data: {
+                details: 'High-end gaming setup with RGB lighting',
+                lastUpdated: new Date(),
+                ownerId: users[0].id,
+                images: {
+                    connect: [{ id: images[2].id }],
+                },
+                hardwareComponents: {
+                    create: [
+                        {
+                            hardwareComponent: {
+                                connect: { id: hardwareComponents[0].id },
+                            },
+                        },
+                    ],
+                },
+                comments: {
+                    create: [
+                        {
+                            content: 'Amazing setup! Love the RGB lighting!',
+                            userId: users[1].id, // John comments on Linda's setup
+                            createdAt: new Date('2023-01-15T10:00:00Z'),
+                        },
+                        {
+                            content: 'Thanks! The RGB really adds to the atmosphere.',
+                            userId: users[0].id, // Linda replies
+                            createdAt: new Date('2023-01-15T11:30:00Z'),
+                        },
+                    ],
+                },
+            },
+            include: {
+                owner: true,
+                hardwareComponents: {
+                    include: {
+                        hardwareComponent: true,
+                    },
+                },
+                images: true,
+                comments: {
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+        }),
+        prisma.setup.create({
+            data: {
+                details: 'Professional workstation for content creation',
+                lastUpdated: new Date(),
+                ownerId: users[1].id,
+                images: {
+                    connect: [{ id: images[3].id }],
+                },
+                hardwareComponents: {
+                    create: [
+                        {
+                            hardwareComponent: {
+                                connect: { id: hardwareComponents[1].id },
+                            },
+                        },
+                    ],
+                },
+                comments: {
+                    create: [
+                        {
+                            content: "How's the Ryzen 9 performing for your workload?",
+                            userId: users[0].id, // Linda comments on John's setup
+                            createdAt: new Date('2023-01-16T09:00:00Z'),
+                        },
+                        {
+                            content: 'It handles everything I throw at it with ease!',
+                            userId: users[1].id, // John replies
+                            createdAt: new Date('2023-01-16T09:45:00Z'),
+                        },
+                        {
+                            content: 'Great to hear! Might upgrade mine soon.',
+                            userId: users[0].id, // Linda responds again
+                            createdAt: new Date('2023-01-16T10:15:00Z'),
+                        },
+                    ],
+                },
+            },
+            include: {
+                owner: true,
+                hardwareComponents: {
+                    include: {
+                        hardwareComponent: true,
+                    },
+                },
+                images: true,
+                comments: {
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+        }),
+    ]);
+
+    // Create additional standalone comments (optional)
+    const additionalComments = await Promise.all([
+        prisma.comment.create({
+            data: {
+                content: 'The cable management looks really clean!',
+                userId: users[1].id,
+                setupId: setups[0].id,
+                createdAt: new Date('2023-01-17T14:00:00Z'),
+            },
+            include: {
+                user: true,
+                setup: true,
+            },
+        }),
+        prisma.comment.create({
+            data: {
+                content: 'What monitor arm are you using?',
+                userId: users[0].id,
+                setupId: setups[1].id,
+                createdAt: new Date('2023-01-18T15:30:00Z'),
+            },
+            include: {
+                user: true,
+                setup: true,
+            },
+        }),
+    ]);
+
     console.log('Seed data created:');
     console.log('Users:', users);
     console.log('Hardware Components:', hardwareComponents);
     console.log('Images:', images);
+    console.log('Setups:', setups);
+    console.log('Additional Comments:', additionalComments);
 };
 
 (async () => {

@@ -1,7 +1,9 @@
 import { User } from './user';
 import { Image } from './image';
 import { Comment } from './comment';
-import { HardwareComponentToSetup } from './HardwareComponentToSetup';
+import { HardwareComponent } from './hardwareComponent';
+
+// Import Prisma models
 
 import {
     User as UserPrisma,
@@ -9,13 +11,14 @@ import {
     Image as ImagesPrisma,
     Comment as CommentPrisma,
     Setup as SetupPrisma,
+    HardwareComponentToSetup as HardwareComponentToSetupPrisma,
 } from '@prisma/client';
 
 export class Setup {
     private id?: number;
     private ownerId: number; // Add this field
     private owner: User;
-    private hardware_components: HardwareComponentToSetup[];
+    private hardwareComponents: HardwareComponent[]; // Changed from hardware_components
     private images: Image[];
     private details: string;
     private lastUpdated: Date;
@@ -25,7 +28,7 @@ export class Setup {
         id?: number;
         ownerId: number;
         owner: User;
-        hardware_components: HardwareComponentToSetup[];
+        hardwareComponents: HardwareComponent[]; // Changed here too
         images: Image[];
         details: string;
         lastUpdated: Date;
@@ -35,17 +38,18 @@ export class Setup {
         this.id = setup.id;
         this.ownerId = setup.ownerId;
         this.owner = setup.owner;
-        this.hardware_components = setup.hardware_components;
-        this.images = setup.images;
         this.details = setup.details;
-        this.lastUpdated = setup.lastUpdated;
-        this.comments = setup.comments;
+        this.lastUpdated = new Date(setup.lastUpdated);
+        this.hardwareComponents = [...setup.hardwareComponents];
+        this.images = [...setup.images];
+        this.comments = [...setup.comments];
     }
 
     validate(setup: {
         id?: number;
+        ownerId: number;
         owner: User;
-        hardware_components: HardwareComponentToSetup[];
+        hardwareComponents: HardwareComponent[];
         images: Image[];
         details: String;
         lastUpdated: Date;
@@ -54,11 +58,20 @@ export class Setup {
         if (setup.id !== undefined && setup.id < 0) {
             throw new Error('Setup ID must be a non-negative number');
         }
-        if (setup.owner.getRole() !== setup.owner.getRole()) {
-            throw new Error('Setup owner must be a user');
+        if (typeof setup.ownerId !== 'number' || setup.ownerId <= 0) {
+            throw new Error('Setup ownerId must be a positive number');
         }
         if (setup.lastUpdated.getTime() > Date.now()) {
             throw new Error('Last updated date must not be in the future');
+        }
+        if (!Array.isArray(setup.hardwareComponents)) {
+            throw new Error('Hardware components must be an array');
+        }
+        if (!Array.isArray(setup.images)) {
+            throw new Error('Images must be an array');
+        }
+        if (setup.comments && !Array.isArray(setup.comments)) {
+            throw new Error('Comments must be an array');
         }
     }
 
@@ -91,8 +104,9 @@ export class Setup {
      * Returns the hardware components associated with the setup.
      * @returns {Hardware_Components[]} The hardware components associated with the setup.
      */
-    public getHardwareComponents(): HardwareComponentToSetup[] {
-        return this.hardware_components ? [...this.hardware_components] : []; // Return a copy to maintain immutability
+    // Update getter method name
+    public getHardwareComponents(): HardwareComponent[] {
+        return this.hardwareComponents ? [...this.hardwareComponents] : [];
     }
 
     /**
@@ -149,11 +163,11 @@ export class Setup {
         this.images.push(image);
     }
 
-    public addHardwareComponent(hardware_component: HardwareComponentToSetup): void {
-        if (this.hardware_components.includes(hardware_component)) {
+    public addHardwareComponent(hardwareComponent: HardwareComponent): void {
+        if (this.hardwareComponents.includes(hardwareComponent)) {
             throw new Error('Hardware component already exists in the list');
         }
-        this.hardware_components.push(hardware_component);
+        this.hardwareComponents.push(hardwareComponent);
     }
 
     /**
@@ -166,32 +180,36 @@ export class Setup {
             throw new Error('Comment already exists in the list');
         }
         this.comments.push(comment);
-    } /*
-    static from(
-            setupPrisma: SetupPrisma & {
-            owner: UserPrisma;
-            hardwareComponents: HardwareComponentToSetup[];
-            images: ImagesPrisma[];
-            comments: CommentPrisma[];
-        }
-    ): Setup {
+    }
+
+    static from({
+        id,
+        owner,
+        ownerId,
+        hardwareComponents,
+        images,
+        details,
+        lastUpdated,
+        comments,
+    }: SetupPrisma & {
+        owner: UserPrisma;
+        hardwareComponents: (HardwareComponentToSetupPrisma & {
+            hardwareComponent: HardwareComponentPrisma;
+        })[];
+        images: ImagesPrisma[];
+        comments: CommentPrisma[];
+    }): Setup {
         return new Setup({
-            id: setupPrisma.id,
-            ownerId: setupPrisma.ownerId,
-            owner: User.from(setupPrisma.owner),
-            hardware_components: setupPrisma.hardwareComponents.map((hc) =>
-                HardwareComponentToSetup.from(hc)
+            id,
+            ownerId,
+            owner: User.from(owner),
+            hardwareComponents: hardwareComponents.map((hc) =>
+                HardwareComponent.from(hc.hardwareComponent)
             ),
-            images: setupPrisma.images.map((img) => Image.from({ id: img.id, url: img.url, details: img.details })),
-            details: setupPrisma.details,
-            lastUpdated: setupPrisma.lastUpdated,
-            comments: setupPrisma.comments.map((comment) => Comment.from({
-                id: comment.comment_id,
-                userId: comment.user_id,
-                setupId: comment.setup_id,
-                content: comment.content,
-                createdAt: new Date() // Assuming createdAt is the current date for this example
-            })),
+            images: images.map(Image.from),
+            details,
+            lastUpdated,
+            comments: comments.map(Comment.from),
         });
-    }*/
+    }
 }
