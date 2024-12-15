@@ -1,19 +1,15 @@
-import { Images } from '../model/images';
+import { Image } from '../model/image';
 
 import imagesDb from '../repository/images.db';
 
-const getAllImages = (): Images[] => {
-    return imagesDb.getAllImages();
-}
+const getAllImages = async (): Promise<Image[]> => imagesDb.getAllImages();
 
-const getImageByUrl = ({ url }: { url: string }): Images => {
-
-    const image = imagesDb.getImageByUrl({ url });
+const getImageByUrl = async ({ url }: { url: string }): Promise<Image | null> => {
+    const image = await imagesDb.getImageByUrl({ url });
     if (!image) {
-        throw new Error(`Image with URL ${url} not found`);
+        throw new Error(`Image with URL "${url}" does not exist.`);
     }
     return image;
-}
+};
 
-export default{ getAllImages, getImageByUrl };
-
+export default { getAllImages, getImageByUrl };

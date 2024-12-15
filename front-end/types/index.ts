@@ -1,3 +1,5 @@
+type Role = "admin" | "user";
+
 export interface RegisterUserData {
   email: string;
   password: string;
@@ -55,5 +57,4 @@ export interface Comment {
   user_id: number;
   content: string;
 }
-
 

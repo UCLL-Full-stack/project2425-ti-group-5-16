@@ -1,5 +1,7 @@
 import { User } from '../model/user';
 import database from './database';
+import { User as UserPrisma } from '@prisma/client';
+
 
 const getAllUsers = async (): Promise<User[]> => {
     try {
@@ -37,6 +39,19 @@ const getUserByName = async ({ name }: { name: string }): Promise<User | null> =
     }
 };
 
+const getUserByEmail = async ({ email }: { email: string }): Promise<User | null> => {
+    try {
+        const userPrisma = await database.user.findFirst({
+            where: { email },
+        });
+
+        return userPrisma ? User.from(userPrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 const createUser = async (user: User): Promise<User> => {
     try {
         const userPrisma = await database.user.create({
@@ -60,4 +75,5 @@ export default {
     createUser,
     getUserById,
     getUserByName,
+    getUserByEmail,
 };

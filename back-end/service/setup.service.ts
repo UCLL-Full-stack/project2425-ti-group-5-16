@@ -1,29 +1,35 @@
-import { Setup } from '../model/setup';
-import userdb from '../repository/user.db';
-import hardware_componentsDb from '../repository/hardware_components.db';
-import imagesDb from '../repository/images.db';
-import setupdb from '../repository/setup.db';
+/*
+import setupDB from '../repository/setup.db';
 
-import { SetupInput } from '../types';
+import { Setup as SetupPrisma } from '@prisma/client';
 
-const getAllSetups = (): Setup[] => {
-    return setupdb.getAllSetups();
+const getAllSetups = async (): Promise<SetupPrisma[]> => {
+    return await setupDB.getAllSetups();
 };
 
-const getSetupById = (setup_id: number): Setup => {
-    return setupdb.getSetupById(setup_id);
+const getSetupById = async (id: number): Promise<SetupPrisma | null> => {
+    return await setupDB.getSetupById(id);
+};
+
+const addSetup = async (setup: Omit<SetupPrisma, 'id'>): Promise<SetupPrisma> => {
+    return await setupDB.addSetup(setup);
+};
+
+const updateSetup = async (id: number, setup: Partial<SetupPrisma>): Promise<SetupPrisma> => {
+    return await setupDB.updateSetup(id, setup);
+};
+
+const deleteSetup = async (id: number): Promise<SetupPrisma> => {
+    return await setupDB.deleteSetup(id);
 };
 
 const addSetup = async ({
-    //setup.id (generated)
     owner: ownerInput, // Logged-in user ID is given when creating a setup
     hardware_components: componentInput,
     image_urls,
     details,
     last_updated,
-
-}: SetupInput): Promise<Setup> => {
-
+}: SetupInput): Promise<SetupPrisma> => {
     // Generate a unique not yet existing ID for the new setup
     const setup_id = setupdb.generateUniqueSetupId();
 
@@ -69,40 +75,5 @@ const addSetup = async ({
     return newSetup;
 };
 
-const updateSetup = async (setup_id: number, setupInput: SetupInput): Promise<Setup> => {
-    const existingSetup = setupdb.getSetupById(setup_id);
-    if (!existingSetup) throw new Error(`Setup with ID ${setup_id} not found`);
-
-    if (!setupInput.owner.id) {
-        throw new Error('Owner ID is undefined');
-    }
-    const owner = await userdb.getUserById({ id: setupInput.owner.id });
-    if (!owner) throw new Error('Owner not found');
-
-    const hardware_components = setupInput.hardware_components.map((componentName) => {
-        const component = hardware_componentsDb.getHardwareComponentByName({ name: componentName });
-        if (!component) throw new Error(`Hardware component "${componentName}" not found`);
-        return component;
-    });
-
-    const image_urls = setupInput.image_urls.map((url) => {
-        const image = imagesDb.getImageByUrl({ url });
-        if (!image) throw new Error(`Image with URL "${url}" not found`);
-        return image;
-    });
-
-    const updatedSetup = new Setup({ 
-        ...existingSetup, 
-        ...setupInput, 
-        owner, 
-        hardware_components, 
-        image_urls, 
-        last_updated: new Date() 
-    });
-
-    setupdb.updateSetup(setup_id, updatedSetup);
-    return updatedSetup;
-};
-
-export default { getAllSetups, getSetupById, addSetup, updateSetup };
-
+export default { addSetup, getAllSetups, getSetupById };
+*/

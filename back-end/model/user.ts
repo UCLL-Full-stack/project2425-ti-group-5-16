@@ -25,8 +25,8 @@ export class User {
         this.name = user.name;
         this.email = user.email;
         this.password = user.password;
-        this.role = user.role;
         this.age = user.age;
+        this.role = user.role;
     }
 
     getId(): number | undefined {
@@ -88,12 +88,12 @@ export class User {
         );
     }
 
-    static from({ id, name, email, password, age, role }: UserPrisma) {
+    static from({ id, email, password, name, role, age }: UserPrisma): User {
         return new User({
             id,
-            name,
             email,
             password,
+            name,
             role: role as Role,
             age,
         });

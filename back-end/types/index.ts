@@ -30,13 +30,13 @@ type ImageInput = {
     details: string;
 };
 
-export {ImageInput, Role, SetupInput, UserInput, CommentInput };
+export { ImageInput, Role, SetupInput, UserInput, CommentInput };
 
 // testing phaze
 
 type AuthenticationResponse = {
     token: string;
-    name: string;
+    email: string;
     role: string;
 };
 

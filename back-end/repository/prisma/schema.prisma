@@ -8,53 +8,69 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
   password String
   name     String
-  role     String
+  role     String      
   age      Int
   setups   Setup[]
   comments Comment[]
+
+  @@map("users")  // Explicit table naming
 }
 
 model Setup {
-  id                 Int                  @id @default(autoincrement())
-  owner              User                 @relation(fields: [ownerId], references: [id])
+  id                 Int                      @id @default(autoincrement())
+  owner              User                     @relation(fields: [ownerId], references: [id])
   ownerId            Int
   details            String
-  lastUpdated        DateTime             @updatedAt
+  lastUpdated        DateTime                 @updatedAt
   hardwareComponents HardwareComponentToSetup[]
   images             Image[]
   comments           Comment[]
+
+  @@map("setups")
 }
 
 model HardwareComponent {
-  name    String  @unique @id
+  id      Int       @id  @default(autoincrement())
+  name    String    @unique
   details String
   price   Float
   setups  HardwareComponentToSetup[]
+
+  @@map("hardware_components")
 }
 
+
 model Image {
-  url     String  @unique @id
+  id      Int    @id @default(autoincrement())
+  url     String    @unique
   details String
   setups  Setup[]
+
+  @@map("images")
 }
 
 model Comment {
-  comment_id Int    @id @default(autoincrement())
-  user       User   @relation(fields: [user_id], references: [id])
-  user_id    Int
-  setup      Setup  @relation(fields: [setup_id], references: [id])
-  setup_id   Int
-  content    String
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int      // Consistent naming convention
+  setup    Setup    @relation(fields: [setupId], references: [id])
+  setupId  Int      // Consistent naming convention
+  content  String
+  createdAt DateTime @default(now())  // Added timestamp
+
+  @@map("comments")
 }
 
 model HardwareComponentToSetup {
-  hardwareComponent HardwareComponent @relation(fields: [hardwareComponentId], references: [name])
-  hardwareComponentId String
-  setup Setup @relation(fields: [setupId], references: [id])
-  setupId Int
+  hardwareComponent   HardwareComponent @relation(fields: [hardwareComponentId], references: [id])
+  hardwareComponentId Int
+  setup              Setup             @relation(fields: [setupId], references: [id])
+  setupId            Int
+
   @@id([hardwareComponentId, setupId])
+  @@map("hardware_components_setups")
 }
