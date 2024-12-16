@@ -1,14 +1,23 @@
 const getAllSetups = async () => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup`);
-    
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      console.warn('Unauthorized: No token found in session storage');
+      return { error: 'Unauthorized, log in with a valid account to see setups' };
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     if (!response.ok) {
       throw new Error(`Failed to fetch setups: ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    // Normalize keys to match frontend expectations
     const normalizedData = data.map((setup: any) => ({
       setup_id: setup.id,
       owner: {
@@ -30,14 +39,31 @@ const getAllSetups = async () => {
 
     return normalizedData;
   } catch (error) {
-    console.error('Error fetching setups:', error);
-    throw error;
+    if (error instanceof Error) {
+      console.error('Error fetching setups:', error.message);
+    } else {
+      console.error('Error fetching setups:', error);
+    }
+    return { error: error instanceof Error ? error.message : 'An unknown error occurred' };
   }
 };
 
+
+// ----------------------------
+
 const getSetupById = async (setup_id: string) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`);
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found in session storage');
+    }
+
+    console.log('Fetching setup:', setup_id);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch setup: ${response.statusText}`);
@@ -72,6 +98,7 @@ const getSetupById = async (setup_id: string) => {
   }
 };
 
+// ----------------------------
   interface Owner {
     id: number;
   }

@@ -28,7 +28,7 @@ app.use(
             '/status,',
             '/images',
             '/hardwareComponents',
-            '/setup',
+            //'/setup',
             '/comments',
             { url: /^\/setup\/.*/, methods: ['GET'] }, // Add this line to match all setup routes
             { url: /^\/comments\/.*/, methods: ['GET'] }, // Add this line to match all comment routes

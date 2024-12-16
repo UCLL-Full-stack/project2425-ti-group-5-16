@@ -6,53 +6,50 @@ import SetupOverviewTable from '@components/SetupOverviewTable';
 import { Setup } from '@types';
 
 const SetupOverview: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [setup, setSetup] = useState<Setup[]>([]);
 
-    // Basic state management
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    // specific state management
-    const [setup, setSetup] = useState<Setup[]>([]);
-    const [selectedLecturer, setSelectedLecturer] = useState<Setup | null>(null);
-
-    useEffect(() => {
-        const fetchSetups = async () => {
-            try {
-                const data = await SetupService.getAllSetups();
-                setSetup(data);
-            } catch (error) {
-                setError('Failed to fetch setups');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSetups();
-    }, []);
-
-    const selectsetups = (Setup: Setup) => {
-        setSelectedLecturer(Setup);
-        console.log('Selected Setup:', Setup);
+  useEffect(() => {
+    const fetchSetups = async () => {
+      const result = await SetupService.getAllSetups();
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSetup(result);
+      }
+      setLoading(false);
     };
 
-    return (
-        <>
-            <Head>
-                <title>SetupOverview</title>
-            </Head>
-            <Header />
-            <main className="d-flex flex-column justify-content-center align-items-center">
-                <h1>SetupOverview</h1>
-                <section>
-                    <p>List of registered setups will be displayed here:</p>
-                    <h2>Setup Overvieuw</h2>
-                    {loading && <p>Loading...</p>}
-                    {error && <p>{error}</p>}
-                    <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
-                </section>
-            </main>
-        </>
-    );
+    fetchSetups();
+  }, []);
+
+  const selectsetups = (selectedSetup: Setup) => {
+    console.log('Selected setup:', selectedSetup);
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Setup Overview</title>
+      </Head>
+      <Header />
+      <main className="d-flex flex-column justify-content-center align-items-center">
+        <h1>Setup Overview</h1>
+        <section>
+          {loading && <p>Loading...</p>}
+          {error && (
+            <div style={{ color: 'red', border: '2px solid red', padding: '1em', margin: '1em 0', backgroundColor: '#ffe6e6' }}>
+              <strong>{error}</strong>
+            </div>
+          )}
+          {!loading && !error && (
+            <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
+          )}
+        </section>
+      </main>
+    </>
+  );
 };
 
 export default SetupOverview;
