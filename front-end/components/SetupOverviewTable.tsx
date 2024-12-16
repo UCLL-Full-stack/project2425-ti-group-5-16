@@ -28,6 +28,7 @@ const SetupOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
           <tr
             key={index}
             onClick={() => {
+              console.log('Navigating to setup:', setup.setup_id);
               router.push(`/SetupOverview/${setup.setup_id}`); // Navigate to the dynamic route
               selectsetups(setup); // Call selectsetups if needed
             }}

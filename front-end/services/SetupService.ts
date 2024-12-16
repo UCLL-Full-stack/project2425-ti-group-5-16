@@ -98,6 +98,7 @@ const getSetupById = async (setup_id: string) => {
   }
 };
 
+/*
 // ----------------------------
   interface Owner {
     id: number;
@@ -175,13 +176,12 @@ const getSetupById = async (setup_id: string) => {
       throw error;
     }
   };
-  
+*/
   const SetupService = {
     getAllSetups,
-    CreateSetup,
+    //CreateSetup,
     getSetupById,
-    updateSetup,
+    //updateSetup,
   };
   
   export default SetupService;
-  
