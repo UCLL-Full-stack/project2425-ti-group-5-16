@@ -48,52 +48,59 @@ const getAllSetups = async () => {
   }
 };
 
-
 // ----------------------------
 
 const getSetupById = async (setup_id: string) => {
   try {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-      throw new Error('No token found in session storage');
-    }
-
     console.log('Fetching setup:', setup_id);
+
+    // Make a GET request to the backend endpoint
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`, {
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json', // Ensures proper JSON formatting
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch setup: ${response.statusText}`);
+      throw new Error(`Failed to fetch setup: ${response.status} ${response.statusText}`);
     }
 
+    // Parse the response data
     const data = await response.json();
 
-    // Normalize keys to match frontend expectations
+    // Normalize the data to match frontend expectations
     const normalizedData = {
-      setup_id: data.id,
+      setup_id: data.id, // Map backend 'id' to frontend 'setup_id'
       owner: {
-        name: data.owner.name,
-        id: data.owner.id,
+        id: data.owner?.id || data.ownerId, // Use nested 'owner.id' or fallback to 'ownerId'
+        name: data.owner?.name || 'Unknown', // Default name if missing
       },
-      hardware_components: data.hardwareComponents,
-      image_urls: data.images.map((image: any) => ({
+      hardware_components: data.hardwareComponents?.map((component: any) => ({
+        id: component.id,
+        name: component.name,
+        details: component.details,
+        price: component.price,
+      })) || [],
+      image_urls: data.images?.map((image: any) => ({
         url: image.url,
         details: image.details,
-      })),
-      details: data.details,
-      last_updated: data.lastUpdated,
-      comments: data.comments.map((comment: any) => ({
+      })) || [],
+      details: data.details || 'No details available.',
+      last_updated: data.lastUpdated || 'Unknown',
+      comments: data.comments?.map((comment: any) => ({
         user_id: comment.userId,
         content: comment.content,
-      })),
+      })) || [],
     };
 
     return normalizedData;
   } catch (error) {
-    console.error('Error fetching setup:', error);
+    if (error instanceof Error) {
+      console.error('Error fetching setup:', error.message);
+    } else {
+      console.error('Error fetching setup:', error);
+    }
     throw error;
   }
 };
