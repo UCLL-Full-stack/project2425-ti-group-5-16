@@ -29,7 +29,7 @@ const EditYourSetupComponent: React.FC<Props> = ({ setups, selectsetups }) => {
             key={index}
             onClick={() => {
               console.log('Navigating to setup:', setup.setup_id);
-              router.push(`/SetupOverview/${setup.setup_id}`); // Navigate to the dynamic route
+              router.push(`/EditYourSetupPage/${setup.setup_id}`); // Navigate to the dynamic route
               selectsetups(setup); // Call selectsetups if needed
             }}
             style={{ cursor: 'pointer' }} // Add pointer cursor for clickability

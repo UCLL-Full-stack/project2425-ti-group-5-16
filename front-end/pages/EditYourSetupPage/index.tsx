@@ -22,6 +22,7 @@ const EditYourSetupPage: React.FC = () => {
         }
   
         // Hardcode "john" as the current owner for now
+        // const userName = sessionStorage.getItem('userName');
         const hardcodedOwner = "john";
         console.log("Filtering setups for owner:", hardcodedOwner);
   
@@ -52,11 +53,12 @@ const EditYourSetupPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Setup Overview</title>
+        <title>EditYourSetup</title>
       </Head>
       <Header />
       <main className="d-flex flex-column justify-content-center align-items-center">
-        <h1>Setup Overview</h1>
+        <h1>Edit Your Setup</h1>
+        <p>Select a setup to edit:</p>
         <section>
           {loading && <p>Loading...</p>}
           {error && (
