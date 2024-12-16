@@ -39,8 +39,6 @@ commentRouter.get('/:id', async (req, res, next) => {
 });
 
 /*
-
-
 // Create comment
 commentRouter.post('/', async (req, res, next) => {
     try {

@@ -1,34 +1,76 @@
 const getAllSetups = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch setups: ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching setups:', error);
-      throw error;
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch setups: ${response.statusText}`);
     }
-  };
+
+    const data = await response.json();
+
+    // Normalize keys to match frontend expectations
+    const normalizedData = data.map((setup: any) => ({
+      setup_id: setup.id,
+      owner: {
+        name: setup.owner.name,
+        id: setup.owner.id,
+      },
+      hardware_components: setup.hardwareComponents,
+      image_urls: setup.images.map((image: any) => ({
+        url: image.url,
+        details: image.details,
+      })),
+      details: setup.details,
+      last_updated: setup.lastUpdated,
+      comments: setup.comments.map((comment: any) => ({
+        user_id: comment.userId,
+        content: comment.content,
+      })),
+    }));
+
+    return normalizedData;
+  } catch (error) {
+    console.error('Error fetching setups:', error);
+    throw error;
+  }
+};
 
 const getSetupById = async (setup_id: string) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch setup: ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching setup:', error);
-      throw error;
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch setup: ${response.statusText}`);
     }
-  };
+
+    const data = await response.json();
+
+    // Normalize keys to match frontend expectations
+    const normalizedData = {
+      setup_id: data.id,
+      owner: {
+        name: data.owner.name,
+        id: data.owner.id,
+      },
+      hardware_components: data.hardwareComponents,
+      image_urls: data.images.map((image: any) => ({
+        url: image.url,
+        details: image.details,
+      })),
+      details: data.details,
+      last_updated: data.lastUpdated,
+      comments: data.comments.map((comment: any) => ({
+        user_id: comment.userId,
+        content: comment.content,
+      })),
+    };
+
+    return normalizedData;
+  } catch (error) {
+    console.error('Error fetching setup:', error);
+    throw error;
+  }
+};
 
   interface Owner {
     id: number;

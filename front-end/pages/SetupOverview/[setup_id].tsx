@@ -10,13 +10,22 @@ type Props = {
   setup: Setup | null;
 };
 
+// Date formatting function
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
 const SetupDetailsPage: React.FC<Props> = ({ setup }) => {
   const router = useRouter();
   const { setup_id } = router.query;
 
   const [comments, setComments] = useState(setup?.comments || []);
   const [newComment, setNewComment] = useState('');
-  
+
   const handleAddComment = async () => {
     try {
       if (!newComment.trim()) {
@@ -67,7 +76,7 @@ const SetupDetailsPage: React.FC<Props> = ({ setup }) => {
           ))}
         </ul>
         <p>{setup.details}</p>
-        <p>Last Updated: {new Date(setup.last_updated).toLocaleDateString()}</p>
+        <p>Last Updated: {formatDate(setup.last_updated)}</p>
       </div>
 
       {/* Comments Section */}
@@ -98,28 +107,28 @@ const SetupDetailsPage: React.FC<Props> = ({ setup }) => {
 
 // Use getServerSideProps to fetch the setup details
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { setup_id } = context.params!; // Get the setup ID from the URL parameters
+  const { setup_id } = context.params!;
 
   try {
-    // Use the SetupService to fetch the setup by ID
     const setup = await SetupService.getSetupById(setup_id as string);
 
     return {
       props: {
-        setup, // Pass the setup data as props
+        setup,
       },
     };
   } catch (error) {
     console.error('Error fetching setup:', error);
     return {
       props: {
-        setup: null, // Pass null if there's an error
+        setup: null,
       },
     };
   }
 };
 
 export default SetupDetailsPage;
+
 
 
 
