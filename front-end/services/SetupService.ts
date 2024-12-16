@@ -159,6 +159,7 @@ const getSetupById = async (setup_id: string) => {
     }
   };
 
+  /*
   const updateSetup = async (setup_id: string, updatedSetup: Setup) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`, {

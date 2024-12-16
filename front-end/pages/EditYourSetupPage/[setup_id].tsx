@@ -47,7 +47,7 @@ const SetupModifierPage: React.FC<Props> = ({ setup }) => {
         image_urls: imageUrls,
       };
 
-      await SetupService.updateSetup(setup_id as string, updatedSetup);
+      //await SetupService.updateSetup(setup_id as string, updatedSetup);
       alert('Setup updated successfully!');
       router.push('/overview');
     } catch (error) {

@@ -90,7 +90,7 @@ const Header: React.FC = () => {
           CreateNewSetup
         </Link>
         <Link
-          href="/EditSetup"
+          href="/EditYourSetupPage"
           className="nav-link fs-5 text-white hover:underline"
         >
           EditYourSetup
