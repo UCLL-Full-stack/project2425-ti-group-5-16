@@ -16,11 +16,11 @@ import {
 
 export class Setup {
     private id?: number;
-    private ownerId: number; // Add this field
+    public ownerId: number; // Add this field
     private owner: User;
-    private hardwareComponents: HardwareComponent[]; // Changed from hardware_components
+    public hardwareComponents: HardwareComponent[]; // Changed from hardware_components
     private images: Image[];
-    private details: string;
+    public details: string;
     private lastUpdated: Date;
     private comments: Comment[];
 

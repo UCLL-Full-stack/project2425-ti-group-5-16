@@ -1,7 +1,7 @@
 import { HardwareComponent as HardwareComponentPrisma } from '@prisma/client';
 
 export class HardwareComponent {
-    private id?: number; // Changed from name to id
+    public id?: number; // Changed from name to id
     private name: string;
     private details: string;
     private price: number;

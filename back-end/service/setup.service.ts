@@ -13,4 +13,11 @@ const getSetupById = async (id: number): Promise<Setup | null> => {
     return setup;
 };
 
-export default { getAllSetups, getSetupById };
+const createSetup = async (setupData: Setup): Promise<Setup> => {
+    const newSetup = await setupDB.createSetup(setupData);
+    return newSetup;
+};
+
+export default { getAllSetups, getSetupById, createSetup };
+
+

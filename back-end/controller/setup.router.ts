@@ -39,4 +39,19 @@ setupRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) 
     }
 });
 
+// Create a new setup
+setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const setupData = req.body; // Ensure the body contains valid setup data
+        if (!setupData || !setupData.owner || !setupData.details) {
+            return res.status(400).json({ message: 'Invalid setup data provided.' });
+        }
+
+        const newSetup = await SetupService.createSetup(setupData);
+        res.status(201).json(newSetup);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export { setupRouter };
