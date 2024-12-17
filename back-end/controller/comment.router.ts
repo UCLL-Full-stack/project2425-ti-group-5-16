@@ -1,9 +1,16 @@
 // src/controller/comment.router.ts
 import express, { Request, Response, NextFunction } from 'express';
+
+// Extend the Request interface to include auth property
+interface AuthenticatedRequest extends Request {
+    auth?: {
+        userId: number;
+    };
+}
 import commentService from '../service/comment.service';
 
 const commentRouter = express.Router();
-
+/*
 // Get all comments
 commentRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -25,7 +32,8 @@ commentRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
         next(error);
     }
 });
-
+*/
+/*
 commentRouter.get('/:id', async (req, res, next) => {
     try {
         const comment = await commentService.getCommentById(Number(req.params.id));
@@ -37,15 +45,25 @@ commentRouter.get('/:id', async (req, res, next) => {
         next(error);
     }
 });
-
+*/
 /*
-
-
+commentRouter.get('/by-email', async (req: Request & { auth: any }, res: Response, next: NextFunction) => {
+        try {
+            const { email, role } = req.auth;
+            const comments = await commentService.getCommentByEmail(email,role);
+            res.status(200).json(comments);
+commentRouter.post('/', authenticateToken, async (req: AuthenticatedRequest, res, next) => {
+            next(error);
+        }
+    }
+);
+*/
 // Create comment
-commentRouter.post('/', async (req, res, next) => {
+/*
+commentRouter.post('/', authenticateToken, async (req, res, next) => {
     try {
         const { setupId, content } = req.body;
-        const userId = req.auth?.id; // Get user ID from JWT token
+        const userId = req.auth?.useremail; // Get user ID from JWT token
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -56,11 +74,13 @@ commentRouter.post('/', async (req, res, next) => {
             setupId,
             content,
         });
-        res.status(201).json(comment.toJSON());
+        res.status(201).json(comment);
     } catch (error) {
         next(error);
     }
 });
+*/
+/*
 
 // Update comment
 commentRouter.put('/:id', async (req, res, next) => {

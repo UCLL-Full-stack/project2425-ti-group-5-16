@@ -131,38 +131,53 @@ userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
  */
 userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required.' });
-        }
-
-        const response = await userService.authenticate({ email, password });
+        const userInput = <UserInput>req.body;
+        const response = await userService.authenticate(userInput);
         res.status(200).json({ message: 'Authentication successful', ...response });
     } catch (error) {
         next(error);
     }
 });
-
-
 /**
  * @swagger
  * /users/signup:
  *   post:
- *      summary: Create a user
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/UserInput'
- *      responses:
- *         200:
- *            description: The created user object
- *            content:
- *              application/json:
- *                schema:
- *                  $ref: '#/components/schemas/User'
+ *     summary: Create a user
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserInput'
+ *     responses:
+ *       200:
+ *         description: The created user object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid input"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
  */
 userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {

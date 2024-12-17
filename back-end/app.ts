@@ -30,8 +30,11 @@ app.use(
             '/hardwareComponents',
             '/setup',
             '/comments',
-            { url: /^\/setup\/.*/, methods: ['GET'] }, // Add this line to match all setup routes
-            { url: /^\/comments\/.*/, methods: ['GET'] }, // Add this line to match all comment routes
+            // Read-only routes
+            { url: /^\/images$/, methods: ['GET'] },
+            { url: /^\/hardwareComponents$/, methods: ['GET'] },
+            { url: /^\/setup\/.*/, methods: ['GET'] },
+            { url: /^\/comments\/.*/, methods: ['GET'] },
         ],
     })
 );
