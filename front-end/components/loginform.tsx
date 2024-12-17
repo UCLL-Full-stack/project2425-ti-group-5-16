@@ -62,6 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
           email: data.email,
           role: data.role,
           token: data.token,
+          username: data.username
         }));
         sessionStorage.setItem("token", data.token);
   

@@ -38,6 +38,7 @@ type AuthenticationResponse = {
     token: string;
     email: string;
     role: string;
+    username: string;
 };
 
 type LoginInput = {
