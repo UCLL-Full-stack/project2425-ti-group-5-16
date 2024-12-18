@@ -44,7 +44,6 @@ const getSetupById = async (id: number): Promise<Setup | null> => {
     }
 }
 
-/*
 const createSetup = async ({
     ownerId,
     hardwareComponents: componentInput,
@@ -122,5 +121,4 @@ const createSetup = async ({
     }
 };
 
-*/
-export default { getAllSetups, getSetupById, /*createSetup*/ };
+export default { getAllSetups, getSetupById, createSetup };

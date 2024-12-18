@@ -39,7 +39,6 @@ setupRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) 
     }
 });
 
-/*
 // Create a new setup
 setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -54,5 +53,5 @@ setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) =>
         next(error);
     }
 });
-*/
+
 export { setupRouter };
