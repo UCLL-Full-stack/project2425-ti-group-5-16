@@ -13,7 +13,6 @@ const EditYourSetupPage: React.FC = () => {
   useEffect(() => {
     const fetchSetups = async () => {
       try {
-        // Retrieve and parse the "user" data from sessionStorage
         const userData = sessionStorage.getItem('user');
         if (!userData) {
           throw new Error("No user data found, please log in to see your setups.");
@@ -26,26 +25,13 @@ const EditYourSetupPage: React.FC = () => {
           throw new Error("Username not found in user data. Please log in again.");
         }
 
-        console.log("Current user:", storedUsername);
-
-        // Fetch all setups from the API
         const result = await SetupService.getAllSetups();
-        console.log("Fetched setups data:", result);
-
         if (result.error) {
           setError(result.error);
           return;
         }
 
-        // Filter setups based on the retrieved username
-        console.log("Filtering setups for owner:", storedUsername);
-
-        const filteredSetups = result.filter((setup: Setup) => {
-          console.log("Owner comparison:", setup.owner.name, "==", storedUsername);
-          return setup.owner.name === storedUsername;
-        });
-
-        console.log("Filtered setups:", filteredSetups);
+        const filteredSetups = result.filter((setup: Setup) => setup.owner.name === storedUsername);
 
         if (filteredSetups.length === 0) {
           setError("No setups found for the current user.");
@@ -54,7 +40,6 @@ const EditYourSetupPage: React.FC = () => {
 
         setSetup(filteredSetups);
       } catch (err: any) {
-        console.error("Fetch error:", err);
         setError(err.message || "An error occurred while fetching setups.");
       } finally {
         setLoading(false);
@@ -71,38 +56,39 @@ const EditYourSetupPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>EditYourSetup</title>
+        <title>Edit Your Setup</title>
       </Head>
       <Header />
-      <main className="d-flex flex-column justify-content-center align-items-center">
-        <h1>Edit Your Setup</h1>
-        <p>Select a setup to edit:</p>
-        <section>
-          {loading && <p>Loading...</p>}
-          {error && (
-            <div
-              style={{
-                color: 'red',
-                border: '2px solid red',
-                padding: '1em',
-                margin: '1em 0',
-                backgroundColor: '#ffe6e6',
-              }}
-            >
-              <strong>{error}</strong>
-            </div>
-          )}
-          {!loading && !error && setup.length === 0 && <p>No setups available for the current user.</p>}
-          {!loading && !error && setup.length > 0 && (
-            <EditYourSetupComponent setups={setup} selectsetups={selectsetups} />
-          )}
-        </section>
+      <main className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6 text-center">Edit Your Setup</h1>
+          <section>
+            {loading && (
+              <p className="text-gray-500 text-center">Loading setups...</p>
+            )}
+            {error && (
+              <div className="text-red-600 border border-red-500 bg-red-100 px-4 py-2 rounded mb-4">
+                <strong>Error:</strong> {error}
+              </div>
+            )}
+            {!loading && !error && setup.length === 0 && (
+              <p className="text-gray-500 text-center">
+                No setups available for the current user.
+              </p>
+            )}
+            {!loading && !error && setup.length > 0 && (
+              <EditYourSetupComponent setups={setup} selectsetups={selectsetups} />
+            )}
+          </section>
+        </div>
       </main>
     </>
   );
 };
 
 export default EditYourSetupPage;
+
+
 
 
 

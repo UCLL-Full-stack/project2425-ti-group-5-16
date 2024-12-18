@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouter } from 'next/router'; // Import Next.js router
+import { useRouter } from 'next/router';
 import { Setup } from '@types';
 
 type Props = {
@@ -8,77 +8,77 @@ type Props = {
 };
 
 const SetupOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
-  const router = useRouter(); // Use Next.js router
+  const router = useRouter();
 
   return (
-    <table className="table table-hover">
-      <thead>
-        <tr>
-          <th scope="col">Setup ID</th>
-          <th scope="col">Owner</th>
-          <th scope="col">Hardware Components</th>
-          <th scope="col">Image URLs</th>
-          <th scope="col">Details</th>
-          <th scope="col">Last Updated</th>
-          <th scope="col">Comments</th>
-        </tr>
-      </thead>
-      <tbody>
-        {setups.map((setup, index) => (
-          <tr
-            key={index}
-            onClick={() => {
-              console.log('Navigating to setup:', setup.setup_id);
-              router.push(`/SetupOverview/${setup.setup_id}`); // Navigate to the dynamic route
-              selectsetups(setup); // Call selectsetups if needed
-            }}
-            style={{ cursor: 'pointer' }} // Add pointer cursor for clickability
-          >
-            <td>{setup.setup_id}</td>
-            <td>{setup.owner.name}</td>
-            <td>
-              <ul>
-                {setup.hardware_components.map((component, idx) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {setups.map((setup, index) => (
+        <div
+          key={index}
+          className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md cursor-pointer transition"
+          onClick={() => {
+            router.push(`/SetupOverview/${setup.setup_id}`);
+            selectsetups(setup);
+          }}
+        >
+          <h2 className="text-lg font-semibold mb-2 text-gray-800">
+            Setup ID: {setup.setup_id}
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
+            <strong>Owner:</strong> {setup.owner.name}
+          </p>
+          <div className="mb-4">
+            <h3 className="text-gray-700 font-medium">Hardware Components:</h3>
+            <ul className="list-disc list-inside">
+              {setup.hardware_components.map((component, idx) => (
+                <li key={idx} className="text-sm text-gray-600">
+                  <strong>{component.name}</strong> - {component.details} (${component.price})
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mb-4">
+            <h3 className="text-gray-700 font-medium">Images:</h3>
+            <ul className="list-disc list-inside">
+              {setup.image_urls.map((image, idx) => (
+                <li key={idx} className="text-sm text-blue-500 hover:underline">
+                  <a href={image.url} target="_blank" rel="noopener noreferrer">
+                    {image.details}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            <strong>Details:</strong> {setup.details}
+          </p>
+          <p className="text-sm text-gray-500">
+            <strong>Last Updated:</strong>{' '}
+            {new Date(setup.last_updated).toLocaleDateString()}
+          </p>
+          <div className="mt-4">
+            <h3 className="text-gray-700 font-medium">Comments:</h3>
+            <ul className="list-disc list-inside text-sm text-gray-600">
+              {setup.comments && setup.comments.length > 0 ? (
+                setup.comments.map((comment, idx) => (
                   <li key={idx}>
-                    <strong>{component.name}</strong> - {component.details} (${component.price})
+                    <strong>User {comment.user_id}:</strong> {comment.content}
                   </li>
-                ))}
-              </ul>
-            </td>
-            <td>
-              <ul>
-                {setup.image_urls.map((image, idx) => (
-                  <li key={idx}>
-                    <a href={image.url} target="_blank" rel="noopener noreferrer">
-                      {image.details}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </td>
-            <td>{setup.details}</td>
-            <td>{new Date(setup.last_updated).toLocaleDateString()}</td>
-            <td>
-              <ul>
-                {setup.comments && setup.comments.length > 0 ? (
-                  setup.comments.map((comment, idx) => (
-                    <li key={idx}>
-                      <strong>User {comment.user_id}:</strong> {comment.content}
-                    </li>
-                  ))
-                ) : (
-                  <li>No comments available</li>
-                )}
-              </ul>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+                ))
+              ) : (
+                <li>No comments available</li>
+              )}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 
 export default SetupOverviewTable;
+
+
 
 
 

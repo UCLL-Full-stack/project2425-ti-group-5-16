@@ -34,22 +34,27 @@ const SetupOverview: React.FC = () => {
         <title>Setup Overview</title>
       </Head>
       <Header />
-      <main className="d-flex flex-column justify-content-center align-items-center">
-        <h1>Setup Overview</h1>
-        <section>
-          {loading && <p>Loading...</p>}
-          {error && (
-            <div style={{ color: 'red', border: '2px solid red', padding: '1em', margin: '1em 0', backgroundColor: '#ffe6e6' }}>
-              <strong>{error}</strong>
-            </div>
-          )}
-          {!loading && !error && (
-            <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
-          )}
-        </section>
+      <main className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6 text-center">Setup Overview</h1>
+          <section>
+            {loading && (
+              <p className="text-gray-500 text-center">Loading setups...</p>
+            )}
+            {error && (
+              <div className="text-red-600 border border-red-500 bg-red-100 px-4 py-2 rounded mb-4">
+                <strong>Error:</strong> {error}
+              </div>
+            )}
+            {!loading && !error && (
+              <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
+            )}
+          </section>
+        </div>
       </main>
     </>
   );
 };
 
 export default SetupOverview;
+
