@@ -1,7 +1,7 @@
 import { Image as ImagePrisma } from '@prisma/client';
 
 export class Image {
-    public id?: number;
+    private id?: number;
     private url: string;
     private details: string;
 

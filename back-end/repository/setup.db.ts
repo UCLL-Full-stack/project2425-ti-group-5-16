@@ -44,24 +44,62 @@ const getSetupById = async (id: number): Promise<Setup | null> => {
     }
 }
 
-const createSetup = async (setup: Setup): Promise<Setup> => {
+const createSetup = async ({
+    ownerId,
+    hardwareComponents: componentInput,
+    imageUrls,
+    details,
+}: {
+    ownerId: number;
+    hardwareComponents: string[];
+    imageUrls: string[];
+    details: string;
+}): Promise<Setup> => {
     try {
-        // Create the setup with related data
+        // Validate and fetch the owner
+        const owner = await database.user.findUnique({ where: { id: ownerId } });
+        if (!owner) {
+            throw new Error('Owner not found.');
+        }
+
+        // Validate and fetch the hardware components
+        const hardwareComponents = await Promise.all(
+            componentInput.map(async (componentName) => {
+                const component = await database.hardwareComponent.findUnique({
+                    where: { name : (componentName) },
+                });
+                if (!component) {
+                    throw new Error(`Hardware component "${componentName}" not found.`);
+                }
+                return component;
+            })
+        );
+
+        // Validate and fetch the images
+        const images = await Promise.all(
+            imageUrls.map(async (url) => {
+                const image = await database.image.findUnique({
+                    where: { url },
+                });
+                if (!image) {
+                    throw new Error(`Image with URL "${url}" not found.`);
+                }
+                return image;
+            })
+        );
+
+        // Create the setup
         const setupPrisma = await database.setup.create({
             data: {
-                ownerId: setup.ownerId, // Assuming `ownerId` is passed in the setup object
-                details: setup.details,
+                ownerId, // Direct reference to the owner
+                details,
                 hardwareComponents: {
-                    create: setup.hardwareComponents.map((hc) => ({
-                        hardwareComponent: {
-                            connect: { id: hc.id },
-                        },
+                    create: hardwareComponents.map((component) => ({
+                        hardwareComponentId: component.id,
                     })),
                 },
                 images: {
-                    connect: setup.images.map((image) => ({
-                        id: image.id, // Images must exist; we're connecting them here
-                    })),
+                    connect: images.map((image) => ({ id: image.id })), // Link to pre-existing images
                 },
             },
             include: {
@@ -75,11 +113,13 @@ const createSetup = async (setup: Setup): Promise<Setup> => {
             },
         });
 
-        return Setup.from(setupPrisma); // Convert Prisma object to domain model
+        // Transform the Prisma result to the `Setup` model (if necessary)
+        return Setup.from(setupPrisma); // Assuming `Setup.from` adapts Prisma's format to your domain model
     } catch (error) {
         console.error('Error creating setup:', error);
         throw new Error('Failed to create setup. See server log for details.');
     }
 };
+
 
 export default { getAllSetups, getSetupById, createSetup };

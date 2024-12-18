@@ -1,7 +1,7 @@
 import { HardwareComponent as HardwareComponentPrisma } from '@prisma/client';
 
 export class HardwareComponent {
-    public id?: number; // Changed from name to id
+    private id?: number; // Changed from name to id
     private name: string;
     private details: string;
     private price: number;
@@ -41,6 +41,7 @@ export class HardwareComponent {
         }
         return this.price;
     }
+    
     validate(hardware: { name: string; details: string; price: number }) {
         if (!hardware.name?.trim()) {
             throw new Error('Name is required');
