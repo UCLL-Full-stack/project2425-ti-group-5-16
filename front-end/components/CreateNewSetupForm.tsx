@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SetupService from '@services/SetupService';
 
 const CreateNewSetupForm: React.FC = () => {
@@ -7,6 +7,14 @@ const CreateNewSetupForm: React.FC = () => {
   const [details, setDetails] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      console.warn('Unauthorized: No token found in session storage');
+      setErrorMessage('Unauthorized, log in with a valid account to create a new setup');
+    }
+  }, []);
 
   const validateInputs = () => {
     if (!hardwareComponents.length) return 'Hardware components cannot be empty.';
@@ -19,8 +27,13 @@ const CreateNewSetupForm: React.FC = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    // Replace with actual user context or auth service.
-    const ownerId = 1; // logged in user id
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      setErrorMessage('Unauthorized, log in with a valid account to create a new setup');
+      return;
+    }
+
+    const ownerId = 1; // Placeholder for logged-in user ID
 
     const validationError = validateInputs();
     if (validationError) {
@@ -30,8 +43,8 @@ const CreateNewSetupForm: React.FC = () => {
 
     const formattedSetup = {
       owner: { id: ownerId },
-      hardware_components: [...new Set(hardwareComponents)], // Ensure unique components
-      image_urls: [...new Set(imageUrls)], // Ensure unique URLs
+      hardware_components: [...new Set(hardwareComponents)],
+      image_urls: [...new Set(imageUrls)],
       details,
       last_updated: new Date().toISOString(),
     };
@@ -49,6 +62,16 @@ const CreateNewSetupForm: React.FC = () => {
       );
     }
   };
+
+  if (errorMessage === 'Unauthorized, log in with a valid account to create a new setup') {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="text-red-500 font-medium bg-red-100 p-4 rounded-md">
+          {errorMessage}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -122,6 +145,8 @@ const CreateNewSetupForm: React.FC = () => {
 };
 
 export default CreateNewSetupForm;
+
+
 
 
 
