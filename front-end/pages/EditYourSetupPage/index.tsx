@@ -20,9 +20,10 @@ const EditYourSetupPage: React.FC = () => {
 
         const parsedUser = JSON.parse(userData);
         const storedUsername = parsedUser.username;
+        const storedRole = parsedUser.role;
 
-        if (!storedUsername) {
-          throw new Error("Username not found in user data. Please log in again.");
+        if (!storedUsername || !storedRole) {
+          throw new Error("Incomplete user data found. Please log in again.");
         }
 
         const result = await SetupService.getAllSetups();
@@ -31,10 +32,17 @@ const EditYourSetupPage: React.FC = () => {
           return;
         }
 
-        const filteredSetups = result.filter((setup: Setup) => setup.owner.name === storedUsername);
+        // Admin sees all setups; non-admin users see only their own setups
+        const filteredSetups = storedRole === 'admin'
+          ? result
+          : result.filter((setup: Setup) => setup.owner.name === storedUsername);
 
         if (filteredSetups.length === 0) {
-          setError("No setups found for the current user.");
+          setError(
+            storedRole === 'admin'
+              ? "No setups found."
+              : "No setups found for the current user."
+          );
           return;
         }
 
@@ -56,12 +64,12 @@ const EditYourSetupPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Edit Your Setup</title>
+        <title>Edit Your Setup(s)</title>
       </Head>
       <Header />
       <main className="min-h-screen bg-gray-50 py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6 text-center">Edit Your Setup</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center">Edit Your Setup(s)</h1>
           <section>
             {loading && (
               <p className="text-gray-500 text-center">Loading setups...</p>
@@ -73,7 +81,7 @@ const EditYourSetupPage: React.FC = () => {
             )}
             {!loading && !error && setup.length === 0 && (
               <p className="text-gray-500 text-center">
-                No setups available for the current user.
+                {error || "No setups available."}
               </p>
             )}
             {!loading && !error && setup.length > 0 && (

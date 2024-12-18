@@ -44,6 +44,7 @@ const getSetupById = async (id: number): Promise<Setup | null> => {
     }
 }
 
+/*
 const createSetup = async ({
     ownerId,
     hardwareComponents: componentInput,
@@ -120,5 +121,6 @@ const createSetup = async ({
         throw new Error('Failed to create setup. See server log for details.');
     }
 };
+*/
 
-export default { getAllSetups, getSetupById, createSetup };
+export default { getAllSetups, getSetupById, /*createSetup*/ };
