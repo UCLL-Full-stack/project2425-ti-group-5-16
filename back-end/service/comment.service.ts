@@ -54,36 +54,30 @@ const createComment = async ({ content, setup_id, user_id }: CommentInput): Prom
     const commentData = { content, setupId, userId };
     return await commentDB.createComment(commentData);
 };
-/*
-const updateComment = async (
-    id: number,
-    content: string,
-    userId: number
-): Promise<Comment | null> => {
+
+const updateComment = async (id: number, content: string): Promise<Comment | null> => {
     const comment = await commentDB.getCommentById(id);
     if (!comment) {
         throw new Error('Comment not found');
     }
-    if (comment.getUserID() !== userId) {
-        throw new Error('Unauthorized to update this comment');
-    }
+
     return await commentDB.updateComment(id, content);
 };
 
-const deleteComment = async (id: number, userId: number): Promise<void> => {
+const deleteComment = async (id: number): Promise<void> => {
     const comment = await commentDB.getCommentById(id);
     if (!comment) {
         throw new Error('Comment not found');
     }
-    if (comment.getUserID() !== userId) {
-        throw new Error('Unauthorized to delete this comment');
-    }
+
     await commentDB.deleteComment(id);
 };
-*/
+
 export default {
     getAllComments,
     getComment,
     getCommentById,
     createComment,
+    updateComment,
+    deleteComment,
 };
