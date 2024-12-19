@@ -1,62 +1,186 @@
-import express, { NextFunction, Response } from 'express';
+/**
+ * @swagger
+ *   components:
+ *    schemas:
+ *      Setup:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: number
+ *            ownerId:
+ *              type: number
+ *            details:
+ *              type: string
+ *            lastUpdated:
+ *              type: string
+ *              format: date-time
+ *            hardwareComponents:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/HardwareComponent'
+ *            images:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Image'
+ *      SetupUpdateData:
+ *          type: object
+ *          properties:
+ *            details:
+ *              type: string
+ *              description: Setup details
+ *            hardwareComponents:
+ *              type: array
+ *              items:
+ *                type: number
+ *              description: Array of hardware component IDs
+ *            images:
+ *              type: array
+ *              items:
+ *                type: number
+ *              description: Array of image IDs
+ *      HardwareComponent:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: number
+ *            name:
+ *              type: string
+ *            details:
+ *              type: string
+ *            price:
+ *              type: number
+ *      Image:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: number
+ *            url:
+ *              type: string
+ *            details:
+ *              type: string
+ */
+
+import express, { NextFunction, Request, Response } from 'express';
 import setupService from '../service/setup.service';
-import { Request } from 'express-jwt';
-import { SetupInput } from '../types';
+import userService from '../service/user.service';
+import jwt from 'jsonwebtoken';
+import { Role, SetupInput, SetupUpdateData, AuthRequest } from '../types';
 
 const setupRouter = express.Router();
-/*
-// Get all setups or get setup by id using query parameter
-setupRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = req.query.id;
-        if (id) {
-            // If id is provided as query parameter
-            const setup = await setupService.getSetupById(Number(id));
-            if (setup) {
-                res.status(200).json(setup);
-            } else {
-                res.status(404).json({ message: 'Setup not found.' });
-            }
-        } else {
-            // If no id is provided, get all setups
-            const setups = await setupService.getAllSetups();
-            res.status(200).json(setups);
-        }
-    } catch (error) {
-        next(error);
+
+const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Authentication token required' });
     }
-});
-*/
-// Get setup by id using URL parameter
-setupRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+
     try {
-        const setup = await setupService.getSetupById(Number(req.params.id));
-        if (setup) {
-            res.status(200).json(setup);
-        } else {
-            res.status(404).json({ message: 'Setup not found.' });
-        }
+        const auth = jwt.verify(token, process.env.JWT_SECRET!) as { email: string; role: Role };
+        (req as AuthRequest).auth = auth;
+        next();
+    } catch (error) {
+        return res.status(403).json({ message: 'Invalid token' });
+    }
+};
+
+/**
+ * @swagger
+ * /setups:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get all setups
+ *     responses:
+ *       200:
+ *         description: List of all setups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Setup'
+ */
+setupRouter.get('/', async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const setups = await setupService.getAllSetups();
+        res.status(200).json(setups);
     } catch (error) {
         next(error);
     }
 });
 
-setupRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const email = req.query.email;
-        if (email) {
-            // If id is provided as query parameter
-            const setup = await setupService.getSetupByEmail({ email: String(email) });
-            if (setup) {
-                res.status(200).json(setup);
-            } else {
-                res.status(404).json({ message: 'Comment not found.' });
+/**
+ * @swagger
+ * /setups/my:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get user's setups
+ *     responses:
+ *       200:
+ *         description: List of user's setups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Setup'
+ *       404:
+ *         description: User not found
+ */
+setupRouter.get(
+    '/my',
+    authenticateToken,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email } = (req as AuthRequest).auth;
+            const user = await userService.getUserByEmail({ email });
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
             }
-        } else {
-            // If no id is provided, get all setups
-            const comments = await setupService.getAllSetups();
-            res.status(200).json(comments);
+
+            const setups = await setupService.getSetupsByOwnerId({ ownerId: user.getId() });
+            res.status(200).json(setups);
+        } catch (error) {
+            next(error);
         }
+    }
+);
+
+/**
+ * @swagger
+ * /setups/{id}:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get setup by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: The setup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Setup'
+ *       404:
+ *         description: Setup not found
+ */
+setupRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = parseInt(req.params.id);
+        const setup = await setupService.getSetupById({ id });
+        if (!setup) {
+            return res.status(404).json({ message: 'Setup not found' });
+        }
+        res.status(200).json(setup);
     } catch (error) {
         next(error);
     }
@@ -66,84 +190,180 @@ setupRouter.get('/', async (req: Request, res: Response, next: NextFunction) => 
  * @swagger
  * /setups:
  *   post:
- *     summary: Create a setup
- *     tags:
- *       - Setups
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Create a new setup
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/SetupInput'
+ *             type: object
+ *             properties:
+ *               details:
+ *                 type: string
+ *                 description: Setup details
+ *               hardwareComponentIds:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *               imageIds:
+ *                 type: array
+ *                 items:
+ *                   type: number
  *     responses:
- *       200:
- *         description: The created setup object
+ *       201:
+ *         description: The created setup
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Setup'
- *       400:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Invalid input"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Internal server error"
+ *       404:
+ *         description: User not found
  */
+setupRouter.post(
+    '/',
+    authenticateToken,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email } = (req as AuthRequest).auth;
+            const user = await userService.getUserByEmail({ email });
 
-/*
-setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const setupInput = <SetupInput>req.body;
-        const setup = await setupService.createSetup(setupInput);
-        res.status(200).json(setup);
-    } catch (error) {
-        next(error);
-    }
-});
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
 
-*/
+            const setupInput: SetupInput = {
+                ownerId: user.getId(),
+                details: req.body.details,
+                hardwareComponentIds: req.body.hardwareComponentIds,
+                imageIds: req.body.imageIds,
+            };
 
-/*
-// Create setup
-setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const role = req.query.role;
-        const setupData = <SetupInput>req.body;
-        if (!role) {
-            return res.status(400).json({ message: 'Email and role are required.' });
+            const setup = await setupService.createSetup(setupInput);
+            res.status(201).json(setup);
+        } catch (error) {
+            next(error);
         }
-
-        const newSetup = await setupService.createSetup(setupData);
-        res.status(201).json(newSetup);
-    } catch (error) {
-        next(error);
     }
-});
-*/
-/*
-setupRouter.post('/by-email',async (req: Request & { auth: any }, res: Response, next: NextFunction) => {
-    try {
-        const { email, role } = req.auth;
-        const setups = await setupService.getsetupByEmail(email,role);
-        res.status(200).json(comments);
-setupRouter.post('/', authenticateToken, async (req: AuthenticatedRequest, res, next) => {
-        next(error);
-    }
-}
 );
-*/
+
+/**
+ * @swagger
+ * /setups/{id}:
+ *   put:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Update a setup
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SetupUpdateData'
+ *     responses:
+ *       200:
+ *         description: The updated setup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Setup'
+ *       403:
+ *         description: Not authorized
+ *       404:
+ *         description: Setup or user not found
+ */
+setupRouter.put(
+    '/:id',
+    authenticateToken,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = parseInt(req.params.id);
+            const { email, role } = (req as AuthRequest).auth;
+            const user = await userService.getUserByEmail({ email });
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const existingSetup = await setupService.getSetupById({ id });
+            if (!existingSetup) {
+                return res.status(404).json({ message: 'Setup not found' });
+            }
+
+            if (existingSetup.getOwnerId() !== user.getId() && role !== 'admin') {
+                return res.status(403).json({ message: 'Not authorized to update this setup' });
+            }
+
+            const setupData: SetupUpdateData = {
+                details: req.body.details,
+                hardwareComponents: req.body.hardwareComponentIds,
+                images: req.body.imageIds,
+            };
+
+            const setup = await setupService.updateSetup(id, setupData);
+            res.status(200).json(setup);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * @swagger
+ * /setups/{id}:
+ *   delete:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Delete a setup
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       204:
+ *         description: Setup deleted successfully
+ *       403:
+ *         description: Not authorized
+ *       404:
+ *         description: Setup or user not found
+ */
+setupRouter.delete(
+    '/:id',
+    authenticateToken,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = parseInt(req.params.id);
+            const { email, role } = (req as AuthRequest).auth;
+            const user = await userService.getUserByEmail({ email });
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const existingSetup = await setupService.getSetupById({ id });
+            if (!existingSetup) {
+                return res.status(404).json({ message: 'Setup not found' });
+            }
+
+            if (existingSetup.getOwnerId() !== user.getId() && role !== 'admin') {
+                return res.status(403).json({ message: 'Not authorized to delete this setup' });
+            }
+
+            await setupService.deleteSetup({ id });
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export { setupRouter };

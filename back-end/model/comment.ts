@@ -41,7 +41,7 @@ export class Comment {
      * Returns the comment ID.
      * @returns {number} The comment ID.
      */
-    public getCommentID(): number | undefined {
+    public getId(): number | undefined {
         return this.id;
     }
 
@@ -93,7 +93,7 @@ export class Comment {
 
     equals(comment: Comment): boolean {
         return (
-            this.id === comment.getCommentID() &&
+            this.id === comment.getId() &&
             this.setupId === comment.getSetupID() &&
             this.userId === comment.getUserID() &&
             this.content === comment.getContent()

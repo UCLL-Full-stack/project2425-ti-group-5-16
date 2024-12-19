@@ -1,15 +1,7 @@
 import { HardwareComponent, Image, User } from '@prisma/client';
+import { Request as ExpressRequest } from 'express'; // Change the import to be more specific
 
-type Role = 'admin' | 'user' | 'guest' | 'owner';
-
-type Owner = {
-    id: number;
-    email: string;
-    password: string;
-    name: string;
-    age: number;
-    role: Role;
-};
+type Role = 'admin' | 'user' | 'guest';
 
 type UserInput = {
     id?: number; // Make id optional
@@ -27,13 +19,6 @@ type CommentInput = {
     content: string;
 };
 
-type SetupInput = {
-    owner: Owner;
-    hardwareComponents?: HardwareComponent[];
-    images?: Image[];
-    details: string;
-};
-
 type ImageInput = {
     url: string;
     details: string;
@@ -45,7 +30,44 @@ type HardwareComponentInput = {
     price: number;
 };
 
-export { ImageInput, Role, SetupInput, UserInput, CommentInput, HardwareComponentInput };
+type SetupInput = {
+    ownerId: number;
+    details: string;
+    hardwareComponentIds?: number[];
+    imageIds?: number[];
+};
+
+type SetupUpdateInput = {
+    id: number;
+    details?: string;
+    hardwareComponentIds?: number[];
+    imageIds?: number[];
+};
+
+type SetupUpdateData = {
+    details?: string;
+    hardwareComponents?: number[];
+    images?: number[];
+};
+
+type AuthRequest = ExpressRequest & {
+    auth: {
+        email: string;
+        role: Role;
+    };
+};
+
+export {
+    AuthRequest,
+    SetupUpdateData,
+    ImageInput,
+    Role,
+    SetupInput,
+    UserInput,
+    CommentInput,
+    HardwareComponentInput,
+    SetupUpdateInput,
+};
 
 // testing phaze
 
