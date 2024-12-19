@@ -39,7 +39,7 @@ const createSetup = async ({owner,hardwareComponents = [],images = [],details}: 
     });
     return await setupDB.createSetup(setup);
 };
-*/
+/*
 const createSetup = async (setupInput: SetupInput): Promise<Setup> => {
     const owner = new User(setupInput.owner); // Ensure the owner is a User instance
     const setup = new Setup({
@@ -53,5 +53,5 @@ const createSetup = async (setupInput: SetupInput): Promise<Setup> => {
     });
     return await setupDB.createSetup(setup);
 };
-
-export default { getAllSetups, getSetupById, getSetupByEmail, createSetup };
+*/
+export default { getAllSetups, getSetupById, getSetupByEmail, /*createSetup*/ };

@@ -103,6 +103,8 @@ setupRouter.get('/', async (req: Request, res: Response, next: NextFunction) => 
  *                   type: string
  *                   example: "Internal server error"
  */
+
+/*
 setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const setupInput = <SetupInput>req.body;
@@ -112,6 +114,9 @@ setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) =>
         next(error);
     }
 });
+
+*/
+
 /*
 // Create setup
 setupRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {

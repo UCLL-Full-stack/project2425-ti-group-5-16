@@ -66,6 +66,7 @@ const getSetupByEmail = async ({ email }: { email: string }): Promise<Setup[]> =
     }
 };
 
+/*
 const createSetup = async (setup: Setup): Promise<Setup> => {
     try {
         const setupPrisma = await database.setup.create({
@@ -83,7 +84,6 @@ const createSetup = async (setup: Setup): Promise<Setup> => {
         throw new Error('Failed to create setup. See server log for details.');
     }
 };
+*/
 
-export default { getAllSetups, getSetupById, getSetupByEmail, createSetup };
-
-export default { getAllSetups, getSetupById, /*createSetup*/ };
+export default { getAllSetups, getSetupById, getSetupByEmail /*createSetup*/ };
