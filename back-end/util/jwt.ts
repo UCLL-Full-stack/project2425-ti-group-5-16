@@ -4,7 +4,7 @@ import { Role } from '../types';
 const generateJwtToken = ({ email, role }: { email: string; role: Role }): string => {
     const options = {
         expiresIn: `${process.env.JWT_EXPIRES_HOURS}h`,
-        issuer: 'http://localhost:8080',
+        issuer: 'http://localhost:3000',
     };
 
     try {

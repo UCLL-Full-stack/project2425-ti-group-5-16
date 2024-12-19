@@ -20,7 +20,17 @@ app.use(
         secret: process.env.JWT_SECRET || 'default_secret',
         algorithms: ['HS256'],
     }).unless({
-        path: ['/api-docs', /^\/api-docs\/.*/, '/users/login', '/users/signup', '/status'],
+        path: [
+            '/api-docs',                          // Swagger API docs
+            /^\/api-docs\/.*/,                    // Swagger nested paths
+            '/users/login',                       // User login does not need a token
+            '/users/signup',                      // User signup does not need a token
+            '/status',                            // Status route
+            '/images',                            // Images endpoint
+            '/hardwareComponents',                // Hardware components endpoint
+            { url: /^\/setup\/\d+$/, methods: ['GET'] }, // Allows `/setup/:id` GET requests without a token
+            { url: /^\/comments\/.*/, methods: ['GET'] } // Allows `/comments` and nested GET routes without a token
+        ],
     })
 );
 
@@ -68,7 +78,6 @@ app.use('/hardwareComponents', hardwareComponentsRouter);
 import { imagesRouter } from './controller/images.router';
 app.use('/images', imagesRouter);
 
-/*
 // SETUP ROUTES
 import { setupRouter } from './controller/setup.router';
 app.use('/setup', setupRouter);
@@ -76,7 +85,6 @@ app.use('/setup', setupRouter);
 // COMMENT ROUTES
 import { commentRouter } from './controller/comment.router';
 app.use('/comments', commentRouter);
-*/
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err.name === 'UnauthorizedError') {

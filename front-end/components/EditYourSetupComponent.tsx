@@ -7,7 +7,7 @@ type Props = {
   selectsetups: (setup: Setup) => void;
 };
 
-const SetupOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
+const EditYourSetupComponent: React.FC<Props> = ({ setups, selectsetups }) => {
   const router = useRouter();
 
   return (
@@ -17,7 +17,7 @@ const SetupOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
           key={index}
           className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md cursor-pointer transition"
           onClick={() => {
-            router.push(`/SetupOverview/${setup.setup_id}`);
+            router.push(`/EditYourSetupPage/${setup.setup_id}`);
             selectsetups(setup);
           }}
         >
@@ -76,7 +76,8 @@ const SetupOverviewTable: React.FC<Props> = ({ setups, selectsetups }) => {
   );
 };
 
-export default SetupOverviewTable;
+export default EditYourSetupComponent;
+
 
 
 

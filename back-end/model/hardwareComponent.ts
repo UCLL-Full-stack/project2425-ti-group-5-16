@@ -41,6 +41,7 @@ export class HardwareComponent {
         }
         return this.price;
     }
+    
     validate(hardware: { name: string; details: string; price: number }) {
         if (!hardware.name?.trim()) {
             throw new Error('Name is required');
