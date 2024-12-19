@@ -102,7 +102,7 @@ const createSetup = async (setupData: {
     // Fetch the updated setup with all relations
     return (await setupDB.getSetupById({ id: createdSetup.getId() })) as Setup;
 };
-
+// In setup.service.ts
 const updateSetup = async (
     id: number,
     setupData: {
@@ -116,11 +116,45 @@ const updateSetup = async (
         throw new Error(`Setup with id: ${id} does not exist.`);
     }
 
+    // Update details if provided
     if (setupData.details) {
         existingSetup.setDetails(setupData.details);
     }
 
-    return await setupDB.updateSetup(existingSetup);
+    // Update hardware components if provided
+    if (setupData.hardwareComponents) {
+        const hardwareComponents = await Promise.all(
+            setupData.hardwareComponents.map(async (componentId) => {
+                const component = await hardwareComponentDB.getById({ id: componentId });
+                if (!component) {
+                    throw new Error(`Hardware component with id: ${componentId} does not exist.`);
+                }
+                return component;
+            })
+        );
+
+        // Update the setup's hardware components
+        await setupDB.updateSetupHardwareComponents(id, hardwareComponents);
+    }
+
+    // Update images if provided
+    if (setupData.images) {
+        const images = await Promise.all(
+            setupData.images.map(async (imageId) => {
+                const image = await imageDB.getById({ id: imageId });
+                if (!image) {
+                    throw new Error(`Image with id: ${imageId} does not exist.`);
+                }
+                return image;
+            })
+        );
+
+        // Update the setup's images
+        await setupDB.updateSetupImages(id, images);
+    }
+
+    // Fetch and return the updated setup with all relations
+    return (await setupDB.getSetupById({ id })) as Setup;
 };
 
 const deleteSetup = async ({ id }: { id: number }): Promise<void> => {
