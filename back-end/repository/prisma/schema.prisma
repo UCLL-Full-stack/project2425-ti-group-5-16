@@ -30,36 +30,26 @@ model Image {
 }
 
 model Setup {
-  id                 Int                        @id @default(autoincrement())
+  id                 Int                 @id @default(autoincrement())
   ownerId            Int
-  owner              User                       @relation(fields: [ownerId], references: [id])
-  hardwareComponents HardwareComponentToSetup[]
+  owner              User                @relation(fields: [ownerId], references: [id])
+  hardwareComponents HardwareComponent[]
   images             Image[]
   details            String
-  lastUpdated        DateTime                   @updatedAt
+  lastUpdated        DateTime            @updatedAt
   comments           Comment[]
 
   @@map("setups")
 }
 
 model HardwareComponent {
-  id      Int                        @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
   details String
   price   Float
-  setups  HardwareComponentToSetup[]
+  setups  Setup[]
 
   @@map("hardware_components")
-}
-
-model HardwareComponentToSetup {
-  hardwareComponentId Int
-  setupId             Int
-  hardwareComponent   HardwareComponent @relation(fields: [hardwareComponentId], references: [id])
-  setup               Setup             @relation(fields: [setupId], references: [id])
-
-  @@id([hardwareComponentId, setupId])
-  @@map("hardware_component_to_setup")
 }
 
 model Comment {

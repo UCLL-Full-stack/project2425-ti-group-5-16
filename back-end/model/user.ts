@@ -29,7 +29,11 @@ export class User {
         this.role = user.role;
     }
 
-    getId(): number | undefined {
+    // In User class
+    getId(): number {
+        if (this.id === undefined) {
+            throw new Error('User ID is undefined');
+        }
         return this.id;
     }
 
