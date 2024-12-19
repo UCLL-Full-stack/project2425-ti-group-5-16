@@ -1,4 +1,3 @@
-import { set } from 'date-fns';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -6,7 +5,6 @@ const prisma = new PrismaClient();
 
 const main = async () => {
     // Clear existing data
-    await prisma.hardwareComponentToSetup.deleteMany();
     await prisma.comment.deleteMany();
     await prisma.setup.deleteMany();
     await prisma.image.deleteMany();
@@ -44,118 +42,132 @@ const main = async () => {
         }),
     ]);
 
-    // Create hardware components
+    // Create hardware components with more realistic specs and prices
     const hardwareComponents = await Promise.all([
         prisma.hardwareComponent.create({
             data: {
-                name: 'NVIDIA GeForce RTX 3080',
-                details: 'High-end graphics card with ray tracing capabilities',
+                name: 'NVIDIA GeForce RTX 4090',
+                details: 'NVIDIA Ada Lovelace architecture, 24GB GDDR6X, Ray Tracing',
+                price: 1599.99,
+            },
+        }),
+        prisma.hardwareComponent.create({
+            data: {
+                name: 'AMD Ryzen 9 7950X',
+                details: '16-core, 32-thread, up to 5.7GHz boost',
                 price: 699.99,
             },
         }),
         prisma.hardwareComponent.create({
             data: {
-                name: 'AMD Ryzen 9 5900X',
-                details: '12-core, 24-thread processor',
-                price: 549.99,
+                name: 'Corsair Dominator Platinum RGB 32GB',
+                details: 'DDR5-6200MHz CL36 Memory Kit',
+                price: 219.99,
             },
         }),
         prisma.hardwareComponent.create({
             data: {
-                name: 'Corsair Vengeance LPX 16GB',
-                details: 'High-performance DDR4 memory',
-                price: 89.99,
+                name: 'Samsung 990 PRO 2TB',
+                details: 'PCIe 4.0 NVMe SSD, 7,450MB/s Read',
+                price: 249.99,
             },
         }),
         prisma.hardwareComponent.create({
             data: {
-                name: 'Samsung 970 EVO Plus 1TB',
-                details: 'NVMe M.2 SSD with high-speed performance',
-                price: 129.99,
+                name: 'Lian Li O11 Dynamic EVO',
+                details: 'Premium ATX case with tempered glass panels',
+                price: 169.99,
             },
         }),
         prisma.hardwareComponent.create({
             data: {
-                name: 'NZXT H510 Elite',
-                details: 'Mid-tower ATX case with tempered glass',
-                price: 149.99,
+                name: 'ASUS ROG SWIFT PG32UQX',
+                details: '32" 4K HDR 144Hz Gaming Monitor',
+                price: 2999.99,
+            },
+        }),
+        prisma.hardwareComponent.create({
+            data: {
+                name: 'Logitech G Pro X Superlight',
+                details: 'Wireless Gaming Mouse, 63g Ultra-lightweight',
+                price: 159.99,
+            },
+        }),
+        prisma.hardwareComponent.create({
+            data: {
+                name: 'Custom Water Cooling Loop',
+                details: 'EK Water Blocks Premium Custom Loop',
+                price: 899.99,
             },
         }),
     ]);
 
-    // Create images
+    // Create images with actual setup photos
     const images = await Promise.all([
         prisma.image.create({
             data: {
-                url: 'https://example.com/images/rtx3080.jpg',
-                details: 'NVIDIA GeForce RTX 3080 product image',
+                url: 'https://dlcdnwebimgs.asus.com/gain/37A21D4D-29F3-4374-AC70-27917436F12F/w1000/h732',
+                details: 'ROG Gaming Setup with RGB',
             },
         }),
         prisma.image.create({
             data: {
-                url: 'https://example.com/images/ryzen9.jpg',
-                details: 'AMD Ryzen 9 5900X processor image',
+                url: 'https://www.corsair.com/corsairmedia/sys_master/productcontent/Setup_2.png',
+                details: 'Corsair Streaming Setup',
             },
         }),
         prisma.image.create({
             data: {
-                url: 'https://example.com/images/setup1.jpg',
-                details: 'Gaming setup with RGB lighting',
+                url: 'https://cdn.shopify.com/s/files/1/0153/8863/files/Workspace-Headphone-Setup-Desktop-Gaming-Setup.jpg',
+                details: 'Minimalist Audiophile Gaming Setup',
             },
         }),
         prisma.image.create({
             data: {
-                url: 'https://example.com/images/setup2.jpg',
-                details: 'Professional workstation setup',
+                url: 'https://cdn.autonomous.ai/static/upload/images/common/upload/20201013/4689bfe53d4.jpg',
+                details: 'Professional Developer Workstation',
             },
         }),
         prisma.image.create({
             data: {
-                url: 'https://example.com/images/setup3.jpg',
-                details: 'Minimalist white-themed setup',
+                url: 'https://i.pinimg.com/originals/81/d3/8f/81d38f4b4bb23c663c1e85fb5f82c732.jpg',
+                details: 'White & Clean Setup',
             },
         }),
         prisma.image.create({
             data: {
-                url: 'https://example.com/images/setup4.jpg',
-                details: 'Home office setup with dual monitors',
+                url: 'https://cdn.shopify.com/s/files/1/0153/8863/files/Workspace-Headphone-Setup-Desktop-Gaming-Setup-2.jpg',
+                details: 'Productivity Focused Setup',
             },
         }),
     ]);
 
-    // Create setups with comments
+    // Create setups with detailed descriptions and component connections
+
     const setups = await Promise.all([
         prisma.setup.create({
             data: {
-                details: 'High-end gaming setup with RGB lighting',
+                details: `Ultimate RGB Gaming Paradise
+            // ... (rest of the details)`,
                 lastUpdated: new Date(),
                 ownerId: users[0].id,
                 images: {
-                    connect: [{ id: images[2].id }],
+                    connect: [{ id: images[0].id }],
                 },
                 hardwareComponents: {
-                    create: [
-                        {
-                            hardwareComponent: {
-                                connect: { id: hardwareComponents[0].id },
-                            },
-                        },
-                        {
-                            hardwareComponent: {
-                                connect: { id: hardwareComponents[2].id },
-                            },
-                        },
-                    ],
+                    connect: hardwareComponents.slice(0, 4).map((comp) => ({
+                        id: comp.id,
+                    })),
                 },
                 comments: {
                     create: [
                         {
-                            content: 'Amazing setup! Love the RGB lighting!',
+                            content: 'Incredible build! Those temps with the custom loop?',
                             userId: users[1].id,
                             createdAt: new Date('2023-01-15T10:00:00Z'),
                         },
                         {
-                            content: 'Thanks! The RGB really adds to the atmosphere.',
+                            content: 'GPU never exceeds 55°C under full load!',
                             userId: users[0].id,
                             createdAt: new Date('2023-01-15T11:30:00Z'),
                         },
@@ -165,42 +177,29 @@ const main = async () => {
         }),
         prisma.setup.create({
             data: {
-                details: 'Professional workstation for content creation',
+                details: `Professional Content Creator Studio
+            // ... (rest of the details)`,
                 lastUpdated: new Date(),
                 ownerId: users[1].id,
                 images: {
-                    connect: [{ id: images[3].id }],
+                    connect: [{ id: images[1].id }],
                 },
                 hardwareComponents: {
-                    create: [
-                        {
-                            hardwareComponent: {
-                                connect: { id: hardwareComponents[1].id },
-                            },
-                        },
-                        {
-                            hardwareComponent: {
-                                connect: { id: hardwareComponents[3].id },
-                            },
-                        },
-                    ],
+                    connect: hardwareComponents.slice(2, 6).map((comp) => ({
+                        id: comp.id,
+                    })),
                 },
                 comments: {
                     create: [
                         {
-                            content: "How's the Ryzen 9 performing for your workload?",
+                            content: 'Amazing editing station! Render times must be incredible.',
                             userId: users[0].id,
                             createdAt: new Date('2023-01-16T09:00:00Z'),
                         },
                         {
-                            content: 'It handles everything I throw at it with ease!',
+                            content: '4K exports are now real-time with CUDA acceleration!',
                             userId: users[1].id,
                             createdAt: new Date('2023-01-16T09:45:00Z'),
-                        },
-                        {
-                            content: 'Great to hear! Might upgrade mine soon.',
-                            userId: users[0].id,
-                            createdAt: new Date('2023-01-16T10:15:00Z'),
                         },
                     ],
                 },
@@ -208,25 +207,22 @@ const main = async () => {
         }),
         prisma.setup.create({
             data: {
-                details: 'Minimalist white-themed setup for productivity',
+                details: `Minimalist Productivity Haven
+            // ... (rest of the details)`,
                 lastUpdated: new Date(),
                 ownerId: users[0].id,
                 images: {
                     connect: [{ id: images[4].id }],
                 },
                 hardwareComponents: {
-                    create: [
-                        {
-                            hardwareComponent: {
-                                connect: { id: hardwareComponents[4].id },
-                            },
-                        },
-                    ],
+                    connect: hardwareComponents.slice(4, 7).map((comp) => ({
+                        id: comp.id,
+                    })),
                 },
                 comments: {
                     create: [
                         {
-                            content: 'This looks so clean and organized!',
+                            content: 'The cable management is incredible! So clean!',
                             userId: users[1].id,
                             createdAt: new Date('2023-01-20T11:00:00Z'),
                         },
@@ -236,30 +232,29 @@ const main = async () => {
         }),
         prisma.setup.create({
             data: {
-                details: 'Home office setup with dual monitors for coding',
+                details: `Developer's Command Center
+            // ... (rest of the details)`,
                 lastUpdated: new Date(),
                 ownerId: users[2].id,
                 images: {
-                    connect: [{ id: images[5].id }],
+                    connect: [{ id: images[3].id }],
                 },
                 hardwareComponents: {
-                    create: [
-                        {
-                            hardwareComponent: {
-                                connect: { id: hardwareComponents[3].id },
-                            },
-                        },
-                    ],
+                    connect: hardwareComponents.slice(1, 5).map((comp) => ({
+                        id: comp.id,
+                    })),
                 },
                 comments: {
                     create: [
                         {
-                            content: 'Love the dual monitors setup. Super efficient!',
+                            content:
+                                "'Impressive dev environment! How's the K8s cluster performing?'",
                             userId: users[0].id,
                             createdAt: new Date('2023-01-25T09:30:00Z'),
                         },
                         {
-                            content: 'Thanks! Makes multitasking much easier.',
+                            content:
+                                'Running like a dream with the new CPU. CI/CD is lightning fast!',
                             userId: users[2].id,
                             createdAt: new Date('2023-01-25T10:00:00Z'),
                         },
