@@ -53,7 +53,7 @@ export class Setup {
         images: Image[];
         details: String;
         lastUpdated: Date;
-        comments?: Comment[];
+        comments: Comment[];
     }) {
         if (setup.id !== undefined && setup.id < 0) {
             throw new Error('Setup ID must be a non-negative number');
@@ -92,7 +92,7 @@ export class Setup {
     }
 
     // refrence to the user class
-    public getOwnerID(): number {
+    public getOwnerId(): number {
         const ownerId = this.owner.getId();
         if (ownerId === undefined) {
             throw new Error('Owner ID is undefined');
@@ -119,7 +119,7 @@ export class Setup {
 
     // ----------------------------
 
-    public getDetails(): String {
+    public getDetails(): string {
         const details = this.details;
         if (details === undefined) {
             throw new Error('Details are undefined');

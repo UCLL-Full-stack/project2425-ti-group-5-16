@@ -1,5 +1,6 @@
 import ImagesService from '../service/Images.service';
 import express, { NextFunction, Request, Response } from 'express';
+import { ImageInput } from '../types';
 
 const imagesRouter = express.Router();
 
@@ -34,6 +35,57 @@ imagesRouter.get('/:url', async (req: Request, res: Response, next: NextFunction
         } else {
             next(error);
         }
+    }
+});
+
+/**
+ * @swagger
+ * /images:
+ *   post:
+ *     summary: Create an image
+ *     tags:
+ *       - Images
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ImageInput'
+ *     responses:
+ *       200:
+ *         description: The created image object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Image'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid input"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+imagesRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const imageInput = <ImageInput>req.body;
+        const image = await ImagesService.createImage(imageInput);
+        res.status(200).json(image);
+    } catch (error) {
+        next(error);
     }
 });
 

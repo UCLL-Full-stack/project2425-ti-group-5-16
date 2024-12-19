@@ -18,7 +18,7 @@ export class HardwareComponent {
         return this.id;
     }
 
-    getName(): String {
+    getName(): string {
         const name = this.name;
         if (name === undefined) {
             throw new Error('Name is undefined');
@@ -26,7 +26,7 @@ export class HardwareComponent {
         return this.name;
     }
 
-    getDetails(): String {
+    getDetails(): string {
         const details = this.details;
         if (details === undefined) {
             throw new Error('Details is undefined');

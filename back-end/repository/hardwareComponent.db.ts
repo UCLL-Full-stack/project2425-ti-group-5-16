@@ -44,4 +44,28 @@ const getHardwareComponentByName = async ({
         throw new Error('Database error. See server log for details.');
     }
 };
-export default { getAllHardwareComponents, getById, getHardwareComponentByName };
+
+const createHardwareComponent = async (
+    hardwareComponent: HardwareComponent
+): Promise<HardwareComponent> => {
+    try {
+        const hardwareComponentPrisma = await database.hardwareComponent.create({
+            data: {
+                name: hardwareComponent.getName(),
+                details: hardwareComponent.getDetails(),
+                price: hardwareComponent.getPrice(),
+            },
+        });
+        return HardwareComponent.from(hardwareComponentPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+export default {
+    getAllHardwareComponents,
+    getById,
+    getHardwareComponentByName,
+    createHardwareComponent,
+};

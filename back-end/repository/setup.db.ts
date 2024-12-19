@@ -22,7 +22,7 @@ const getAllSetups = async (): Promise<Setup[]> => {
     }
 };
 
-const getSetupById = async (id: number): Promise<Setup | null> => {
+const getSetupById = async ({ id }: { id: number }): Promise<Setup | null> => {
     try {
         const setupPrisma = await database.setup.findUnique({
             where: { id },
@@ -43,16 +43,38 @@ const getSetupById = async (id: number): Promise<Setup | null> => {
         throw new Error('Database error. See server log for details.');
     }
 };
-/*
+
+const getSetupByEmail = async ({ email }: { email: string }): Promise<Setup[]> => {
+    try {
+        const setupsPrisma = await database.setup.findMany({
+            where: { owner: { email } },
+            include: {
+                owner: true,
+                hardwareComponents: {
+                    include: {
+                        hardwareComponent: true,
+                    },
+                },
+                images: true,
+                comments: true,
+            },
+        });
+        return setupsPrisma.map((setupPrisma) => Setup.from(setupPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
 const createSetup = async (setup: Setup): Promise<Setup> => {
     try {
         const setupPrisma = await database.setup.create({
             data: {
-                owner: setup.getOwner(),
-                hardware_components: setup.getHardwareComponents(),
-                image_urls: setup.getImageUrls(),
+                ownerId: setup.getOwnerId(),
+                hardwareComponents: setup.getHardwareComponents(),
+                imageUrls: setup.getImageUrls(),
                 details: setup.getDetails(),
-                last_updated: setup.getLastUpdated(),
+                lastUpdated: setup.getLastUpdated(),
             },
         });
         return Setup.from(setupPrisma);
@@ -62,16 +84,4 @@ const createSetup = async (setup: Setup): Promise<Setup> => {
     }
 };
 
-const deleteSetup = async (id: number): Promise<Setup> => {
-    try {
-        const setupPrisma = await database.setup.delete({
-            where: { id },
-        });
-        return Setup.from(setupPrisma);
-    } catch (error) {
-        console.error(error);
-        throw new Error('Database error. See server log for details.');
-    }
-};
-*/
-export default { getAllSetups, getSetupById };
+export default { getAllSetups, getSetupById, getSetupByEmail, createSetup };

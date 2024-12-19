@@ -1,4 +1,15 @@
-type Role = 'admin' | 'user';
+import { HardwareComponent, Image, User } from '@prisma/client';
+
+type Role = 'admin' | 'user' | 'guest' | 'owner';
+
+type Owner = {
+    id: number;
+    email: string;
+    password: string;
+    name: string;
+    age: number;
+    role: Role;
+};
 
 type UserInput = {
     id?: number; // Make id optional
@@ -17,12 +28,10 @@ type CommentInput = {
 };
 
 type SetupInput = {
-    setup_id: number;
-    owner: UserInput;
-    hardware_components: string[];
-    image_urls: string[];
+    owner: Owner;
+    hardwareComponents?: HardwareComponent[];
+    images?: Image[];
     details: string;
-    last_updated: Date;
 };
 
 type ImageInput = {
@@ -30,7 +39,13 @@ type ImageInput = {
     details: string;
 };
 
-export { ImageInput, Role, SetupInput, UserInput, CommentInput };
+type HardwareComponentInput = {
+    name: string;
+    details: string;
+    price: number;
+};
+
+export { ImageInput, Role, SetupInput, UserInput, CommentInput, HardwareComponentInput };
 
 // testing phaze
 
