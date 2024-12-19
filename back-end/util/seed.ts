@@ -15,6 +15,7 @@ const main = async () => {
     const users = await Promise.all([
         prisma.user.create({
             data: {
+                id: 1,
                 password: await bcrypt.hash('lindas123', 12),
                 name: 'linda',
                 email: 'linda.lawson@ucll.be',
@@ -24,6 +25,7 @@ const main = async () => {
         }),
         prisma.user.create({
             data: {
+                id: 2,
                 password: await bcrypt.hash('john123', 12),
                 name: 'john',
                 email: 'john.doe@example.com',
@@ -33,6 +35,7 @@ const main = async () => {
         }),
         prisma.user.create({
             data: {
+                id: 3,
                 password: await bcrypt.hash('max123', 12),
                 name: 'max',
                 email: 'max.mustermann@example.com',
@@ -46,6 +49,7 @@ const main = async () => {
     const hardwareComponents = await Promise.all([
         prisma.hardwareComponent.create({
             data: {
+                id: 1,
                 name: 'NVIDIA GeForce RTX 4090',
                 details: 'NVIDIA Ada Lovelace architecture, 24GB GDDR6X, Ray Tracing',
                 price: 1599.99,
@@ -53,6 +57,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 2,
                 name: 'AMD Ryzen 9 7950X',
                 details: '16-core, 32-thread, up to 5.7GHz boost',
                 price: 699.99,
@@ -60,6 +65,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 3,
                 name: 'Corsair Dominator Platinum RGB 32GB',
                 details: 'DDR5-6200MHz CL36 Memory Kit',
                 price: 219.99,
@@ -67,6 +73,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 4,
                 name: 'Samsung 990 PRO 2TB',
                 details: 'PCIe 4.0 NVMe SSD, 7,450MB/s Read',
                 price: 249.99,
@@ -74,6 +81,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 5,
                 name: 'Lian Li O11 Dynamic EVO',
                 details: 'Premium ATX case with tempered glass panels',
                 price: 169.99,
@@ -81,6 +89,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 6,
                 name: 'ASUS ROG SWIFT PG32UQX',
                 details: '32" 4K HDR 144Hz Gaming Monitor',
                 price: 2999.99,
@@ -88,6 +97,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 7,
                 name: 'Logitech G Pro X Superlight',
                 details: 'Wireless Gaming Mouse, 63g Ultra-lightweight',
                 price: 159.99,
@@ -95,6 +105,7 @@ const main = async () => {
         }),
         prisma.hardwareComponent.create({
             data: {
+                id: 8,
                 name: 'Custom Water Cooling Loop',
                 details: 'EK Water Blocks Premium Custom Loop',
                 price: 899.99,
@@ -106,36 +117,42 @@ const main = async () => {
     const images = await Promise.all([
         prisma.image.create({
             data: {
+                id: 1,
                 url: 'https://dlcdnwebimgs.asus.com/gain/37A21D4D-29F3-4374-AC70-27917436F12F/w1000/h732',
                 details: 'ROG Gaming Setup with RGB',
             },
         }),
         prisma.image.create({
             data: {
+                id: 2,
                 url: 'https://www.corsair.com/corsairmedia/sys_master/productcontent/Setup_2.png',
                 details: 'Corsair Streaming Setup',
             },
         }),
         prisma.image.create({
             data: {
+                id: 3,
                 url: 'https://cdn.shopify.com/s/files/1/0153/8863/files/Workspace-Headphone-Setup-Desktop-Gaming-Setup.jpg',
                 details: 'Minimalist Audiophile Gaming Setup',
             },
         }),
         prisma.image.create({
             data: {
+                id: 4,
                 url: 'https://cdn.autonomous.ai/static/upload/images/common/upload/20201013/4689bfe53d4.jpg',
                 details: 'Professional Developer Workstation',
             },
         }),
         prisma.image.create({
             data: {
+                id: 5,
                 url: 'https://i.pinimg.com/originals/81/d3/8f/81d38f4b4bb23c663c1e85fb5f82c732.jpg',
                 details: 'White & Clean Setup',
             },
         }),
         prisma.image.create({
             data: {
+                id: 6,
                 url: 'https://cdn.shopify.com/s/files/1/0153/8863/files/Workspace-Headphone-Setup-Desktop-Gaming-Setup-2.jpg',
                 details: 'Productivity Focused Setup',
             },
@@ -147,6 +164,7 @@ const main = async () => {
     const setups = await Promise.all([
         prisma.setup.create({
             data: {
+                id: 1,
                 details: `Ultimate RGB Gaming Paradise
             // ... (rest of the details)`,
                 lastUpdated: new Date(),
@@ -177,6 +195,7 @@ const main = async () => {
         }),
         prisma.setup.create({
             data: {
+                id: 2,
                 details: `Professional Content Creator Studio
             // ... (rest of the details)`,
                 lastUpdated: new Date(),
@@ -207,6 +226,7 @@ const main = async () => {
         }),
         prisma.setup.create({
             data: {
+                id: 3,
                 details: `Minimalist Productivity Haven
             // ... (rest of the details)`,
                 lastUpdated: new Date(),
@@ -232,6 +252,7 @@ const main = async () => {
         }),
         prisma.setup.create({
             data: {
+                id: 4,
                 details: `Developer's Command Center
             // ... (rest of the details)`,
                 lastUpdated: new Date(),
