@@ -12,13 +12,6 @@ type UserInput = {
     role: Role;
 };
 
-type CommentInput = {
-    comment_id: number;
-    setup_id: number;
-    user_id: number;
-    content: string;
-};
-
 type ImageInput = {
     url: string;
     details: string;
@@ -55,6 +48,12 @@ type AuthRequest = ExpressRequest & {
         email: string;
         role: Role;
     };
+};
+
+type CommentInput = {
+    content: string;
+    setup_id: number;
+    user_id: number;
 };
 
 export {
