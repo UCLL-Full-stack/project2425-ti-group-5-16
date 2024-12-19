@@ -43,13 +43,6 @@ const createComment = async ({ content, setup_id, user_id }: CommentInput): Prom
     if (userId === undefined) {
         throw new Error('User ID is undefined');
     }
-    const existingComment = await commentDB.getCommentBySetupAndUser({
-        setupId: setupId,
-        userId: userId,
-    });
-    if (existingComment) {
-        throw new Error('Comment already exists');
-    }
 
     const commentData = { content, setupId, userId };
     return await commentDB.createComment(commentData);
