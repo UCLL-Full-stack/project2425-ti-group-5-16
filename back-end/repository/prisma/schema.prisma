@@ -12,17 +12,17 @@ model User {
   email    String    @unique
   password String
   name     String
-  role     String      
+  role     String
   age      Int
   setups   Setup[]
   comments Comment[]
 
-  @@map("users")  // Explicit table naming
+  @@map("users") // Explicit table naming
 }
 
 model Image {
-  id      Int    @id @default(autoincrement())
-  url     String    @unique
+  id      Int     @id @default(autoincrement())
+  url     String  @unique
   details String
   setups  Setup[]
 
@@ -30,46 +30,46 @@ model Image {
 }
 
 model Setup {
-    id                  Int                        @id @default(autoincrement())
-    ownerId            Int
-    owner              User                       @relation(fields: [ownerId], references: [id])
-    hardwareComponents HardwareComponentToSetup[]
-    images             Image[]
-    details            String
-    lastUpdated        DateTime                   @updatedAt
-    comments           Comment[]
+  id                 Int                        @id @default(autoincrement())
+  ownerId            Int
+  owner              User                       @relation(fields: [ownerId], references: [id])
+  hardwareComponents HardwareComponentToSetup[]
+  images             Image[]
+  details            String
+  lastUpdated        DateTime                   @updatedAt
+  comments           Comment[]
 
-    @@map("setups")
+  @@map("setups")
 }
 
 model HardwareComponent {
-    id                Int                        @id @default(autoincrement())
-    name              String
-    details           String
-    price             Float
-    setups            HardwareComponentToSetup[]
+  id      Int                        @id @default(autoincrement())
+  name    String
+  details String
+  price   Float
+  setups  HardwareComponentToSetup[]
 
-    @@map("hardware_components")
+  @@map("hardware_components")
 }
 
 model HardwareComponentToSetup {
-    hardwareComponentId Int
-    setupId            Int
-    hardwareComponent  HardwareComponent         @relation(fields: [hardwareComponentId], references: [id])
-    setup              Setup                     @relation(fields: [setupId], references: [id])
+  hardwareComponentId Int
+  setupId             Int
+  hardwareComponent   HardwareComponent @relation(fields: [hardwareComponentId], references: [id])
+  setup               Setup             @relation(fields: [setupId], references: [id])
 
-    @@id([hardwareComponentId, setupId])
-    @@map("hardware_component_to_setup")
+  @@id([hardwareComponentId, setupId])
+  @@map("hardware_component_to_setup")
 }
 
 model Comment {
-  id       Int      @id @default(autoincrement())
-  user     User     @relation(fields: [userId], references: [id])
-  userId   Int      // Consistent naming convention
-  setup    Setup    @relation(fields: [setupId], references: [id])
-  setupId  Int      // Consistent naming convention
-  content  String
-  createdAt DateTime @default(now())  // Added timestamp
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int // Consistent naming convention
+  setup     Setup    @relation(fields: [setupId], references: [id])
+  setupId   Int // Consistent naming convention
+  content   String
+  createdAt DateTime @default(now()) // Added timestamp
 
   @@map("comments")
 }

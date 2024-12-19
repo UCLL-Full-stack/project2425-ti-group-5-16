@@ -17,6 +17,22 @@ const getAllComments = async (): Promise<Comment[]> => {
     }
 };
 
+const getCommentByEmail = async (email: string): Promise<Comment[]> => {
+    try {
+        const comments = await database.comment.findMany({
+            where: { user: { email } },
+            include: {
+                user: true,
+                setup: true,
+            },
+        });
+        return comments.map(Comment.from);
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error fetching comments');
+    }
+};
+
 const getCommentById = async (id: number): Promise<Comment | null> => {
     try {
         const comment = await database.comment.findUnique({
@@ -81,10 +97,34 @@ const deleteComment = async (id: number): Promise<void> => {
     }
 };
 
+const getCommentBySetupAndUser = async ({
+    setupId,
+    userId,
+}: {
+    setupId: number;
+    userId: number;
+}): Promise<Comment | null> => {
+    try {
+        const comment = await database.comment.findFirst({
+            where: { setupId, userId },
+            include: {
+                user: true,
+                setup: true,
+            },
+        });
+        return comment ? Comment.from(comment) : null;
+    } catch (error) {
+        console.error('Database error:', error);
+        throw new Error('Error fetching comment');
+    }
+};
+
 export default {
     getAllComments,
     getCommentById,
     createComment,
     updateComment,
     deleteComment,
+    getCommentByEmail,
+    getCommentBySetupAndUser,
 };

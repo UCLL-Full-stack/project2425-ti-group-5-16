@@ -6,7 +6,7 @@ import { User } from '../model/user';
 
 const getAllUsers = async (): Promise<User[]> => userDB.getAllUsers();
 
-const getUserByUsername = async ({ name }: { name: string }): Promise<User> => {
+const getUserByName = async ({ name }: { name: string }): Promise<User> => {
     const user = await userDB.getUserByName({ name });
     if (!user) {
         throw new Error(`User with username: ${name} does not exist.`);
@@ -22,10 +22,9 @@ const getUserByEmail = async ({ email }: { email: string }): Promise<User> => {
     return user;
 };
 
-const authenticate = async ({ email, password }: LoginInput): Promise<AuthenticationResponse> => {
-
+const authenticate = async ({ email, password }: UserInput): Promise<AuthenticationResponse> => {
     console.log('gets in authenticate with { email, password } :', { email, password });
-    
+
     const user = await getUserByEmail({ email });
 
     const isValidPassword = await bcrypt.compare(password, user.getPassword());
@@ -33,6 +32,7 @@ const authenticate = async ({ email, password }: LoginInput): Promise<Authentica
     if (!isValidPassword) {
         throw new Error('Incorrect password.');
     }
+
     return {
         token: generateJwtToken({ email, role: user.getRole() }),
         email: email,
@@ -54,4 +54,4 @@ const createUser = async ({ name, password, email, age, role }: UserInput): Prom
     return await userDB.createUser(user);
 };
 
-export default { getUserByUsername, authenticate, createUser, getAllUsers, getUserByEmail };
+export default { getUserByName, authenticate, createUser, getAllUsers, getUserByEmail };

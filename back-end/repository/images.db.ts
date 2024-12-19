@@ -38,4 +38,19 @@ const getImageByUrl = async ({ url }: { url: string }): Promise<Image | null> =>
     }
 };
 
-export default { getAllImages, getImageByUrl, getById };
+const createImage = async (image: Image): Promise<Image> => {
+    try {
+        const imagePrisma = await database.image.create({
+            data: {
+                url: image.getUrl(),
+                details: image.getDetails(),
+            },
+        });
+        return Image.from(imagePrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
+    }
+};
+
+export default { getAllImages, getImageByUrl, getById, createImage };

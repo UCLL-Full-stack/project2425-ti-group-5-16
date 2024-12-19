@@ -1,4 +1,5 @@
 import { Image } from '../model/image';
+import { ImageInput } from '../types';
 
 import imagesDb from '../repository/images.db';
 
@@ -12,4 +13,15 @@ const getImageByUrl = async ({ url }: { url: string }): Promise<Image | null> =>
     return image;
 };
 
-export default { getAllImages, getImageByUrl };
+const createImage = async ({ url, details }: ImageInput): Promise<Image> => {
+    const existingImage = await imagesDb.getImageByUrl({ url });
+
+    if (existingImage) {
+        throw new Error(`Image with URL ${url} is already registered.`);
+    }
+
+    const image = new Image({ url, details });
+    return await imagesDb.createImage(image);
+};
+
+export default { getAllImages, getImageByUrl, createImage };

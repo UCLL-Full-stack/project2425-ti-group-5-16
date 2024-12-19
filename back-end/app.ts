@@ -21,15 +21,20 @@ app.use(
         algorithms: ['HS256'],
     }).unless({
         path: [
-            '/api-docs',                          // Swagger API docs
-            /^\/api-docs\/.*/,                    // Swagger nested paths
-            '/users/login',                       // User login does not need a token
-            '/users/signup',                      // User signup does not need a token
-            '/status',                            // Status route
-            '/images',                            // Images endpoint
-            '/hardwareComponents',                // Hardware components endpoint
-            { url: /^\/setup\/\d+$/, methods: ['GET'] }, // Allows `/setup/:id` GET requests without a token
-            { url: /^\/comments\/.*/, methods: ['GET'] } // Allows `/comments` and nested GET routes without a token
+            '/api-docs',
+            /^\/api-docs\/.*/,
+            '/users/login',
+            '/users/signup',
+            '/status,',
+            '/images',
+            '/hardwareComponents',
+            //'/setup',
+            //'/comments',
+            // Read-only routes
+            { url: /^\/images$/, methods: ['GET'] },
+            { url: /^\/hardwareComponents$/, methods: ['GET'] },
+            { url: /^\/setup\/.*/, methods: ['GET'] },
+            { url: /^\/comments\/.*/, methods: ['GET'] },
         ],
     })
 );

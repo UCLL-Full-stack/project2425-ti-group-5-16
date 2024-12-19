@@ -1,5 +1,6 @@
 // src/controller/comment.router.ts
-import express, { Request, Response, NextFunction } from 'express';
+import express, { NextFunction, Response } from 'express';
+import { Request } from 'express-jwt';
 import commentService from '../service/comment.service';
 
 const commentRouter = express.Router();
@@ -26,6 +27,7 @@ commentRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
     }
 });
 
+/*
 commentRouter.get('/:id', async (req, res, next) => {
     try {
         const comment = await commentService.getCommentById(Number(req.params.id));
@@ -37,13 +39,14 @@ commentRouter.get('/:id', async (req, res, next) => {
         next(error);
     }
 });
+*/
 
-/*
 // Create comment
-commentRouter.post('/', async (req, res, next) => {
+/*
+commentRouter.post('/', authenticateToken, async (req, res, next) => {
     try {
         const { setupId, content } = req.body;
-        const userId = req.auth?.id; // Get user ID from JWT token
+        const userId = req.auth?.useremail; // Get user ID from JWT token
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -54,11 +57,13 @@ commentRouter.post('/', async (req, res, next) => {
             setupId,
             content,
         });
-        res.status(201).json(comment.toJSON());
+        res.status(201).json(comment);
     } catch (error) {
         next(error);
     }
 });
+*/
+/*
 
 // Update comment
 commentRouter.put('/:id', async (req, res, next) => {
