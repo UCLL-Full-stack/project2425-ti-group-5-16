@@ -1,9 +1,18 @@
+import React from 'react';
 import Head from 'next/head';
 import Header from '@components/header';
 import CreateNewSetupForm from '@components/CreateNewSetupForm';
 
 const CreateNewSetup: React.FC = () => {
+  const userData = typeof window !== 'undefined' ? sessionStorage.getItem('user') : null;
   const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+
+  // Parse user data if it exists
+  const parsedUser = userData ? JSON.parse(userData) : null;
+  const userRole = parsedUser?.role;
+
+  const isGuest = userRole === 'guest';
+  const isAuthenticated = token && !isGuest;
 
   return (
     <>
@@ -17,12 +26,15 @@ const CreateNewSetup: React.FC = () => {
           Create New Setup
         </h1>
         {/* Conditional Content */}
-        {token ? (
+        {isAuthenticated ? (
           <CreateNewSetupForm />
         ) : (
           <div className="flex justify-center items-center h-full">
-            <div style={{ color: 'red', border: '2px solid red', padding: '1em', margin: '1em 0', backgroundColor: '#ffe6e6' }}>
-              Unauthorized, log in with a valid account to create a new setup
+            <div className="text-red-600 border border-red-500 bg-red-100 px-4 py-2 rounded mb-4"
+            > <strong>Error: </strong>
+              {isGuest
+                ? "Log in as a non-guest user to create a new setup."
+                : "Unauthorized, log in with a valid account to create a new setup."}
             </div>
           </div>
         )}
@@ -32,6 +44,7 @@ const CreateNewSetup: React.FC = () => {
 };
 
 export default CreateNewSetup;
+
 
 
 
