@@ -13,11 +13,9 @@ const CreateNewSetup: React.FC = () => {
       <Header />
       <main className="min-h-screen bg-gray-50 py-8 px-6">
         {/* Page Title */}
-        <h3 className="text-4xl font-bold text-gray-700 mb-8 text-center">
+        <h1 className="text-3xl font-bold mb-6 text-center">
           Create New Setup
-        </h3>
-        <p className="text-center">Add a new setup to your profile:</p>
-
+        </h1>
         {/* Conditional Content */}
         {token ? (
           <CreateNewSetupForm />

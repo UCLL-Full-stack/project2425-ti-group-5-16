@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Header from "@components/header";
-import RegisterForm from "@components/RegisterForm"; // Note the capitalization
 import LoginForm from "@components/loginform";
 
 const RegisterPage: React.FC = () => {
