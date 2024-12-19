@@ -28,7 +28,7 @@ const EditYourSetupPage: React.FC = () => {
   
         // Check if the role is "guest"
         if (storedRole === 'guest') {
-          setError("Log in as a user to see and alter your setups.");
+          setError("Log in as a non-guest to see and alter your setups.");
           return;
         }
   
