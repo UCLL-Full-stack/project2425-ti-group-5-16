@@ -7,6 +7,7 @@ const RegisterPage: React.FC = () => {
     { email: "linda.lawson@ucll.be", password: "lindas123", role: "admin" },
     { email: "john.doe@example.com", password: "john123", role: "user" },
     { email: "max.mustermann@example.com", password: "max123", role: "user" },
+    { email: "guestuser@example.com", password: "guest123", role: "guest" },
   ];
 
   return (

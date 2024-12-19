@@ -17,26 +17,32 @@ const EditYourSetupPage: React.FC = () => {
         if (!userData) {
           throw new Error("No user data found, please log in to see your setups.");
         }
-
+  
         const parsedUser = JSON.parse(userData);
         const storedUsername = parsedUser.username;
         const storedRole = parsedUser.role;
-
+  
         if (!storedUsername || !storedRole) {
           throw new Error("Incomplete user data found. Please log in again.");
         }
-
+  
+        // Check if the role is "guest"
+        if (storedRole === 'guest') {
+          setError("Log in as a user to see and alter your setups.");
+          return;
+        }
+  
         const result = await SetupService.getAllSetups();
         if (result.error) {
           setError(result.error);
           return;
         }
-
+  
         // Admin sees all setups; non-admin users see only their own setups
         const filteredSetups = storedRole === 'admin'
           ? result
           : result.filter((setup: Setup) => setup.owner.name === storedUsername);
-
+  
         if (filteredSetups.length === 0) {
           setError(
             storedRole === 'admin'
@@ -45,7 +51,7 @@ const EditYourSetupPage: React.FC = () => {
           );
           return;
         }
-
+  
         setSetup(filteredSetups);
       } catch (err: any) {
         setError(err.message || "An error occurred while fetching setups.");
@@ -53,9 +59,9 @@ const EditYourSetupPage: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     fetchSetups();
-  }, []);
+  }, []);  
 
   const selectsetups = (selectedSetup: Setup) => {
     console.log('Selected setup:', selectedSetup);

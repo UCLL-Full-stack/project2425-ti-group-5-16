@@ -42,6 +42,16 @@ const main = async () => {
                 age: 35,
             },
         }),
+        prisma.user.create({
+            data: {
+                password: await bcrypt.hash('guest123', 12),
+                name: 'guestuser',
+                email: 'guestuser@example.com',
+                role: 'guest',
+                age: 35,
+            },
+        }),
+
     ]);
 
     // Create hardware components
