@@ -1,26 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import Header from '@components/header';
 import SetupService from '@services/SetupService';
 import SetupOverviewTable from '@components/SetupOverviewTable';
 import { Setup } from '@types';
+import useInterval from '../../hooks/useInterval';
 
 const SetupOverview: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [setup, setSetup] = useState<Setup[]>([]);
 
-  useEffect(() => {
-    const fetchSetups = async () => {
+  const fetchSetups = async () => {
+    try {
       const result = await SetupService.getAllSetups();
       if (result.error) {
         setError(result.error);
       } else {
         setSetup(result);
+        setError(null); // Reset error if successful.
       }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
+  // Use polling with a 5-second interval (5000ms).
+  useInterval(() => {
+    fetchSetups();
+  }, 5000);
+
+  // Run once initially to fetch data immediately.
+  React.useEffect(() => {
     fetchSetups();
   }, []);
 
@@ -57,4 +70,5 @@ const SetupOverview: React.FC = () => {
 };
 
 export default SetupOverview;
+
 
