@@ -1,8 +1,11 @@
+type Role = "admin" | "user";
+
 export interface RegisterUserData {
   email: string;
   password: string;
   name: string;
   age: number;
+  role: string;
 }
 
 export interface Owner {
@@ -14,12 +17,14 @@ export interface Owner {
 }
 
 export interface HardwareComponent {
+  id : number;
   name: string;
   details: string;
   price: number;
 }
 
 export interface ImageUrl {
+  id : number;
   url: string;
   details: string;
 }
@@ -48,5 +53,11 @@ export interface SetupInput {
   imageUrls: Array<string>;
   details: string;
   lastUpdated: Date;
+}
+
+export interface Comment {
+  setup_id: number;
+  user_id: number;
+  content: string;
 }
 

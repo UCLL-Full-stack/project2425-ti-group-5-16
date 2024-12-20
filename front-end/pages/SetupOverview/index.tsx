@@ -1,58 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import Header from '@components/header';
 import SetupService from '@services/SetupService';
 import SetupOverviewTable from '@components/SetupOverviewTable';
 import { Setup } from '@types';
+import useInterval from '../../hooks/useInterval';
 
 const SetupOverview: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [setup, setSetup] = useState<Setup[]>([]);
 
-    // Basic state management
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+  const fetchSetups = async () => {
+    try {
+      const result = await SetupService.getAllSetups();
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSetup(result);
+        setError(null); // Reset error if successful.
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // specific state management
-    const [setup, setSetup] = useState<Setup[]>([]);
-    const [selectedLecturer, setSelectedLecturer] = useState<Setup | null>(null);
+  // Use polling with a 5-second interval (5000ms).
+  useInterval(() => {
+    fetchSetups();
+  }, 5000);
 
-    useEffect(() => {
-        const fetchSetups = async () => {
-            try {
-                const data = await SetupService.getAllSetups();
-                setSetup(data);
-            } catch (error) {
-                setError('Failed to fetch setups');
-            } finally {
-                setLoading(false);
-            }
-        };
+  // Run once initially to fetch data immediately.
+  React.useEffect(() => {
+    fetchSetups();
+  }, []);
 
-        fetchSetups();
-    }, []);
+  const selectsetups = (selectedSetup: Setup) => {
+    console.log('Selected setup:', selectedSetup);
+  };
 
-    const selectsetups = (Setup: Setup) => {
-        setSelectedLecturer(Setup);
-        console.log('Selected Setup:', Setup);
-    };
-
-    return (
-        <>
-            <Head>
-                <title>SetupOverview</title>
-            </Head>
-            <Header />
-            <main className="d-flex flex-column justify-content-center align-items-center">
-                <h1>SetupOverview</h1>
-                <section>
-                    <p>List of registered setups will be displayed here:</p>
-                    <h2>Setup Overvieuw</h2>
-                    {loading && <p>Loading...</p>}
-                    {error && <p>{error}</p>}
-                    <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
-                </section>
-            </main>
-        </>
-    );
+  return (
+    <>
+      <Head>
+        <title>Setup Overview</title>
+      </Head>
+      <Header />
+      <main className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6 text-center">Setup Overview</h1>
+          <section>
+            {loading && (
+              <p className="text-gray-500 text-center">Loading setups...</p>
+            )}
+            {error && (
+              <div className="text-red-600 border border-red-500 bg-red-100 px-4 py-2 rounded mb-4">
+                <strong>Error:</strong> {error}
+              </div>
+            )}
+            {!loading && !error && (
+              <SetupOverviewTable setups={setup} selectsetups={selectsetups} />
+            )}
+          </section>
+        </div>
+      </main>
+    </>
+  );
 };
 
 export default SetupOverview;
+
+

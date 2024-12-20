@@ -1,4 +1,7 @@
-import { Hardware_Components } from '../model/hardware_components'; 
+/*import { HardwareComponent } from '../model/hardwareComponent'; 
+
+import database from './database';
+
 
 const hardware_componentsDB: Hardware_Components[] = [
     new Hardware_Components({
@@ -39,3 +42,4 @@ const getHardwareComponentByName = ({ name }: { name: string }): Hardware_Compon
 
 export default { getAllHardwareComponents, getHardwareComponentByName };
 
+*/

@@ -1,4 +1,4 @@
-import { User } from "../../../model/user";
+import { User } from '../../../model/user';
 
 describe('User Class', () => {
     it('should create a user instance with valid data', () => {
@@ -8,7 +8,7 @@ describe('User Class', () => {
             email: 'johndoe@example.com',
             password: 'password123',
             age: 25,
-            role: "admin",
+            role: 'admin',
         });
 
         expect(user.getName()).toBe('John Doe');
@@ -24,7 +24,7 @@ describe('User Class', () => {
                 email: 'johndoe@example.com',
                 password: 'password123',
                 age: 25,
-                role: "admin",
+                role: 'admin',
             });
         }).toThrow('Username is required');
     });
@@ -37,7 +37,7 @@ describe('User Class', () => {
                 email: '',
                 password: 'password123',
                 age: 25,
-                role: "user",
+                role: 'user',
             });
         }).toThrow('Email is required');
     });
@@ -49,7 +49,7 @@ describe('User Class', () => {
             email: 'johndoe@example.com',
             password: 'password123',
             age: 25,
-            role: "admin",
+            role: 'admin',
         });
 
         const user2 = new User({
@@ -58,12 +58,9 @@ describe('User Class', () => {
             email: 'johndoe@example.com',
             password: 'password123',
             age: 25,
-            role: "admin",
+            role: 'admin',
         });
 
         expect(user1.equals(user2)).toBe(true);
     });
 });
-
-
-

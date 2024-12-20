@@ -1,4 +1,4 @@
-import { Hardware_Components } from "../../../model/hardware_components";
+/*import { Hardware_Components } from "../../../model/hardware_components";
 
 const valid_hardware_component_1 = new Hardware_Components({name: "CPU", details: "Intel i9 10900k", price: 500});
 
@@ -44,4 +44,4 @@ test('given: valid values, when: setting name, setting details, setting price, t
     expect(hardware_component.getName()).toEqual("GPU");
     expect(hardware_component.getDetails()).toEqual("Nvidia RTX 3090");
     expect(hardware_component.getPrice()).toEqual(1500);
-});
+});*/

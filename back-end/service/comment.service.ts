@@ -1,79 +1,76 @@
-import { Comment } from '../model/comment';
-import { Setup } from '../model/setup';
-import { User } from '../model/user';
 import commentDB from '../repository/comments.db';
-import setupDB from '../repository/setup.db';
-import userDB from '../repository/user.db';
-import { CommentInput } from '../types';
+import { Comment } from '../model/comment';
+import { CommentInput, Role, SetupInput, UserInput } from '../types';
+import setupDb from '../repository/setup.db';
+import userDb from '../repository/user.db';
+import { UnauthorizedError } from 'express-jwt';
 
-const getAllComments = (): Comment[] => {
-    return commentDB.getAllComments();
+const getAllComments = async (): Promise<Comment[]> => {
+    const comments = await commentDB.getAllComments();
+    return comments;
 };
 
-const getCommentById = (comment_id: number): Comment => {
-    return commentDB.getCommentById(comment_id);
+const getComment = async ({ email, role }: { email: string; role: Role }): Promise<Comment[]> => {
+    if (role === 'admin') {
+        return commentDB.getAllComments();
+    } else if (role === 'user') {
+        return commentDB.getCommentByEmail(email);
+    } else {
+        throw new UnauthorizedError('credentials_required', {
+            message: 'you are not authorized to view this comment',
+        });
+    }
 };
 
-const getCommentsBySetupId = (setup_id: number): Comment[] => {
-    return commentDB.getCommentsBySetupId(setup_id);
+const getCommentById = async (id: number): Promise<Comment | null> => {
+    return await commentDB.getCommentById(id);
 };
 
-const addComment = ({ comment_id, setup_id, user_id, content }: CommentInput): Comment => {
-    // BASIC VALIDATION
-    if (!comment_id) {
-        throw new Error('Comment ID is required');
-    }
-    if (commentDB.getCommentById(comment_id)) {
-        throw new Error('Comment ID already exists');
-    }
-    if (!setup_id) {
-        throw new Error('Setup ID is required');
-    }
-    if (!user_id) {
-        throw new Error('User ID is required');
-    }
-    if (!content) {
-        throw new Error('Content is required');
-    }
-
-    // GET THE SETUP OBJECT USING THE ID
-    const setup = setupDB.getSetupById(setup_id);
+const createComment = async ({ content, setup_id, user_id }: CommentInput): Promise<Comment> => {
+    const setup = await setupDb.getSetupById({ id: setup_id });
+    const user = await userDb.getUserById({ id: user_id });
     if (!setup) {
         throw new Error('Setup not found');
     }
-
-    // GET THE USER OBJECT USING THE ID
-    const user = userDB.getUserById({ id: user_id });
     if (!user) {
         throw new Error('User not found');
     }
+    const setupId = setup.getId();
+    if (setupId === undefined) {
+        throw new Error('Setup ID is undefined');
+    }
+    const userId = user.getId();
+    if (userId === undefined) {
+        throw new Error('User ID is undefined');
+    }
 
-    const newComment = new Comment({
-        comment_id,
-        setup_id,
-        user_id,
-        content,
-    });
-
-    commentDB.addComment(newComment);
-    setup.addComment(newComment); // Add the comment to the setup
-
-    return newComment;
+    const commentData = { content, setupId, userId };
+    return await commentDB.createComment(commentData);
 };
 
-const updateComment = (comment_id: number, content: string): Comment => {
-    return commentDB.updateComment(comment_id, content);
+const updateComment = async (id: number, content: string): Promise<Comment | null> => {
+    const comment = await commentDB.getCommentById(id);
+    if (!comment) {
+        throw new Error('Comment not found');
+    }
+
+    return await commentDB.updateComment(id, content);
 };
 
-const deleteComment = (comment_id: number): void => {
-    commentDB.deleteComment(comment_id);
+const deleteComment = async (id: number): Promise<void> => {
+    const comment = await commentDB.getCommentById(id);
+    if (!comment) {
+        throw new Error('Comment not found');
+    }
+
+    await commentDB.deleteComment(id);
 };
 
 export default {
-    addComment,
     getAllComments,
+    getComment,
     getCommentById,
-    getCommentsBySetupId,
+    createComment,
     updateComment,
     deleteComment,
 };
