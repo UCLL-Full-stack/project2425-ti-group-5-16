@@ -39,7 +39,7 @@ const main = async () => {
                 password: await bcrypt.hash('max123', 12),
                 name: 'max',
                 email: 'max.mustermann@example.com',
-                role: 'guest',
+                role: 'user',
                 age: 35,
             },
         }),
