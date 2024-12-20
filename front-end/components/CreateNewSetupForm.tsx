@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SetupService from '@services/SetupService';
+import HardwareService from '@services/HardwareService';
+import ImageService from '@services/ImageService';
 
 const CreateNewSetupForm: React.FC = () => {
   const [hardwareIdsInput, setHardwareIdsInput] = useState<string>('');
@@ -7,6 +9,23 @@ const CreateNewSetupForm: React.FC = () => {
   const [details, setDetails] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [hardwareComponents, setHardwareComponents] = useState<any[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const hardwareData = await HardwareService.getHardwareComponents();
+        const imageData = await ImageService.getImages();
+        setHardwareComponents(Array.isArray(hardwareData) ? hardwareData : []);
+        setImages(Array.isArray(imageData) ? imageData : []);
+      } catch (error) {
+        console.error('Failed to fetch hardware components or images:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -53,7 +72,7 @@ const CreateNewSetupForm: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-gray-100">
       {/* Left Column */}
       <div className="flex flex-col space-y-6">
         <div>
@@ -99,10 +118,41 @@ const CreateNewSetupForm: React.FC = () => {
         </button>
       </div>
 
+      {/* Display Hardware Components and Images */}
+      <div className="col-span-1 lg:col-span-2">
+        <h2 className="text-lg font-medium mb-2">Hardware Components</h2>
+        {hardwareComponents.length > 0 ? (
+          <ul className="list-disc list-inside bg-white p-4 rounded-md shadow-md">
+            {hardwareComponents.map((component) => (
+              <li key={component.id}>
+                <span className="font-semibold">ID:</span> {component.id}, <span className="font-semibold">Name:</span> {component.name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No hardware components available.</p>
+        )}
+
+        <h2 className="text-lg font-medium mt-4 mb-2">Images</h2>
+        {images.length > 0 ? (
+          <ul className="list-disc list-inside bg-white p-4 rounded-md shadow-md">
+            {images.map((image) => (
+              <li key={image.id}>
+                <span className="font-semibold">ID:</span> {image.id}, <span className="font-semibold">Details:</span> {image.details}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No images available.</p>
+        )}
+      </div>
+
       {/* Feedback Messages */}
       <div className="col-span-1 lg:col-span-2 mt-4">
         {errorMessage && (
-          <div className="text-red-500 font-medium bg-red-100 p-3 rounded-md">{errorMessage}</div>
+          <div className="text-red-500 font-medium bg-red-100 p-3 rounded-md">
+            {errorMessage}
+          </div>
         )}
         {successMessage && (
           <div className="text-green-500 font-medium bg-green-100 p-3 rounded-md">
@@ -115,6 +165,9 @@ const CreateNewSetupForm: React.FC = () => {
 };
 
 export default CreateNewSetupForm;
+
+
+
 
 
 
