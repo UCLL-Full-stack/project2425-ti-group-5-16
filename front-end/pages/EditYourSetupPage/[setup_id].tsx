@@ -13,39 +13,40 @@ const SetupModifierPage: React.FC<Props> = ({ setup }) => {
   const router = useRouter();
   const { setup_id } = router.query;
 
-  const [hardwareComponents, setHardwareComponents] = useState(setup?.hardware_components || []);
-  const [details, setDetails] = useState(setup?.details || '');
-  const [imageUrls, setImageUrls] = useState(setup?.image_urls || []);
+  // Convert the hardware components and image IDs to comma-separated strings for the input fields
+  const [hardwareComponentIds, setHardwareComponentIds] = useState<string>(
+    setup?.hardware_components.map((component) => component.id).join(',') || ''
+  );
+  const [imageIds, setImageIds] = useState<string>(
+    setup?.image_urls.map((image) => image.id).join(',') || ''
+  );
+  const [details, setDetails] = useState<string>(setup?.details || '');
   const [error, setError] = useState<string | null>(null);
-
-  const handleComponentChange = (index: number, value: string) => {
-    const updatedComponents = [...hardwareComponents];
-    updatedComponents[index] = { ...updatedComponents[index], name: value };
-    setHardwareComponents(updatedComponents);
-  };
-
-  const handleImageChange = (index: number, key: string, value: string) => {
-    const updatedImages = [...imageUrls];
-    updatedImages[index] = { ...updatedImages[index], [key]: value };
-    setImageUrls(updatedImages);
-  };
 
   const handleSave = async () => {
     try {
       if (!setup) throw new Error('No setup to update');
 
-      const validComponents = hardwareComponents.filter((component) => 
-        setup.hardware_components.some((existing) => existing.name === component.name)
-      );
+      // Convert the comma-separated strings back to arrays of numbers
+      const hardwareComponentIdsArray = hardwareComponentIds
+        .split(',')
+        .map((id) => parseInt(id.trim()))
+        .filter((id) => !isNaN(id));
+
+      const imageIdsArray = imageIds
+        .split(',')
+        .map((id) => parseInt(id.trim()))
+        .filter((id) => !isNaN(id));
 
       const updatedSetup = {
-        ...setup,
-        hardware_components: validComponents,
         details,
-        image_urls: imageUrls,
+        hardwareComponentIds: hardwareComponentIdsArray,
+        imageIds: imageIdsArray,
       };
 
-      // await SetupService.updateSetup(setup_id as string, updatedSetup);
+      // Use the updateSetup function from SetupService
+      await SetupService.updateSetup(setup_id as string, updatedSetup);
+
       alert('Setup updated successfully!');
       router.push('/overview');
     } catch (error) {
@@ -64,65 +65,50 @@ const SetupModifierPage: React.FC<Props> = ({ setup }) => {
 
   return (
     <>
-    <Header />
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Modify Setup ID: {setup_id}</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <Header />
+      <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <h1 className="text-2xl font-bold mb-4">Modify Setup ID: {setup_id}</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="mb-6">
-        <h3 className="text-xl font-medium mb-2">Hardware Components</h3>
-        {hardwareComponents.map((component, index) => (
-          <div key={index} className="mb-4">
-            <input
-              type="text"
-              value={component.name}
-              onChange={(e) => handleComponentChange(index, e.target.value)}
-              placeholder="Component Name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
-            />
-          </div>
-        ))}
+        <div className="mb-6">
+          <h3 className="text-xl font-medium mb-2">Hardware Component IDs</h3>
+          <input
+            type="text"
+            value={hardwareComponentIds}
+            onChange={(e) => setHardwareComponentIds(e.target.value)}
+            placeholder="Enter hardware component IDs (comma-separated)"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+          />
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-xl font-medium mb-2">Image IDs</h3>
+          <input
+            type="text"
+            value={imageIds}
+            onChange={(e) => setImageIds(e.target.value)}
+            placeholder="Enter image IDs (comma-separated)"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+          />
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-xl font-medium mb-2">Setup Details</h3>
+          <textarea
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            placeholder="Setup Details"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 h-28"
+          />
+        </div>
+
+        <button
+          onClick={handleSave}
+          className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700"
+        >
+          Save Changes
+        </button>
       </div>
-
-      <div className="mb-6">
-        <h3 className="text-xl font-medium mb-2">Image URLs</h3>
-        {imageUrls.map((image, index) => (
-          <div key={index} className="mb-4">
-            <input
-              type="text"
-              value={image.url}
-              onChange={(e) => handleImageChange(index, 'url', e.target.value)}
-              placeholder="Image URL"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 mb-2"
-            />
-            <input
-              type="text"
-              value={image.details}
-              onChange={(e) => handleImageChange(index, 'details', e.target.value)}
-              placeholder="Image Details"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-6">
-        <h3 className="text-xl font-medium mb-2">Setup Details</h3>
-        <textarea
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
-          placeholder="Setup Details"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 h-28"
-        />
-      </div>
-
-      <button
-        onClick={handleSave}
-        className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700"
-      >
-        Save Changes
-      </button>
-    </div>
     </>
   );
 };
@@ -148,10 +134,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default SetupModifierPage;
-
-
-
-
 
 
 

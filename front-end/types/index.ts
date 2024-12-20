@@ -17,12 +17,14 @@ export interface Owner {
 }
 
 export interface HardwareComponent {
+  id : number;
   name: string;
   details: string;
   price: number;
 }
 
 export interface ImageUrl {
+  id : number;
   url: string;
   details: string;
 }

@@ -133,37 +133,42 @@ const createSetup = async (setup: { details: string; hardwareComponentIds: numbe
   }
 };
 
-  /*
-  const updateSetup = async (setup_id: string, updatedSetup: Setup) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedSetup),
-      });
-  
-      if (!response.ok) {
-        const errorDetails = await response.text();
-        console.error('Error response from backend:', errorDetails);
-        throw new Error(`Failed to update setup: ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-      console.log('Setup successfully updated:', data);
-      return data;
-    } catch (error) {
-      console.error('Error updating setup:', error);
-      throw error;
+const updateSetup = async (setup_id: string, updatedSetup: { details: string; hardwareComponentIds: number[]; imageIds: number[] }) => {
+  try {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      throw new Error('Unauthorized: No token found');
     }
-  };
-*/
-  const SetupService = {
-    getAllSetups,
-    createSetup,
-    getSetupById,
-    //updateSetup,
-  };
-  
-  export default SetupService;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/setup/${setup_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedSetup),
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      console.error('Error response from backend:', errorDetails);
+      throw new Error(`Failed to update setup: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Setup successfully updated:', data);
+    return data;
+  } catch (error) {
+    console.error('Error updating setup:', error);
+    throw error;
+  }
+};
+
+const SetupService = {
+  getAllSetups,
+  createSetup,
+  getSetupById,
+  updateSetup, // Add the new function here
+};
+
+export default SetupService;
