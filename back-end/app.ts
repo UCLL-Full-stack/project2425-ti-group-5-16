@@ -6,6 +6,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { expressjwt } from 'express-jwt';
 import helmet from 'helmet';
+import { resolve } from 'path';
 
 // BASIC CONFIGURATION
 const app = express();
@@ -15,42 +16,20 @@ app.use(cors());
 app.use(express.json());
 app.use(helmet());
 
-app.use(
-    expressjwt({
-        secret: process.env.JWT_SECRET || 'default_secret',
-        algorithms: ['HS256'],
-    }).unless({
-        path: [
-            '/api-docs',
-            /^\/api-docs\/.*/,
-            '/users/login',
-            '/users/signup',
-            '/status,',
-            '/images',
-            '/hardwareComponents',
-            //'/setup',
-            //'/comments',
-            // Read-only routes
-            { url: /^\/images$/, methods: ['GET'] },
-            { url: /^\/hardwareComponents$/, methods: ['GET'] },
-            { url: /^\/setup\/.*/, methods: ['GET'] },
-            { url: /^\/comments\/.*/, methods: ['GET'] },
-        ],
-    })
-);
-
-app.get('/status', (req, res) => {
-    res.json({ message: 'Back-end is running...' });
-});
-
-// Swagger setup
-const swaggerOptions = {
+const swaggerOptions: swaggerJSDoc.Options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Courses API',
+            title: 'Setup API',
             version: '1.0.0',
+            description: 'Setup management API documentation',
         },
+        servers: [
+            {
+                url: 'http://localhost:3000',
+                description: 'Development server',
+            },
+        ],
         components: {
             securitySchemes: {
                 bearerAuth: {
@@ -60,12 +39,40 @@ const swaggerOptions = {
                 },
             },
         },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
-    apis: ['./controller/*.ts'], // Path to the API docs
+    apis: [resolve(__dirname, './controller/*.ts'), resolve(__dirname, './controller/*.js')], // Include both TS and JS files
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const corsOptions = {
+    origin: true,
+    credentials: true,
+};
+
+// Configure Swagger UI
+app.use(
+    '/api-docs',
+    cors(corsOptions),
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+        explorer: true,
+        customCssUrl:
+            'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-newspaper.css',
+        customSiteTitle: 'Setup API Documentation',
+        swaggerOptions: {
+            persistAuthorization: true,
+        },
+    })
+);
+
+app.get('/status', (req, res) => {
+    res.json({ message: 'Back-end is running...' });
+});
 
 app.listen(port || 3000, () => {
     console.log(`Back-end is running on port ${port}.`);

@@ -1,63 +1,275 @@
 /**
  * @swagger
  *   components:
- *    schemas:
- *      Setup:
- *          type: object
- *          properties:
- *            id:
- *              type: number
- *            ownerId:
- *              type: number
- *            details:
- *              type: string
- *            lastUpdated:
- *              type: string
- *              format: date-time
- *            hardwareComponents:
- *              type: array
- *              items:
- *                $ref: '#/components/schemas/HardwareComponent'
- *            images:
- *              type: array
- *              items:
- *                $ref: '#/components/schemas/Image'
- *      SetupUpdateData:
- *          type: object
- *          properties:
- *            details:
- *              type: string
- *              description: Setup details
- *            hardwareComponents:
- *              type: array
- *              items:
- *                type: number
- *              description: Array of hardware component IDs
- *            images:
- *              type: array
- *              items:
- *                type: number
- *              description: Array of image IDs
- *      HardwareComponent:
- *          type: object
- *          properties:
- *            id:
- *              type: number
- *            name:
- *              type: string
- *            details:
- *              type: string
- *            price:
- *              type: number
- *      Image:
- *          type: object
- *          properties:
- *            id:
- *              type: number
- *            url:
- *              type: string
- *            details:
- *              type: string
+ *     schemas:
+ *       Setup:
+ *         type: object
+ *         required:
+ *           - id
+ *           - ownerId
+ *           - details
+ *           - lastUpdated
+ *         properties:
+ *           id:
+ *             type: number
+ *             description: The auto-generated id of the setup
+ *           ownerId:
+ *             type: number
+ *             description: ID of the user who owns this setup
+ *           owner:
+ *             $ref: '#/components/schemas/User'
+ *           hardwareComponents:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/HardwareComponent'
+ *           images:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Image'
+ *           details:
+ *             type: string
+ *             description: Description of the setup
+ *           lastUpdated:
+ *             type: string
+ *             format: date-time
+ *           comments:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Comment'
+ *         example:
+ *           id: 1
+ *           ownerId: 1
+ *           details: "Gaming setup with RGB lighting"
+ *           lastUpdated: "2023-08-17T12:00:00Z"
+ *           hardwareComponents: []
+ *           images: []
+ *           comments: []
+ *
+ *       User:
+ *         type: object
+ *         required:
+ *           - id
+ *           - email
+ *           - name
+ *           - role
+ *           - age
+ *         properties:
+ *           id:
+ *             type: number
+ *           email:
+ *             type: string
+ *           name:
+ *             type: string
+ *           role:
+ *             type: string
+ *             enum: [admin, user, guest]
+ *           age:
+ *             type: number
+ *
+ *       HardwareComponent:
+ *         type: object
+ *         required:
+ *           - id
+ *           - name
+ *           - details
+ *           - price
+ *         properties:
+ *           id:
+ *             type: number
+ *           name:
+ *             type: string
+ *           details:
+ *             type: string
+ *           price:
+ *             type: number
+ *             format: float
+ *
+ *       Image:
+ *         type: object
+ *         required:
+ *           - id
+ *           - url
+ *           - details
+ *         properties:
+ *           id:
+ *             type: number
+ *           url:
+ *             type: string
+ *           details:
+ *             type: string
+ *
+ *       SetupInput:
+ *         type: object
+ *         required:
+ *           - details
+ *         properties:
+ *           details:
+ *             type: string
+ *           hardwareComponentIds:
+ *             type: array
+ *             items:
+ *               type: number
+ *           imageIds:
+ *             type: array
+ *             items:
+ *               type: number
+ *
+ *       SetupUpdateData:
+ *         type: object
+ *         properties:
+ *           details:
+ *             type: string
+ *           hardwareComponents:
+ *             type: array
+ *             items:
+ *               type: number
+ *           images:
+ *             type: array
+ *             items:
+ *               type: number
+ *
+ * @swagger
+ * tags:
+ *   name: Setups
+ *   description: Setup management API
+ *
+ * @swagger
+ * /setup:
+ *   get:
+ *     summary: Get all setups
+ *     tags: [Setups]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all setups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Setup'
+ *       401:
+ *         description: Unauthorized
+ *
+ *   post:
+ *     summary: Create a new setup
+ *     tags: [Setups]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SetupInput'
+ *     responses:
+ *       201:
+ *         description: Setup created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Setup'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Referenced components/images not found
+ *
+ * @swagger
+ * /setup/my:
+ *   get:
+ *     summary: Get user's setups
+ *     tags: [Setups]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of user's setups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Setup'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ *
+ * @swagger
+ * /setup/{id}:
+ *   get:
+ *     summary: Get setup by ID
+ *     tags: [Setups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: The setup details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Setup'
+ *       404:
+ *         description: Setup not found
+ *
+ *   put:
+ *     summary: Update a setup
+ *     tags: [Setups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SetupUpdateData'
+ *     responses:
+ *       200:
+ *         description: Setup updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Setup'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - user doesn't own this setup
+ *       404:
+ *         description: Setup not found
+ *
+ *   delete:
+ *     summary: Delete a setup
+ *     tags: [Setups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       204:
+ *         description: Setup deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - user doesn't own this setup
+ *       404:
+ *         description: Setup not found
  */
 
 import express, { NextFunction, Request, Response } from 'express';
@@ -85,23 +297,6 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-/**
- * @swagger
- * /setups:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Get all setups
- *     responses:
- *       200:
- *         description: List of all setups
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Setup'
- */
 setupRouter.get('/', async (_req: Request, res: Response, next: NextFunction) => {
     try {
         const setups = await setupService.getAllSetups();
@@ -111,25 +306,6 @@ setupRouter.get('/', async (_req: Request, res: Response, next: NextFunction) =>
     }
 });
 
-/**
- * @swagger
- * /setups/my:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Get user's setups
- *     responses:
- *       200:
- *         description: List of user's setups
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Setup'
- *       404:
- *         description: User not found
- */
 setupRouter.get(
     '/my',
     authenticateToken,
@@ -150,29 +326,6 @@ setupRouter.get(
     }
 );
 
-/**
- * @swagger
- * /setups/{id}:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Get setup by ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: The setup
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Setup'
- *       404:
- *         description: Setup not found
- */
 setupRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);
@@ -186,41 +339,6 @@ setupRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) 
     }
 });
 
-/**
- * @swagger
- * /setups:
- *   post:
- *     security:
- *       - bearerAuth: []
- *     summary: Create a new setup
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               details:
- *                 type: string
- *                 description: Setup details
- *               hardwareComponentIds:
- *                 type: array
- *                 items:
- *                   type: number
- *               imageIds:
- *                 type: array
- *                 items:
- *                   type: number
- *     responses:
- *       201:
- *         description: The created setup
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Setup'
- *       404:
- *         description: User not found
- */
 setupRouter.post(
     '/',
     authenticateToken,
@@ -248,37 +366,6 @@ setupRouter.post(
     }
 );
 
-/**
- * @swagger
- * /setups/{id}:
- *   put:
- *     security:
- *       - bearerAuth: []
- *     summary: Update a setup
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/SetupUpdateData'
- *     responses:
- *       200:
- *         description: The updated setup
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Setup'
- *       403:
- *         description: Not authorized
- *       404:
- *         description: Setup or user not found
- */
 setupRouter.put(
     '/:id',
     authenticateToken,
@@ -301,41 +388,21 @@ setupRouter.put(
                 return res.status(403).json({ message: 'Not authorized to update this setup' });
             }
 
+            // Transform the request body to match SetupUpdateData
             const setupData: SetupUpdateData = {
                 details: req.body.details,
-                hardwareComponents: req.body.hardwareComponentIds,
-                images: req.body.imageIds,
+                hardwareComponents: req.body.hardwareComponents, // Map from request body
+                images: req.body.images, // Map from request body
             };
 
-            const setup = await setupService.updateSetup(id, setupData);
-            res.status(200).json(setup);
+            const updatedSetup = await setupService.updateSetup(id, setupData);
+            res.status(200).json(updatedSetup);
         } catch (error) {
             next(error);
         }
     }
 );
 
-/**
- * @swagger
- * /setups/{id}:
- *   delete:
- *     security:
- *       - bearerAuth: []
- *     summary: Delete a setup
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       204:
- *         description: Setup deleted successfully
- *       403:
- *         description: Not authorized
- *       404:
- *         description: Setup or user not found
- */
 setupRouter.delete(
     '/:id',
     authenticateToken,
