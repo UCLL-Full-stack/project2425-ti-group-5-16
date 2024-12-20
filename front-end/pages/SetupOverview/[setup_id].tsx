@@ -30,22 +30,21 @@ const SetupDetailsPage: React.FC<Props> = ({ setup }) => {
       if (!newComment.trim()) {
         throw new Error('Comment cannot be empty');
       }
-
+  
       const commentData = {
-        setup_id: Number(setup_id),
-        user_id: 1,
+        setupId: Number(setup_id), // Ensure the property name matches backend
         content: newComment,
       };
-
+  
       const newCommentData = await CommentService.AddComment(commentData);
-      setComments([...comments, newCommentData]);
-      setNewComment('');
+      setComments([...comments, newCommentData]); // Add the new comment to the state
+      setNewComment(''); // Clear the input field
     } catch (error) {
       console.error('Error adding comment:', error);
       alert('Failed to add comment. Please try again.');
     }
   };
-
+  
   if (!setup) {
     return (
       <div className="text-center text-red-600 text-lg mt-4">
