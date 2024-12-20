@@ -9,6 +9,9 @@ import { SetupInput, SetupUpdateData } from '../types';
 import { Comment } from '../model/comment';
 import hardwareComponentDB from '../repository/hardwareComponent.db';
 import imageDB from '../repository/images.db';
+import database from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 const getAllSetups = async (): Promise<Setup[]> => setupDB.getAllSetups();
 
@@ -102,58 +105,112 @@ const createSetup = async (setupData: {
     // Fetch the updated setup with all relations
     return (await setupDB.getSetupById({ id: createdSetup.getId() })) as Setup;
 };
-// In setup.service.ts
+
 const updateSetup = async (
     id: number,
     setupData: {
         details?: string;
-        hardwareComponents?: number[];
-        images?: number[];
+        hardwareComponentIds?: number[];
+        imageIds?: number[];
     }
 ): Promise<Setup> => {
+    // Check if setup exists
     const existingSetup = await setupDB.getSetupById({ id });
     if (!existingSetup) {
         throw new Error(`Setup with id: ${id} does not exist.`);
     }
 
-    // Update details if provided
-    if (setupData.details) {
-        existingSetup.setDetails(setupData.details);
-    }
-
-    // Update hardware components if provided
-    if (setupData.hardwareComponents) {
-        const hardwareComponents = await Promise.all(
-            setupData.hardwareComponents.map(async (componentId) => {
-                const component = await hardwareComponentDB.getById({ id: componentId });
+    // Fetch hardware components if IDs are provided
+    let hardwareComponents: HardwareComponent[] = [];
+    if (setupData.hardwareComponentIds && setupData.hardwareComponentIds.length > 0) {
+        hardwareComponents = await Promise.all(
+            setupData.hardwareComponentIds.map(async (id) => {
+                const component = await hardwareComponentDB.getById({ id });
                 if (!component) {
-                    throw new Error(`Hardware component with id: ${componentId} does not exist.`);
+                    throw new Error(`Hardware component with id: ${id} does not exist.`);
                 }
                 return component;
             })
         );
-
-        // Update the setup's hardware components
-        await setupDB.updateSetupHardwareComponents(id, hardwareComponents);
     }
 
-    // Update images if provided
-    if (setupData.images) {
-        const images = await Promise.all(
-            setupData.images.map(async (imageId) => {
-                const image = await imageDB.getById({ id: imageId });
+    // Fetch images if IDs are provided
+    let images: Image[] = [];
+    if (setupData.imageIds && setupData.imageIds.length > 0) {
+        images = await Promise.all(
+            setupData.imageIds.map(async (id) => {
+                const image = await imageDB.getById({ id });
                 if (!image) {
-                    throw new Error(`Image with id: ${imageId} does not exist.`);
+                    throw new Error(`Image with id: ${id} does not exist.`);
                 }
                 return image;
             })
         );
-
-        // Update the setup's images
-        await setupDB.updateSetupImages(id, images);
     }
 
-    // Fetch and return the updated setup with all relations
+    const setup = new Setup({
+        id,
+        ownerId: existingSetup.getOwnerId(),
+        owner: existingSetup.getOwner(),
+        details: setupData.details || existingSetup.getDetails(),
+        lastUpdated: new Date(),
+        hardwareComponents,
+        images,
+        comments: existingSetup.getComments(),
+    });
+
+    // First remove all existing components and images
+    const existingComponents = existingSetup.getHardwareComponents();
+    for (const component of existingComponents) {
+        const componentId = component.getId();
+        if (componentId === undefined) {
+            throw new Error(`Component ID is undefined for component: ${component}`);
+        }
+        await setupDB.removeHardwareComponent({
+            setupId: id,
+            componentId,
+        });
+    }
+
+    const existingImages = existingSetup.getImages();
+    for (const image of existingImages) {
+        const imageId = image.getId();
+        if (imageId === undefined) {
+            throw new Error(`Image ID is undefined for image: ${image}`);
+        }
+        await setupDB.removeImage({
+            setupId: id,
+            imageId,
+        });
+    }
+
+    // Update the basic setup details
+    const updatedSetup = await setupDB.updateSetup(id, {
+        details: setupData.details,
+        hardwareComponentIds: setupData.hardwareComponentIds,
+        imageIds: setupData.imageIds,
+    });
+
+    // Connect new hardware components and images
+    if (setupData.hardwareComponentIds && setupData.hardwareComponentIds.length > 0) {
+        for (const componentId of setupData.hardwareComponentIds) {
+            await setupDB.addHardwareComponent({
+                setupId: id,
+                componentId,
+            });
+        }
+    }
+
+    if (setupData.imageIds && setupData.imageIds.length > 0) {
+        for (const imageId of setupData.imageIds) {
+            await setupDB.addImage({
+                setupId: id,
+                imageId,
+            });
+        }
+    }
+
+    // Fetch and return the final updated setup with all relations
     return (await setupDB.getSetupById({ id })) as Setup;
 };
 

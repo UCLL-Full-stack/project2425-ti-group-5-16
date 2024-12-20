@@ -1,3 +1,202 @@
+/**
+ * @swagger
+ *   components:
+ *     schemas:
+ *       Comment:
+ *         type: object
+ *         required:
+ *           - userId
+ *           - setupId
+ *           - content
+ *         properties:
+ *           id:
+ *             type: number
+ *             description: The auto-generated id of the comment
+ *           userId:
+ *             type: number
+ *             description: The id of the user who made the comment
+ *           setupId:
+ *             type: number
+ *             description: The id of the setup being commented on
+ *           content:
+ *             type: string
+ *             description: The content of the comment
+ *           createdAt:
+ *             type: string
+ *             format: date-time
+ *             description: The timestamp when the comment was created
+ *         example:
+ *           id: 1
+ *           userId: 1
+ *           setupId: 1
+ *           content: "This is a great setup!"
+ *           createdAt: "2023-08-17T12:00:00Z"
+ *
+ *       CommentInput:
+ *         type: object
+ *         required:
+ *           - content
+ *           - setupId
+ *         properties:
+ *           content:
+ *             type: string
+ *             description: The content of the comment
+ *           setupId:
+ *             type: number
+ *             description: The id of the setup to comment on
+ *         example:
+ *           content: "This is a great setup!"
+ *           setupId: 1
+ *
+ *       CommentUpdate:
+ *         type: object
+ *         required:
+ *           - content
+ *         properties:
+ *           content:
+ *             type: string
+ *             description: The updated content of the comment
+ *         example:
+ *           content: "Updated comment content"
+ *
+ *     securitySchemes:
+ *       bearerAuth:
+ *         type: http
+ *         scheme: bearer
+ *         bearerFormat: JWT
+ *
+ * @swagger
+ * tags:
+ *   name: Comments
+ *   description: Comment management API
+ *
+ * @swagger
+ * /comments:
+ *   get:
+ *     summary: Returns all comments
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all comments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
+ *       401:
+ *         description: Unauthorized - invalid or missing token
+ *       500:
+ *         description: Server error
+ *
+ *   post:
+ *     summary: Create a new comment
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CommentInput'
+ *     responses:
+ *       201:
+ *         description: Comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Setup or User not found
+ *       409:
+ *         description: User has already commented on this setup
+ *
+ * @swagger
+ * /comments/{id}:
+ *   get:
+ *     summary: Get a comment by id
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Comment id
+ *     responses:
+ *       200:
+ *         description: The comment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *       404:
+ *         description: Comment not found
+ *
+ *   put:
+ *     summary: Update a comment
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Comment id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CommentUpdate'
+ *     responses:
+ *       200:
+ *         description: Comment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - user doesn't own this comment
+ *       404:
+ *         description: Comment not found
+ *
+ *   delete:
+ *     summary: Delete a comment
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: /comments/{id}
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Comment id
+ *     responses:
+ *       204:
+ *         description: Comment deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - user doesn't own this comment
+ *       404:
+ *         description: Comment not found
+ */
+
 // src/controller/comment.router.ts
 import express, { NextFunction, Request, Response } from 'express';
 import commentService from '../service/comment.service';
@@ -24,23 +223,6 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-/**
- * @swagger
- * /comments:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Get all comments
- *     responses:
- *       200:
- *         description: List of all comments
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Comment'
- */
 commentRouter.get('/', async (_req: Request, res: Response, next: NextFunction) => {
     try {
         const comments = await commentService.getAllComments();
@@ -50,29 +232,6 @@ commentRouter.get('/', async (_req: Request, res: Response, next: NextFunction) 
     }
 });
 
-/**
- * @swagger
- * /comments/{id}:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Get comment by ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: The comment
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Comment'
- *       404:
- *         description: Comment not found
- */
 commentRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);
@@ -86,30 +245,6 @@ commentRouter.get('/:id', async (req: Request, res: Response, next: NextFunction
     }
 });
 
-/**
- * @swagger
- * /comments:
- *   post:
- *     security:
- *       - bearerAuth: []
- *     summary: Create a new comment
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
- *               setupId:
- *                 type: number
- *     responses:
- *       201:
- *         description: Comment created successfully
- *       404:
- *         description: User or Setup not found
- */
 commentRouter.post(
     '/',
     authenticateToken,
@@ -136,36 +271,6 @@ commentRouter.post(
     }
 );
 
-/**
- * @swagger
- * /comments/{id}:
- *   put:
- *     security:
- *       - bearerAuth: []
- *     summary: Update a comment
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
- *     responses:
- *       200:
- *         description: Comment updated successfully
- *       403:
- *         description: Not authorized
- *       404:
- *         description: Comment or User not found
- */
 commentRouter.put(
     '/:id',
     authenticateToken,
@@ -196,27 +301,6 @@ commentRouter.put(
     }
 );
 
-/**
- * @swagger
- * /comments/{id}:
- *   delete:
- *     security:
- *       - bearerAuth: []
- *     summary: Delete a comment
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       204:
- *         description: Comment deleted successfully
- *       403:
- *         description: Not authorized
- *       404:
- *         description: Comment or User not found
- */
 commentRouter.delete(
     '/:id',
     authenticateToken,

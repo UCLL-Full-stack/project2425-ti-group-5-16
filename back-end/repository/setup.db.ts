@@ -229,14 +229,35 @@ const removeImage = async ({
         throw new Error('Database error. See server log for details.');
     }
 };
-
-const updateSetup = async (setup: Setup): Promise<Setup> => {
+const updateSetup = async (
+    id: number,
+    data: {
+        details?: string;
+        hardwareComponentIds?: number[];
+        imageIds?: number[];
+    }
+): Promise<Setup> => {
     try {
-        const setupPrisma = await database.setup.update({
-            where: { id: setup.getId() },
+        // First update basic details
+        const updatedSetup = await database.setup.update({
+            where: { id },
             data: {
-                details: setup.getDetails(),
-                lastUpdated: setup.getLastUpdated(),
+                details: data.details,
+                lastUpdated: new Date(),
+                hardwareComponents: {
+                    disconnect: await database.hardwareComponent.findMany({
+                        where: { setups: { some: { id } } },
+                        select: { id: true },
+                    }),
+                    connect: data.hardwareComponentIds?.map((id) => ({ id })) || [],
+                },
+                images: {
+                    disconnect: await database.image.findMany({
+                        where: { setups: { some: { id } } },
+                        select: { id: true },
+                    }),
+                    connect: data.imageIds?.map((id) => ({ id })) || [],
+                },
             },
             include: {
                 owner: true,
@@ -245,10 +266,11 @@ const updateSetup = async (setup: Setup): Promise<Setup> => {
                 comments: true,
             },
         });
-        return Setup.from(setupPrisma);
+
+        return Setup.from(updatedSetup);
     } catch (error) {
         console.error(error);
-        throw new Error('Database error. See server log for details.');
+        throw new Error('Database error updating setup');
     }
 };
 
